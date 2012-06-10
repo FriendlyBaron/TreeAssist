@@ -15,20 +15,12 @@ public class TreeAssistReplant implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public void run() 
+	{
 		if(plugin.isEnabled())
 		{
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
+			this.block.setTypeId(6);
+			this.block.setData(this.data);
 		}
-		
-		this.block.setTypeId(6);
-		this.block.setData(this.data);
 	}
 }
