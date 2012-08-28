@@ -436,7 +436,7 @@ public class TreeAssistBlockListener implements Listener
 					
 					int total = removeBlocks(blocksToRemove, player);
 					success = true;
-					if(plugin.config.getBoolean("Main.Apply Full Tool Damage"))
+					if(plugin.config.getBoolean("Main.Apply Full Tool Damage", false))
 					{
 						int type = player.getItemInHand().getTypeId();
 						if(type == 258 || type == 271 || type == 275 || type == 279 || type == 286)
@@ -447,7 +447,7 @@ public class TreeAssistBlockListener implements Listener
 				}
 				if((blockdata == 0 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Oak")) || (blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Jungle")) || blockdata > 3) //ugly branch messes
 				{
-					if(plugin.config.getBoolean("Main.Apply Full Tool Damage"))
+					if(plugin.config.getBoolean("Main.Apply Full Tool Damage", false))
 					{
 						if(player.getItemInHand() != null)
 						{
@@ -770,11 +770,8 @@ public class TreeAssistBlockListener implements Listener
 		{
 			this.mcMMOFake(play, block);
 		}
-		block.breakNaturally();
-		//ItemStack drop = new ItemStack(block.getType(), 1, block.getData());
-		//block.getWorld().dropItem(block.getLocation(), drop);
 		
-		//block.setTypeId(0);
+		block.breakNaturally();
 				
 		if (tool != null) 
 		{
