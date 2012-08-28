@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -22,10 +21,10 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import com.gmail.nossr50.api.ExperienceAPI;
 import com.gmail.nossr50.datatypes.AbilityType;
 import com.gmail.nossr50.datatypes.PlayerProfile;
 import com.gmail.nossr50.datatypes.SkillType;
-import com.gmail.nossr50.util.Skills;
 import com.gmail.nossr50.util.Users;
 
 public class TreeAssistBlockListener implements Listener  
@@ -88,38 +87,7 @@ public class TreeAssistBlockListener implements Listener
 			leafBreak(world.getBlockAt(x-1, y-1, z-1));
 			leafBreak(world.getBlockAt(x-1, y-1, z));
 			leafBreak(world.getBlockAt(x, y-1, z));
-		}
-		
-		
-		/*
-		if(plugin.config.getBoolean("Leaf Decay.Enable Custom Drops"))
-		{
-			List<?> listOfDrops = plugin.config.getList("Leaf Decay.Drops");
-			String[] dropList = (String[]) listOfDrops.toArray(new String[0]);
-
-			for(int y = 0; y < dropList.length; y++)
-			{
-				String[] line = dropList[y].split(";");
-				if((int)(Math.random()*300) < Integer.parseInt(line[1]))
-				{
-					ItemStack item =  new ItemStack(Integer.parseInt(line[0]), 1);
-					if(item.getTypeId() == 18 || item.getTypeId() == 17)
-					{
-						//MaterialData data = new MaterialData(block.getData());
-						//data.setData(block.getData());
-						plugin.getServer().broadcastMessage("" + item.getDurability());
-						plugin.getServer().broadcastMessage("" + block.getData());
-						item.setDurability(block.getData());
-						
-						//item.setData(data);
-						plugin.getServer().broadcastMessage("" + item.getDurability());
-					}
-					block.getWorld().dropItem(block.getLocation(), item);
-					//y = 100;
-				}
-			}
-		}
-		*/	
+		}	
 	}
 	
 	private void leafBreak(Block blockAt) 
@@ -957,26 +925,23 @@ public class TreeAssistBlockListener implements Listener
 
 	public void mcMMOFake(Player player, Block block) 
 	{
-        PlayerProfile pp = Users.getProfile(player);
-        Skills.monitorSkill(player, pp, 0, SkillType.WOODCUTTING);
         Plugin mcmmo = plugin.getServer().getPluginManager().getPlugin("mcMMO");
         if(block.getData() == 0) 
-        {
-            pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Oak"));
+        {   	
+        	ExperienceAPI.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Oak"));
         }
         else if(block.getData() == 1) 
         {
-        	pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Spruce"));
+        	ExperienceAPI.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Spruce"));
         }
         else if(block.getData() == 2) 
         {
-        	pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Birch"));
+        	ExperienceAPI.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Birch"));
         }
         else if(block.getData() == 3) 
         {
-        	pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Jungle"));
+        	ExperienceAPI.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Jungle"));
         }
-        Skills.XpCheckAll(player);
 	}
 
 	private int removeBlocks(Block[] blocksToRemove, Player player) 

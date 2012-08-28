@@ -12,7 +12,6 @@ public class TreeAssistProtect implements Runnable {
 		this.location = importLocation;
 	}
 
-	@Override
 	public void run() 
 	{
 		if(plugin.isEnabled() && plugin.blockList.contains(this.location))
