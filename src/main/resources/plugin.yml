@@ -1,0 +1,10 @@
+name: TreeAssist
+main: me.itsatacoshop247.TreeAssist.TreeAssist
+version: 4.3
+author: itsatacoshop247
+description: TreeAssist
+dev-url: http://dev.bukkit.org/server-mods/tree-assist/
+commands:
+  TreeAssist:
+    description: Turn TreeAssist Featues on or off
+    usage: /<command> toggle/global

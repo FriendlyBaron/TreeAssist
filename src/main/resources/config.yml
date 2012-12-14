@@ -1,0 +1,33 @@
+Main:
+  Automatic Tree Destruction: true
+  Use Permissions: false
+  Sapling Replant: true
+  Apply Full Tool Damage: true
+  Ignore User Placed Blocks: true
+  Use mcMMO if Available: true
+Automatic Tree Destruction:
+  Tree Types:
+    Birch: true
+    Jungle: true
+    Oak: true
+    Spruce: true
+Leaf Decay:
+    Fast Leaf Decay: true
+Sapling Replant:
+  Bottom Block has to be Broken First: true
+  Time to Protect Sapling (Seconds): 0
+  Replant When Tree Burns Down: true
+Tools:
+  Sapling Replant Require Tools: true
+  Tree Destruction Require Tools: true
+  Tools List:
+  - DIAMOND_AXE
+  - WOOD_AXE
+  - GOLD_AXE
+  - IRON_AXE
+  - STONE_AXE
+Worlds:
+    Enable Per World: false
+    Enabled Worlds:
+    - world
+    - world2

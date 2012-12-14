@@ -14,7 +14,6 @@ public class TreeAssistReplant implements Runnable {
 		this.data = importData;
 	}
 
-	@Override
 	public void run() 
 	{
 		if(plugin.isEnabled())
