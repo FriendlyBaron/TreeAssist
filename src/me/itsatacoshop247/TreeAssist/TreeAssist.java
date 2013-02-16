@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,11 +19,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
+//Running changelog
+
+//- Tree destruction will only destory the main blocks Type ID. E.G. if a Oak Tree branch hits a jungle tree branch, the Oak Tree will not destroy the jungle Branch and vice-versa
+//- Fixed Blocks dissapearing when used to destroy a tree.
+//- Config autoupdates
 
 public class TreeAssist extends JavaPlugin 
 {
@@ -33,6 +40,8 @@ public class TreeAssist extends JavaPlugin
 	File dataFile;
 	FileConfiguration config;
 	FileConfiguration data;
+	
+	public Logger log = Logger.getLogger("Minecraft");
 	
 	public void onEnable() 
 	{
@@ -55,7 +64,100 @@ public class TreeAssist extends JavaPlugin
 		this.data = new YamlConfiguration();
 		loadYamls();
 		config.options().copyDefaults(true);
+		//check for defaults to set newly
 		data.options().copyDefaults(true);
+		
+		this.updateConfig();
+	}
+
+	private void updateConfig() 
+	{
+		HashMap<String, String> items = new HashMap<String, String>();
+		
+		items = loadConfigurables(items);
+		
+		int num = 0;
+		for(Map.Entry<String, String> item : items.entrySet())
+		{
+			if(this.config.get(item.getKey()) == null)
+			{
+				this.log.info(item.getKey());
+				if(item.getValue().equalsIgnoreCase("LIST"))
+				{
+					List<String> list = Arrays.asList("LIST ITEMS GO HERE");
+					this.config.addDefault(item.getKey(), list);
+				}
+				else if(item.getValue().equalsIgnoreCase("true"))
+				{
+					this.config.addDefault(item.getKey(), true);
+				}
+				else if(item.getValue().equalsIgnoreCase("false"))
+				{
+					this.config.addDefault(item.getKey(), false);
+				}
+				else if(isInteger(item.getValue()))
+				{
+					this.config.addDefault(item.getKey(), Integer.parseInt(item.getValue()));
+				}
+				else
+				{
+					this.config.addDefault(item.getKey(), item.getValue());
+				}
+				num++;
+			}
+		}
+		if(num > 0)
+		{
+			this.log.info("[TreeAssist] " + num + " missing items added to config file.");
+		}
+		this.saveConfig();
+	}
+
+	public boolean isInteger(String input)  
+	{  
+	   try  
+	   {  
+	      Integer.parseInt(input);  
+	      return true;  
+	   }  
+	   catch(Exception e)  
+	   {  
+	      return false; 
+	   }  
+	} 
+
+	private HashMap<String, String> loadConfigurables(HashMap<String, String> items) 
+	{
+		//Pre-5.0
+		items.put("Main.Automatic Tree Destruction", "true");
+		items.put("Main.Use Permissions", "false");
+		items.put("Main.Sapling Replant", "true");
+		items.put("Main.Apply Full Tool Damage", "true");
+		items.put("Main.Ignore User Placed Blocks", "false");
+		items.put("Main.Use mcMMO if Available", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Birch", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Jungle", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Oak", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Spruce", "true");
+		items.put("Leaf Decay.Fast Leaf Decay", "true");
+		items.put("Sapling Replant.Bottom Block has to be Broken First", "true");
+		items.put("Sapling Replant.Time to Protect Sapling (Seconds)", "0");
+		items.put("Sapling Replant.Replant When Tree Burns Down", "true");
+		items.put("Sapling Replant.Block all breaking of Saplings", "false");
+		items.put("Sapling Replant.Delay until Sapling is replanted (seconds) (minimum 1 second)", "1");
+		items.put("Tools.Sapling Replant Require Tools", "true");
+		items.put("Tools.Tree Destruction Require Tools", "true");
+		items.put("Tools.Tools List", "LIST");
+		items.put("Worlds.Enable Per World", "false");
+		items.put("Worlds.Enabled Worlds", "LIST");
+		items.put("Config Help", "dev.bukkit.org/server-mods/tree-assist/pages/config-walkthrough/");
+		
+		//5.0 additions
+		items.put("Sapling Replant.Tree Types to Replant.Birch", "true");
+		items.put("Sapling Replant.Tree Types to Replant.Jungle", "true");
+		items.put("Sapling Replant.Tree Types to Replant.Oak", "true");
+		items.put("Sapling Replant.Tree Types to Replant.Spruce", "true");
+		return items;
 	}
 
 	private void checkMcMMO() 
@@ -77,18 +179,6 @@ public class TreeAssist extends JavaPlugin
         	this.mcMMO = false;
         }
     }
-
-	public WorldGuardPlugin getWorldGuard() 
-	{
-	    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-	    
-	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) 
-	    {
-	        return null;
-	    }
-	 
-	    return (WorldGuardPlugin) plugin;
-	}
 	
 	public void onDisable() 
 	{
@@ -101,8 +191,6 @@ public class TreeAssist extends JavaPlugin
 		{
 			this.dataFile.getParentFile().mkdirs();
 			copy(getResource("data.yml"), this.dataFile);
-			
-			configFile.delete();
 		}
 		if (!this.configFile.exists()) 
 		{

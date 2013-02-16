@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -303,7 +302,7 @@ public class TreeAssistBlockListener implements Listener
 		byte data = block.getData();
 		Block[] jungle = new Block[4];
 		int j = 1;
-		boolean success = true;
+		boolean success = false;
 		
 		if(plugin.config.getBoolean("Worlds.Enable Per World"))
 		{
@@ -331,7 +330,12 @@ public class TreeAssistBlockListener implements Listener
 		{
 			if(typeid == 6)
 			{
-				if(plugin.blockList.contains(block.getLocation()))
+				if(plugin.config.getBoolean("Sapling Replant.Block all breaking of Saplings"))
+				{
+					player.sendMessage(ChatColor.GREEN + "You cannot break saplings on this server!");
+					event.setCancelled(true);
+				}
+				else if(plugin.blockList.contains(block.getLocation()))
 				{
 					player.sendMessage(ChatColor.GREEN + "This sapling is protected!");
 					event.setCancelled(true);
@@ -351,14 +355,6 @@ public class TreeAssistBlockListener implements Listener
 			}
 			
 			return;
-		}
-		
-		if(plugin.getWorldGuard() != null)
-		{
-			if(!plugin.getWorldGuard().canBuild(player, block))
-			{
-				return;
-			}
 		}
 		
 		if(this.mcMMOTreeFeller(player))
@@ -434,7 +430,7 @@ public class TreeAssistBlockListener implements Listener
 			{
 				ItemStack inHand = player.getItemInHand();
 				List<?> fromConfig = plugin.config.getList("Tools.Tools List");
-				if(!fromConfig.contains(inHand.getType().toString()))
+				if(!(fromConfig.contains(inHand.getType().name()) || fromConfig.contains(inHand.getTypeId())))
 				{
 					return;
 				}
@@ -458,6 +454,7 @@ public class TreeAssistBlockListener implements Listener
 				byte blockdata = block.getData();
 				if((blockdata == 1 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Spruce")) || (blockdata == 2 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Birch"))) //simpler calculation for birch and pine trees :D
 				{
+					
 					blocksToRemove[0] = bottom;
 					Block NextBlockUp = world.getBlockAt(bottom.getX(), bottom.getY() + 1, bottom.getZ());
 					for(int q = 1; NextBlockUp.getTypeId() == 17; q++)
@@ -467,7 +464,6 @@ public class TreeAssistBlockListener implements Listener
 					}
 					
 					int total = removeBlocks(blocksToRemove, player);
-					success = true;
 					if(plugin.config.getBoolean("Main.Apply Full Tool Damage"))
 					{
 						int type = player.getItemInHand().getTypeId();
@@ -476,6 +472,8 @@ public class TreeAssistBlockListener implements Listener
 							player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability()+total));
 						}
 					}
+					success = true;
+					
 				}
 				if((blockdata == 0 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Oak")) || (blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Jungle")) || blockdata > 3) //ugly branch messes
 				{
@@ -485,26 +483,24 @@ public class TreeAssistBlockListener implements Listener
 						{
 							if(this.toolgood.contains(player.getItemInHand().getTypeId()))
 							{
-								player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() - 1));
-								checkBlock(bottom, top, player.getItemInHand(), player);
+								checkBlock(bottom, top, player.getItemInHand(), player, top.getData());
 								success = true;
 							}
 							else if(this.toolbad.contains(player.getItemInHand().getTypeId()))
 							{
-								player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() - 2));
-								checkBlock(bottom, top, player.getItemInHand(), player);
+								checkBlock(bottom, top, player.getItemInHand(), player, top.getData());
 								success = true;
 							}
 							else
 							{
-								checkBlock(bottom, top, null, player);
+								checkBlock(bottom, top, null, player, top.getData());
 								success = true;
 							}
 						}
 					}
 					else
 					{
-						checkBlock(bottom, top, null, player);
+						checkBlock(bottom, top, null, player, top.getData());
 						success = true;
 					}
 					
@@ -528,7 +524,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
-		if(plugin.config.getBoolean("Main.Sapling Replant") && !event.isCancelled()) 
+		if(plugin.config.getBoolean("Main.Sapling Replant") && !event.isCancelled() && replantType(data)) 
 		{
 			if((plugin.config.getBoolean("Main.Use Permissions") && player.hasPermission("treeassist.replant")) ||  !(plugin.config.getBoolean("Main.Use Permissions")))
 			{
@@ -543,10 +539,16 @@ public class TreeAssistBlockListener implements Listener
 				}
 				if(plugin.config.getBoolean("Main.Automatic Tree Destruction"))
 				{
+					int delay = plugin.config.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
+					if(delay < 1)
+					{
+						delay = 1;
+					}
 					if(block.getWorld().getBlockAt(bottom.getX(), bottom.getY() - 1, bottom.getZ()).getType() == Material.DIRT || block.getWorld().getBlockAt(bottom.getX(), bottom.getY() - 1, bottom.getZ()).getType() == Material.GRASS || block.getWorld().getBlockAt(bottom.getX(), bottom.getY() - 1, bottom.getZ()).getType() == Material.CLAY)
 					{
 						Runnable b = new TreeAssistReplant(plugin, bottom, data);
-						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
+						
+						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20*delay);
 						
 						if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 						{
@@ -561,7 +563,7 @@ public class TreeAssistBlockListener implements Listener
 								if(jungle[rts] != null)
 								{
 									Runnable t = new TreeAssistReplant(plugin, jungle[rts], data);
-									plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20);
+									plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20*delay);
 								
 									if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 									{
@@ -576,6 +578,11 @@ public class TreeAssistBlockListener implements Listener
 				}
 				else
 				{
+					int delay = plugin.config.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
+					if(delay < 1)
+					{
+						delay = 1;
+					}
 					Block onebelow1 = event.getBlock().getRelative(BlockFace.DOWN, 1);
 					Block oneabove1 = event.getBlock().getRelative(BlockFace.UP, 1);
 					if(onebelow1.getType() == Material.DIRT || onebelow1.getType() == Material.GRASS || onebelow1.getType() == Material.CLAY)
@@ -583,7 +590,7 @@ public class TreeAssistBlockListener implements Listener
 						if(!plugin.getConfig().getBoolean("Sapling Replant.Bottom Block has to be Broken First"))
 						{
 							Runnable b = new TreeAssistReplant(plugin, block, data);
-							plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
+							plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20*delay);
 							
 							if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 							{
@@ -599,7 +606,7 @@ public class TreeAssistBlockListener implements Listener
 									if(jungle[rts] != null && jungle[rts].getTypeId() == 0)
 									{
 										Runnable t = new TreeAssistReplant(plugin, jungle[rts], data);
-										plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20);
+										plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20*delay);
 									
 										if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 										{
@@ -636,7 +643,7 @@ public class TreeAssistBlockListener implements Listener
 								if(extrablockcount < 3)
 								{
 									Runnable b = new TreeAssistReplant(plugin, block, data);
-									plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
+									plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20*delay);
 									if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 									{
 										plugin.blockList.add(block.getLocation());
@@ -650,7 +657,7 @@ public class TreeAssistBlockListener implements Listener
 											if(jungle[rts] != null && jungle[rts].getTypeId() == 0)
 											{
 												Runnable t = new TreeAssistReplant(plugin, jungle[rts], data);
-												plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20);
+												plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20*delay);
 											
 												if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 												{
@@ -671,7 +678,53 @@ public class TreeAssistBlockListener implements Listener
 		if(success)
 		{
 			event.setCancelled(true);
+			
+			if(player.getItemInHand().getDurability() > player.getItemInHand().getType().getMaxDurability())
+			{
+				if(isTool(player.getItemInHand()))
+				{
+					player.setItemInHand(new ItemStack(0));
+				}
+			}
 		}
+	}
+
+	private boolean replantType(byte data) 
+	{
+		if(data == 0 && plugin.config.getBoolean("Sapling Replant.Tree Types to Replant.Oak"))
+		{
+			return true;
+		}
+		if(data == 1 && plugin.config.getBoolean("Sapling Replant.Tree Types to Replant.Spruce"))
+		{
+			return true;
+		}
+		if(data == 2 && plugin.config.getBoolean("Sapling Replant.Tree Types to Replant.Birch"))
+		{
+			return true;
+		}
+		if(data == 3 && plugin.config.getBoolean("Sapling Replant.Tree Types to Replant.Jungle"))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isTool(ItemStack itemInHand) 
+	{
+		if(this.toolbad.contains(itemInHand.getTypeId()))
+		{
+			return true;
+		}
+		else if(this.toolgood.contains(itemInHand.getTypeId()))
+		{
+			return true;
+		}
+		else if(plugin.config.getList("Tools.Tools List").contains(itemInHand.getTypeId()) || plugin.config.getList("Tools.Tools List").contains(itemInHand.getType().name()))
+		{
+			return true;
+		}
+		return false;
 	}
 
 	private void logBreak(Block blockAt) 
@@ -682,7 +735,7 @@ public class TreeAssistBlockListener implements Listener
 		}	
 	}
 
-	private void checkBlock(Block block, Block Top, ItemStack tool, Player p) 
+	private void checkBlock(Block block, Block Top, ItemStack tool, Player p, Byte OrigData) 
 	{
 		if(block.getTypeId() != 17)
 		{
@@ -690,6 +743,18 @@ public class TreeAssistBlockListener implements Listener
 			{
 				block.breakNaturally();
 				return;
+			}
+			else
+			{
+				return;
+			}
+		}
+		
+		if(block.getData() != OrigData)
+		{
+			if(OrigData == 0 && block.getData() > 3)
+			{
+				//
 			}
 			else
 			{
@@ -759,41 +824,41 @@ public class TreeAssistBlockListener implements Listener
 			
 		if(block.getData() == 3)
 		{
-			checkBlock(world.getBlockAt(x-2, y+1, z-2), Top, tool, p);
-			checkBlock(world.getBlockAt(x-1, y+1, z-2), Top, tool, p);
-			checkBlock(world.getBlockAt(x, y+1, z-2), Top, tool, p);
-			checkBlock(world.getBlockAt(x+1, y+1, z-2), Top, tool, p);
-			checkBlock(world.getBlockAt(x+2, y+1, z-2), Top, tool, p);
-			checkBlock(world.getBlockAt(x+2, y+1, z-1), Top, tool, p);
-			checkBlock(world.getBlockAt(x+2, y+1, z), Top, tool, p);
-			checkBlock(world.getBlockAt(x+2, y+1, z+1), Top, tool, p);
-			checkBlock(world.getBlockAt(x+2, y+1, z+2), Top, tool, p);
-			checkBlock(world.getBlockAt(x+1, y+1, z+2), Top, tool, p);
-			checkBlock(world.getBlockAt(x, y+1, z+2), Top, tool, p);
-			checkBlock(world.getBlockAt(x-1, y+1, z+2), Top, tool, p);
-			checkBlock(world.getBlockAt(x-2, y+1, z+2), Top, tool, p);
-			checkBlock(world.getBlockAt(x-2, y+1, z+1), Top, tool, p);
-			checkBlock(world.getBlockAt(x-2, y+1, z), Top, tool, p);
-			checkBlock(world.getBlockAt(x-2, y+1, z-1), Top, tool, p);
+			checkBlock(world.getBlockAt(x-2, y+1, z-2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x-1, y+1, z-2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x, y+1, z-2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+1, y+1, z-2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+2, y+1, z-2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+2, y+1, z-1), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+2, y+1, z), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+2, y+1, z+1), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+2, y+1, z+2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x+1, y+1, z+2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x, y+1, z+2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x-1, y+1, z+2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x-2, y+1, z+2), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x-2, y+1, z+1), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x-2, y+1, z), Top, tool, p, OrigData);
+			checkBlock(world.getBlockAt(x-2, y+1, z-1), Top, tool, p, OrigData);
 		}
-		checkBlock(world.getBlockAt(x-1, y, z+1), Top, tool, p);
-		checkBlock(world.getBlockAt(x, y, z+1), Top, tool, p);
-		checkBlock(world.getBlockAt(x+1, y, z+1), Top, tool, p);
-		checkBlock(world.getBlockAt(x+1, y, z), Top, tool, p);
-		checkBlock(world.getBlockAt(x+1, y, z-1), Top, tool, p);
-		checkBlock(world.getBlockAt(x, y, z-1), Top, tool, p);
-		checkBlock(world.getBlockAt(x-1, y, z-1), Top, tool, p);
-		checkBlock(world.getBlockAt(x-1, y, z), Top, tool, p);
+		checkBlock(world.getBlockAt(x-1, y, z+1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x, y, z+1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x+1, y, z+1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x+1, y, z), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x+1, y, z-1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x, y, z-1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x-1, y, z-1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x-1, y, z), Top, tool, p, OrigData);
 		
-		checkBlock(world.getBlockAt(x-1, y+1, z+1), Top, tool, p);
-		checkBlock(world.getBlockAt(x, y+1, z+1), Top, tool, p);
-		checkBlock(world.getBlockAt(x+1, y+1, z+1), Top, tool, p);
-		checkBlock(world.getBlockAt(x+1, y+1, z), Top, tool, p);
-		checkBlock(world.getBlockAt(x+1, y+1, z-1), Top, tool, p);
-		checkBlock(world.getBlockAt(x, y+1, z-1), Top, tool, p);
-		checkBlock(world.getBlockAt(x-1, y+1, z-1), Top, tool, p);
-		checkBlock(world.getBlockAt(x-1, y+1, z), Top, tool, p);
-		checkBlock(world.getBlockAt(x, y+1, z), Top, tool, p);
+		checkBlock(world.getBlockAt(x-1, y+1, z+1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x, y+1, z+1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x+1, y+1, z+1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x+1, y+1, z), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x+1, y+1, z-1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x, y+1, z-1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x-1, y+1, z-1), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x-1, y+1, z), Top, tool, p, OrigData);
+		checkBlock(world.getBlockAt(x, y+1, z), Top, tool, p, OrigData);
 	}
 
 	private void breakBlock(Block block, ItemStack tool, Player play) 
@@ -803,10 +868,6 @@ public class TreeAssistBlockListener implements Listener
 			this.mcMMOFake(play, block);
 		}
 		block.breakNaturally();
-		//ItemStack drop = new ItemStack(block.getType(), 1, block.getData());
-		//block.getWorld().dropItem(block.getLocation(), drop);
-		
-		//block.setTypeId(0);
 				
 		if (tool != null) 
 		{
@@ -957,26 +1018,26 @@ public class TreeAssistBlockListener implements Listener
 
 	public void mcMMOFake(Player player, Block block) 
 	{
-        PlayerProfile pp = Users.getProfile(player);
-        Skills.monitorSkill(player, pp, 0, SkillType.WOODCUTTING);
-        Plugin mcmmo = plugin.getServer().getPluginManager().getPlugin("mcMMO");
+		Plugin mcmmo = plugin.getServer().getPluginManager().getPlugin("mcMMO");
+		PlayerProfile pp = Users.getProfile(player);
+		Skills.monitorSkill(player, pp, 0, SkillType.WOODCUTTING);
         if(block.getData() == 0) 
         {
-            pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Oak"));
+        	Users.getPlayer(player.getName()).addXP(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Oak"));
         }
         else if(block.getData() == 1) 
         {
-        	pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Spruce"));
+        	Users.getPlayer(player.getName()).addXP(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Spruce"));
         }
         else if(block.getData() == 2) 
         {
-        	pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Birch"));
+        	Users.getPlayer(player.getName()).addXP(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Birch"));
         }
         else if(block.getData() == 3) 
         {
-        	pp.addXP(player, SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Jungle"));
+        	Users.getPlayer(player.getName()).addXP(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Jungle"));
         }
-        Skills.XpCheckAll(player);
+        Skills.xpCheckSkill(SkillType.WOODCUTTING, player, pp);
 	}
 
 	private int removeBlocks(Block[] blocksToRemove, Player player) 
