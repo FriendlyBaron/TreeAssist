@@ -424,7 +424,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
-		if(!event.isCancelled() && plugin.config.getBoolean("Main.Automatic Tree Destruction") && ((player.hasPermission("treeassist.autoremove") || (!plugin.config.getBoolean("Main.Use Permissions")))))
+		if(!event.isCancelled() && plugin.config.getBoolean("Main.Automatic Tree Destruction"))
 		{
 			if(plugin.config.getBoolean("Tools.Tree Destruction Require Tools"))
 			{
