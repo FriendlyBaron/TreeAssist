@@ -21,11 +21,8 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.gmail.nossr50.datatypes.PlayerProfile;
-import com.gmail.nossr50.skills.utilities.AbilityType;
-import com.gmail.nossr50.skills.utilities.SkillTools;
-import com.gmail.nossr50.skills.utilities.SkillType;
-import com.gmail.nossr50.util.Users;
+import com.gmail.nossr50.api.AbilityAPI;
+import com.gmail.nossr50.api.ExperienceAPI;
 
 public class TreeAssistBlockListener implements Listener  
 {
@@ -1005,8 +1002,7 @@ public class TreeAssistBlockListener implements Listener
                 return false;
         }
         
-        PlayerProfile pp = Users.getProfile(player);
-        if(pp.getAbilityMode(AbilityType.TREE_FELLER)) 
+        if(AbilityAPI.treeFellerEnabled(player)) 
         {
                 return true;
         } 
@@ -1019,25 +1015,23 @@ public class TreeAssistBlockListener implements Listener
 	public void mcMMOFake(Player player, Block block) 
 	{
 		Plugin mcmmo = plugin.getServer().getPluginManager().getPlugin("mcMMO");
-		PlayerProfile pp = Users.getProfile(player);
-		SkillTools.monitorSkill(player, pp, 0, SkillType.WOODCUTTING);
+
         if(block.getData() == 0) 
         {
-        	Users.getPlayer(player.getName()).applyXpGain(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Oak"));
+            ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig().getInt("Experience.Woodcutting.Oak"));
         }
         else if(block.getData() == 1) 
         {
-        	Users.getPlayer(player.getName()).applyXpGain(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Spruce"));
+            ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig().getInt("Experience.Woodcutting.Spruce"));
         }
         else if(block.getData() == 2) 
         {
-        	Users.getPlayer(player.getName()).applyXpGain(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Birch"));
+            ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig().getInt("Experience.Woodcutting.Birch"));
         }
         else if(block.getData() == 3) 
         {
-        	Users.getPlayer(player.getName()).applyXpGain(SkillType.WOODCUTTING, mcmmo.getConfig().getInt("Experience.Woodcutting.Jungle"));
+            ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig().getInt("Experience.Woodcutting.Jungle"));
         }
-        SkillTools.xpCheckSkill(SkillType.WOODCUTTING, player, pp);
 	}
 
 	private int removeBlocks(Block[] blocksToRemove, Player player) 
