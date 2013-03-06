@@ -382,6 +382,7 @@ public class TreeAssistBlockListener implements Listener
 				return;
 			}
 		}
+		
 		if(data == 3)
 		{
 			jungle[0] = bottom;
@@ -440,7 +441,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 				
 			String[] directions = {"NORTH", "SOUTH", "EAST", "WEST", "NORTH_EAST", "NORTH_WEST", "SOUTH_EAST", "SOUTH_WEST"};
-			List<Integer> validTypes = Arrays.asList(0, 2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111, 78, 12, 50); //if it's not one of these blocks, it's safe to assume its a house/building
+			List<Integer> validTypes = Arrays.asList(0, 2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111, 78, 12, 50, 66); //if it's not one of these blocks, it's safe to assume its a house/building
 			for(int x = 0; x < directions.length; x++)
 			{
 				if(!validTypes.contains(block.getRelative(BlockFace.valueOf(directions[x])).getTypeId()))
