@@ -5,6 +5,7 @@ Main:
   Apply Full Tool Damage: true
   Ignore User Placed Blocks: false
   Use mcMMO if Available: true
+  Destroy Only Blocks Above: false
 Automatic Tree Destruction:
   Tree Types:
     Birch: true

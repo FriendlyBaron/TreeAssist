@@ -56,6 +56,9 @@ public class TreeAssistBlockListener implements Listener
 			int y = block.getY();
 			int z = block.getZ();
 			
+			//TODO every one of those checks does a for loop around itself.
+			//TODO this needs to be tweaked!
+			
 			leafBreak(world.getBlockAt(x-1, y+1, z+1));
 			leafBreak(world.getBlockAt(x, y+1, z+1));
 			leafBreak(world.getBlockAt(x+1, y+1, z+1));
@@ -120,6 +123,7 @@ public class TreeAssistBlockListener implements Listener
 	
 	private void leafBreak(Block blockAt) 
 	{
+		// TODO this is called quite often, refactor loops!
 		if(blockAt.getTypeId() == 18)
 		{
 			blockAt.breakNaturally();
@@ -359,7 +363,9 @@ public class TreeAssistBlockListener implements Listener
 			return;
 		}
 		
-		bottom = getBottom(block);
+		if (!plugin.config.getBoolean("Main.Destroy Only Blocks Above")) {
+			bottom = getBottom(block);
+		}
 		top = getTop(block);
 		if(bottom == null)
 		{

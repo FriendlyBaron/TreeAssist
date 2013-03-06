@@ -157,6 +157,9 @@ public class TreeAssist extends JavaPlugin
 		items.put("Sapling Replant.Tree Types to Replant.Jungle", "true");
 		items.put("Sapling Replant.Tree Types to Replant.Oak", "true");
 		items.put("Sapling Replant.Tree Types to Replant.Spruce", "true");
+		
+		//5.2 additions
+		items.put("Main.Destroy Only Blocks Above", "false");
 		return items;
 	}
 
