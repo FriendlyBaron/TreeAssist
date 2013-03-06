@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -433,9 +434,7 @@ public class TreeAssistBlockListener implements Listener
 			if(plugin.config.getBoolean("Tools.Tree Destruction Require Tools"))
 			{
 				ItemStack inHand = player.getItemInHand();
-				List<?> fromConfig = plugin.config.getList("Tools.Tools List");
-				if(!(fromConfig.contains(inHand.getType().name()) || fromConfig.contains(inHand.getTypeId())))
-				{
+				if (!isRequiredTool(inHand)) {
 					return;
 				}
 			}
@@ -535,9 +534,7 @@ public class TreeAssistBlockListener implements Listener
 				if(plugin.config.getBoolean("Tools.Sapling Replant Require Tools"))
 				{
 					ItemStack inHand = player.getItemInHand();
-					List<?> fromConfig = plugin.config.getList("Tools.Tools List");
-					if(!fromConfig.contains(inHand.getType().toString()))
-					{
+					if (!isRequiredTool(inHand)) {
 						return;
 					}
 				}
@@ -691,6 +688,52 @@ public class TreeAssistBlockListener implements Listener
 				}
 			}
 		}
+	}
+
+	private boolean isRequiredTool(ItemStack inHand) {
+		List<?> fromConfig = plugin.config.getList("Tools.Tools List");
+		if(fromConfig.contains(inHand.getType().name()) || fromConfig.contains(inHand.getTypeId()))
+		{
+			return true;
+		}
+		
+		for (Object obj : fromConfig) {
+			if (!(obj instanceof String)) {
+				continue; // skip item IDs
+			}
+			String tool = (String) obj;
+			if (!tool.startsWith(inHand.getType().name())) {
+				continue; // skip other names
+			}
+			
+			String[] values = tool.split(":");
+			
+			if (values.length < 2) {
+				return true; // no enchantment found, defaulting to plain (found) name
+			}
+			
+			for (Enchantment ench : inHand.getEnchantments().keySet()) {
+				if (!ench.getName().equalsIgnoreCase(values[1])) {
+					continue; // skip other enchantments
+				}
+				int level = 0;
+				if (values.length < 3) {
+					return true; // has correct enchantment, no level needed
+				}
+				try {
+					level = Integer.parseInt(values[2]);
+				} catch (Exception e) {
+					return true; // invalid level defined, defaulting to no level
+				}
+				
+				if (level > inHand.getEnchantments().get(ench)) {
+					continue; // enchantment too low
+				}
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	private boolean replantType(byte data) 
