@@ -8,3 +8,24 @@ commands:
   TreeAssist:
     description: Turn TreeAssist Featues on or off
     usage: /<command> toggle/global
+permissions:
+  tree-assist.all:
+    description: allows to use tree-assist for all trees
+    children:
+      tree-assist.birch: true
+      tree-assist.jungle: true
+      tree-assist.oak: true
+      tree-assist.spruce: true
+    default: true
+  tree-assist.birch:
+    description: allows to use tree-assist for birch trees
+    default: true
+  tree-assist.jungle:
+    description: allows to use tree-assist for jungle trees
+    default: true
+  tree-assist.oak:
+    description: allows to use tree-assist for oak trees
+    default: true
+  tree-assist.spruce:
+    description: allows to use tree-assist for spruce trees
+    default: true

@@ -314,6 +314,10 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
+		if (!hasPerms(player, data)) {
+			return;
+		}
+		
 		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks"))
 		{
 			String check = "" + block.getX() + ";" + block.getY() + ";" + block.getZ() + ";" + block.getWorld().getName();
@@ -753,6 +757,27 @@ public class TreeAssistBlockListener implements Listener
 		if(data == 3 && plugin.config.getBoolean("Sapling Replant.Tree Types to Replant.Jungle"))
 		{
 			return true;
+		}
+		return false;
+	}
+
+	private boolean hasPerms(Player player, byte data) 
+	{
+		if(data == 0)
+		{
+			return player.hasPermission("tree-assist.oak");
+		}
+		if(data == 1)
+		{
+			return player.hasPermission("tree-assist.spruce");
+		}
+		if(data == 2)
+		{
+			return player.hasPermission("tree-assist.birch");
+		}
+		if(data == 3)
+		{
+			return player.hasPermission("tree-assist.jungle");
 		}
 		return false;
 	}
