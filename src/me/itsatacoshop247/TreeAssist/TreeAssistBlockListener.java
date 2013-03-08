@@ -763,21 +763,24 @@ public class TreeAssistBlockListener implements Listener
 
 	private boolean hasPerms(Player player, byte data) 
 	{
+		if (!plugin.config.getBoolean("Main.Use Permissions")) {
+			return true;
+		}
 		if(data == 0)
 		{
-			return player.hasPermission("tree-assist.oak");
+			return player.hasPermission("treeassist.destroy.oak");
 		}
 		if(data == 1)
 		{
-			return player.hasPermission("tree-assist.spruce");
+			return player.hasPermission("treeassist.destroy.spruce");
 		}
 		if(data == 2)
 		{
-			return player.hasPermission("tree-assist.birch");
+			return player.hasPermission("treeassist.destroy.birch");
 		}
 		if(data == 3)
 		{
-			return player.hasPermission("tree-assist.jungle");
+			return player.hasPermission("treeassist.destroy.jungle");
 		}
 		return false;
 	}

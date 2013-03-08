@@ -1,6 +1,6 @@
 name: TreeAssist
 main: me.itsatacoshop247.TreeAssist.TreeAssist
-version: 5.2.3
+version: 5.2.4
 author: itsatacoshop247
 description: TreeAssist
 dev-url: http://dev.bukkit.org/server-mods/tree-assist/
@@ -9,23 +9,23 @@ commands:
     description: Turn TreeAssist Featues on or off
     usage: /<command> toggle/global
 permissions:
-  tree-assist.all:
+  treeassist.destroy.*:
     description: allows to use tree-assist for all trees
     children:
-      tree-assist.birch: true
-      tree-assist.jungle: true
-      tree-assist.oak: true
-      tree-assist.spruce: true
+      treeassist.destroy.birch: true
+      treeassist.destroy.jungle: true
+      treeassist.destroy.oak: true
+      treeassist.destroy.spruce: true
     default: true
-  tree-assist.birch:
+  treeassist.destroy.birch:
     description: allows to use tree-assist for birch trees
     default: true
-  tree-assist.jungle:
+  treeassist.destroy.jungle:
     description: allows to use tree-assist for jungle trees
     default: true
-  tree-assist.oak:
+  treeassist.destroy.oak:
     description: allows to use tree-assist for oak trees
     default: true
-  tree-assist.spruce:
+  treeassist.destroy.spruce:
     description: allows to use tree-assist for spruce trees
     default: true
