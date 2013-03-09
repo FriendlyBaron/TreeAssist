@@ -41,4 +41,16 @@ Worlds:
   Enabled Worlds:
   - world
   - world2
+Modding:
+  Custom Logs:
+  - 627
+  - 1312
+  - 1313
+  - 1314
+  Custom Tree Blocks:
+  - 211
+  - 625
+  - '1505:1'
+  Custom Saplings:
+  - 626
 Config Help: dev.bukkit.org/server-mods/tree-assist/pages/config-walkthrough/

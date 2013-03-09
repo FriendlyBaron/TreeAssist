@@ -33,6 +33,9 @@ public class TreeAssistBlockListener implements Listener
 	
 	public List<Integer> toolgood = Arrays.asList(271, 275, 258, 286,279);
 	public List<Integer> toolbad = Arrays.asList(256,257,267,268,269,270,272,273,274,276,277,278,283,284,285,290,291,292,293,294);
+	public List<?> customTreeBlocks = null;
+	public List<?> customLogs = null;
+	public List<?> customSaplings = null;
 	
 	public TreeAssistBlockListener(TreeAssist instance)
 	{
@@ -53,41 +56,19 @@ public class TreeAssistBlockListener implements Listener
 					return;
 				}
 			}
-			int x = block.getX();
-			int y = block.getY();
-			int z = block.getZ();
 			
-			//TODO every one of those checks does a for loop around itself.
-			//TODO this needs to be tweaked!
-			
-			leafBreak(world.getBlockAt(x-1, y+1, z+1));
-			leafBreak(world.getBlockAt(x, y+1, z+1));
-			leafBreak(world.getBlockAt(x+1, y+1, z+1));
-			leafBreak(world.getBlockAt(x+1, y+1, z));
-			leafBreak(world.getBlockAt(x+1, y+1, z-1));
-			leafBreak(world.getBlockAt(x, y+1, z-1));
-			leafBreak(world.getBlockAt(x-1, y+1, z-1));
-			leafBreak(world.getBlockAt(x-1, y+1, z));
-			leafBreak(world.getBlockAt(x, y+1, z));
-			
-			leafBreak(world.getBlockAt(x-1, y, z+1));
-			leafBreak(world.getBlockAt(x, y, z+1));
-			leafBreak(world.getBlockAt(x+1, y, z+1));
-			leafBreak(world.getBlockAt(x+1, y, z));
-			leafBreak(world.getBlockAt(x+1, y, z-1));
-			leafBreak(world.getBlockAt(x, y, z-1));
-			leafBreak(world.getBlockAt(x-1, y, z-1));
-			leafBreak(world.getBlockAt(x-1, y, z));
-
-			leafBreak(world.getBlockAt(x-1, y-1, z+1));
-			leafBreak(world.getBlockAt(x, y-1, z+1));
-			leafBreak(world.getBlockAt(x+1, y-1, z+1));
-			leafBreak(world.getBlockAt(x+1, y-1, z));
-			leafBreak(world.getBlockAt(x+1, y-1, z-1));
-			leafBreak(world.getBlockAt(x, y-1, z-1));
-			leafBreak(world.getBlockAt(x-1, y-1, z-1));
-			leafBreak(world.getBlockAt(x-1, y-1, z));
-			leafBreak(world.getBlockAt(x, y-1, z));
+			for (int x = block.getX()-1; x<= block.getX()+1; x++) {
+				for (int y = block.getY()-1; y<= block.getY()+1; y++) {
+					for (int z = block.getZ()-1; z<= block.getZ()+1; z++) {
+						if (x == block.getX() && y == block.getY() && z == block.getZ()) {
+							continue;
+						}
+						if (leafBreak(world.getBlockAt(x,y,z))) {
+							return;
+						}
+					}
+				}
+			}
 		}
 		
 		
@@ -122,10 +103,16 @@ public class TreeAssistBlockListener implements Listener
 		*/	
 	}
 	
-	private void leafBreak(Block blockAt) 
+	/**
+	 * if the block is a leaf block, enforces
+	 * a 8 block radius FloatingLeaf removal
+	 * 
+	 * @param blockAt the block to check
+	 * @return 
+	 */
+	private boolean leafBreak(Block blockAt) 
 	{
-		// TODO this is called quite often, refactor loops!
-		if(blockAt.getTypeId() == 18)
+		if(blockAt.getTypeId() == 18 || isCustomTreeBlock(blockAt))
 		{
 			blockAt.breakNaturally();
 			World world = blockAt.getWorld();
@@ -143,56 +130,58 @@ public class TreeAssistBlockListener implements Listener
 					FloatingLeaf(world.getBlockAt(x+x2, y-2, z+z2));
 				}
 			}
-			
+			return true;
 		}
+		return false;
 	}
 
+	private boolean isCustomTreeBlock(Block blockAt) {
+		if (blockAt.getData() > 0) {
+			if (customTreeBlocks.contains(blockAt.getTypeId())) {
+				return true;
+			}
+			return customTreeBlocks.contains(blockAt.getTypeId()+":"+blockAt.getData());
+		}
+		return customTreeBlocks.contains(blockAt.getTypeId());
+	}
+
+	private boolean isCustomLog(Block blockAt) {
+		if (blockAt.getData() > 0) {
+			if (customLogs.contains(blockAt.getTypeId())) {
+				return true;
+			}
+			return customLogs.contains(blockAt.getTypeId()+":"+blockAt.getData());
+		}
+		return customLogs.contains(blockAt.getTypeId());
+	}
+
+	/**
+	 * Checks if the block is a leaf block and drops it
+	 * if no log is in 2 block radius around
+	 * @param blockAt the block to check
+	 */
 	private void FloatingLeaf(Block blockAt) 
 	{
-		if(blockAt.getTypeId() != 18)
+		if(blockAt.getTypeId() != 18 && !isCustomTreeBlock(blockAt))
 		{
 			return;
 		}
 		World world = blockAt.getWorld();
-		int x = blockAt.getX();
-		int y = blockAt.getY();
-		int z = blockAt.getZ();
 		
-		int fail = 0;
+		int fail = -1; // because we will fail once, when finding blockAt
 		
-		fail+=Air(world.getBlockAt(x-1, y+1, z+1));
-		fail+=Air(world.getBlockAt(x, y+1, z+1));
-		fail+=Air(world.getBlockAt(x+1, y+1, z+1));
-		fail+=Air(world.getBlockAt(x+1, y+1, z));
-		fail+=Air(world.getBlockAt(x+1, y+1, z-1));
-		fail+=Air(world.getBlockAt(x, y+1, z-1));
-		fail+=Air(world.getBlockAt(x-1, y+1, z-1));
-		fail+=Air(world.getBlockAt(x-1, y+1, z));
-		fail+=Air(world.getBlockAt(x, y+1, z));
-		
-		fail+=Air(world.getBlockAt(x-1, y, z+1));
-		fail+=Air(world.getBlockAt(x, y, z+1));
-		fail+=Air(world.getBlockAt(x+1, y, z+1));
-		fail+=Air(world.getBlockAt(x+1, y, z));
-		fail+=Air(world.getBlockAt(x+1, y, z-1));
-		fail+=Air(world.getBlockAt(x, y, z-1));
-		fail+=Air(world.getBlockAt(x-1, y, z-1));
-		fail+=Air(world.getBlockAt(x-1, y, z));
-
-		fail+=Air(world.getBlockAt(x-1, y-1, z+1));
-		fail+=Air(world.getBlockAt(x, y-1, z+1));
-		fail+=Air(world.getBlockAt(x+1, y-1, z+1));
-		fail+=Air(world.getBlockAt(x+1, y-1, z));
-		fail+=Air(world.getBlockAt(x+1, y-1, z-1));
-		fail+=Air(world.getBlockAt(x, y-1, z-1));
-		fail+=Air(world.getBlockAt(x-1, y-1, z-1));
-		fail+=Air(world.getBlockAt(x-1, y-1, z));
-		fail+=Air(world.getBlockAt(x, y-1, z));
-		
-		if(fail < 5)
-		{
-			blockAt.breakNaturally();
+		for (int x = blockAt.getX()-2; x<=blockAt.getX()+2; x++) {
+			for (int y = blockAt.getY()-2; y<=blockAt.getY()+2; y++) {
+				for (int z = blockAt.getZ()-2; x<=blockAt.getZ()+2; z++) {
+					fail+=Air(world.getBlockAt(x, y, z));
+					if (fail > 4) {
+						return; // fail threshold -> out!
+					}
+				}
+			}
 		}
+
+		blockAt.breakNaturally();
 	}
 
 	private int Air(Block blockAt) 
@@ -201,7 +190,7 @@ public class TreeAssistBlockListener implements Listener
 		{
 			return 0;
 		}
-		else if(blockAt.getTypeId() == 17)
+		else if(blockAt.getTypeId() == 17 || isCustomLog(blockAt))
 		{
 			return 5;
 		}
@@ -215,7 +204,7 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && event.getBlock().getTypeId() == 17)
+		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getTypeId() == 17 || isCustomLog(event.getBlock())))
 		{
 			if(plugin.config.getBoolean("Worlds.Enable Per World"))
 			{
@@ -332,7 +321,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
-		if(typeid != 17)
+		if(typeid != 17 && !isCustomLog(block))
 		{
 			if(typeid == 6)
 			{
@@ -359,7 +348,6 @@ public class TreeAssistBlockListener implements Listener
 			{
 				plugin.blockList.remove(block.getLocation());
 			}
-			
 			return;
 		}
 		
@@ -444,7 +432,21 @@ public class TreeAssistBlockListener implements Listener
 			}
 				
 			String[] directions = {"NORTH", "SOUTH", "EAST", "WEST", "NORTH_EAST", "NORTH_WEST", "SOUTH_EAST", "SOUTH_WEST"};
-			List<Integer> validTypes = Arrays.asList(0, 2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111, 78, 12, 50, 66); //if it's not one of these blocks, it's safe to assume its a house/building
+			List<Integer> validTypes = new ArrayList<Integer>(Arrays.asList(0, 2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111, 78, 12, 50, 66)); //if it's not one of these blocks, it's safe to assume its a house/building
+			for (Object obj : plugin.config.getList("Modding.Custom Logs")) {
+				if (obj instanceof Integer) {
+					validTypes.add((Integer) obj);
+					continue;
+				}
+				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
+			}
+			for (Object obj : plugin.config.getList("Modding.Custom Tree Blocks")) {
+				if (obj instanceof Integer) {
+					validTypes.add((Integer) obj);
+					continue;
+				}
+				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
+			}
 			for(int x = 0; x < directions.length; x++)
 			{
 				if(!validTypes.contains(block.getRelative(BlockFace.valueOf(directions[x])).getTypeId()))
@@ -464,7 +466,7 @@ public class TreeAssistBlockListener implements Listener
 					
 					blocksToRemove[0] = bottom;
 					Block NextBlockUp = world.getBlockAt(bottom.getX(), bottom.getY() + 1, bottom.getZ());
-					for(int q = 1; NextBlockUp.getTypeId() == 17; q++)
+					for(int q = 1; NextBlockUp.getTypeId() == 17 || isCustomLog(NextBlockUp); q++)
 					{
 						blocksToRemove[q] = NextBlockUp;
 						NextBlockUp = world.getBlockAt(NextBlockUp.getX(), NextBlockUp.getY() + 1, NextBlockUp.getZ());
@@ -482,7 +484,7 @@ public class TreeAssistBlockListener implements Listener
 					success = true;
 					
 				}
-				if((blockdata == 0 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Oak")) || (blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Jungle")) || blockdata > 3) //ugly branch messes
+				if(isCustomLog(bottom) || (blockdata == 0 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Oak")) || (blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Jungle")) || blockdata > 3) //ugly branch messes
 				{
 					if(plugin.config.getBoolean("Main.Apply Full Tool Damage"))
 					{
@@ -625,18 +627,21 @@ public class TreeAssistBlockListener implements Listener
 						}
 						else
 						{
-							if(oneabove1.getType() == Material.LOG) 
+							if(oneabove1.getType() == Material.LOG || isCustomLog(oneabove1)) 
 							{
 								int x = 1;
 								int extrablockcount = 1;
 								Block blockAbove = player.getWorld().getBlockAt(block.getX(), (block.getY() + 1), block.getZ());
+								
+								int typeId = oneabove1.getTypeId();
+								
 								for(x = 1;x < 4; x++)
 								{
-									if(block.getRelative(BlockFace.NORTH, x).getTypeId() == 17 || block.getRelative(BlockFace.SOUTH, x).getTypeId() == 17 || block.getRelative(BlockFace.EAST, x).getTypeId() == 17 || block.getRelative(BlockFace.WEST, x).getTypeId() == 17)
+									if(block.getRelative(BlockFace.NORTH, x).getTypeId() == typeId || block.getRelative(BlockFace.SOUTH, x).getTypeId() == typeId || block.getRelative(BlockFace.EAST, x).getTypeId() == typeId || block.getRelative(BlockFace.WEST, x).getTypeId() == typeId)
 									{
 										extrablockcount++;
 									}
-									if(blockAbove.getRelative(BlockFace.NORTH, x).getTypeId() == 17 || blockAbove.getRelative(BlockFace.SOUTH, x).getTypeId() == 17 || blockAbove.getRelative(BlockFace.EAST, x).getTypeId() == 17 || blockAbove.getRelative(BlockFace.WEST, x).getTypeId() == 17)
+									if(blockAbove.getRelative(BlockFace.NORTH, x).getTypeId() == typeId || blockAbove.getRelative(BlockFace.SOUTH, x).getTypeId() == typeId || blockAbove.getRelative(BlockFace.EAST, x).getTypeId() == typeId || blockAbove.getRelative(BlockFace.WEST, x).getTypeId() == typeId)
 									{
 										extrablockcount++;
 									}
@@ -804,7 +809,7 @@ public class TreeAssistBlockListener implements Listener
 
 	private void logBreak(Block blockAt) 
 	{
-		if(blockAt.getTypeId() == 17)
+		if(blockAt.getTypeId() == 17 || isCustomLog(blockAt))
 		{
 			blockAt.breakNaturally();
 		}	
@@ -812,9 +817,9 @@ public class TreeAssistBlockListener implements Listener
 
 	private void checkBlock(Block block, Block Top, ItemStack tool, Player p, Byte OrigData) 
 	{
-		if(block.getTypeId() != 17)
+		if(block.getTypeId() != 17 && !isCustomLog(block))
 		{
-			if(block.getTypeId() == 18 && plugin.config.getBoolean("Leaf Decay.Fast Leaf Decay"))
+			if((block.getTypeId() == 18 || isCustomTreeBlock(block) )&& plugin.config.getBoolean("Leaf Decay.Fast Leaf Decay"))
 			{
 				block.breakNaturally();
 				return;
@@ -825,7 +830,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
-		if(block.getData() != OrigData)
+		if(!isCustomLog(block) && block.getData() != OrigData)
 		{
 			if(OrigData == 0 && block.getData() > 3)
 			{
@@ -842,7 +847,8 @@ public class TreeAssistBlockListener implements Listener
 		int z = block.getZ();
 		World world = block.getWorld();
 		
-		if(world.getBlockAt(x, y+1, z).getTypeId() == 17 || world.getBlockAt(x, y-1, z).getTypeId() == 17) //might be a trunk
+		if(world.getBlockAt(x, y+1, z).getTypeId() == 17 || isCustomLog(world.getBlockAt(x, y+1, z)) || 
+				world.getBlockAt(x, y-1, z).getTypeId() == 17 || isCustomLog(world.getBlockAt(x, y-1, z))) //might be a trunk
 		{
 			if(block.getX() != Top.getX() && block.getZ() != Top.getZ())
 			{
@@ -851,7 +857,8 @@ public class TreeAssistBlockListener implements Listener
 					int failCount = 0;
 					for(int cont = -4; cont < 5; cont++)
 					{
-						if(world.getBlockAt(x, y+cont, z).getTypeId() == 17)
+						if(world.getBlockAt(x, y+cont, z).getTypeId() == 17 ||
+								isCustomLog(world.getBlockAt(x, y+cont, z)))
 						{
 							failCount++;
 						}
@@ -881,7 +888,8 @@ public class TreeAssistBlockListener implements Listener
 						int failCount = 0;
 						for(int cont = -4; cont < 5; cont++)
 						{
-							if(world.getBlockAt(x, y+cont, z).getTypeId() == 17)
+							if(world.getBlockAt(x, y+cont, z).getTypeId() == 17
+									|| isCustomLog(world.getBlockAt(x, y+cont, z)))
 							{
 								failCount++;
 							}
@@ -969,11 +977,11 @@ public class TreeAssistBlockListener implements Listener
 			y++;
 			above = block.getWorld().getBlockAt(x, y, z);
 			
-			if(above.getTypeId() == 18)
+			if(above.getTypeId() == 18 || isCustomTreeBlock(above))
 			{
 				top = block.getWorld().getBlockAt(x, y - 1, z);
 			}
-			else if(above.getTypeId() != 17)
+			else if(above.getTypeId() != 17 && !isCustomLog(above))
 			{
 				return null;
 			}
@@ -1031,7 +1039,7 @@ public class TreeAssistBlockListener implements Listener
 
 	private int isLeaf(Block blockAt) 
 	{
-		if(blockAt.getTypeId() == 18)
+		if(blockAt.getTypeId() == 18 || isCustomTreeBlock(blockAt))
 		{
 			return 1;
 		}
@@ -1047,7 +1055,8 @@ public class TreeAssistBlockListener implements Listener
 		int counter = 1;
 		do
 		{
-			if(block.getWorld().getBlockAt(block.getX(), block.getY() - counter, block.getZ()).getTypeId() == 17)
+			if(block.getWorld().getBlockAt(block.getX(), block.getY() - counter, block.getZ()).getTypeId() == 17
+					|| isCustomLog(block.getWorld().getBlockAt(block.getX(), block.getY() - counter, block.getZ())))
 			{
 				counter++;
 			}

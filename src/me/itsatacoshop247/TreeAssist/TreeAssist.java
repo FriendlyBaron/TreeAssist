@@ -14,10 +14,12 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,14 +43,13 @@ public class TreeAssist extends JavaPlugin
 	FileConfiguration config;
 	FileConfiguration data;
 	
+	TreeAssistBlockListener listener;
+	
 	public Logger log = Logger.getLogger("Minecraft");
 	
 	public void onEnable() 
 	{
 		checkMcMMO();
-		
-		new TreeAssistBlockListener(this);
-		getServer().getPluginManager().registerEvents(new TreeAssistBlockListener(this), this);
 		
 		this.configFile = new File(getDataFolder(), "config.yml");
 		this.dataFile = new File(getDataFolder(), "data.yml");
@@ -62,12 +63,22 @@ public class TreeAssist extends JavaPlugin
 		}
 		this.config = new YamlConfiguration();
 		this.data = new YamlConfiguration();
+		this.listener = new TreeAssistBlockListener(this);
 		loadYamls();
 		config.options().copyDefaults(true);
 		//check for defaults to set newly
 		data.options().copyDefaults(true);
 		
 		this.updateConfig();
+		
+		getServer().getPluginManager().registerEvents(listener, this);
+		reloadLists();
+	}
+
+	private void reloadLists() {
+		listener.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
+		listener.customLogs = config.getList("Modding.Custom Logs");
+		listener.customSaplings = config.getList("Modding.Custom Saplings");
 	}
 
 	private void updateConfig() 
@@ -160,6 +171,10 @@ public class TreeAssist extends JavaPlugin
 		
 		//5.2 additions
 		items.put("Main.Destroy Only Blocks Above", "false");
+		
+		//5.3 additions
+		items.put("Modding.Custom Logs", "LIST");
+		items.put("Modding.Custom Tree Blocks", "LIST");
 		return items;
 	}
 
@@ -275,6 +290,7 @@ public class TreeAssist extends JavaPlugin
 					}
 					this.saveData();
 					this.loadYamls();
+					reloadLists();
 					sender.sendMessage(ChatColor.GREEN + "TreeAssist has been reloaded.");
 					return true;
 				}
