@@ -56,19 +56,20 @@ public class TreeAssistBlockListener implements Listener
 					return;
 				}
 			}
+			int x = block.getX();
+			int y = block.getY();
+			int z = block.getZ(); 
+
+			// only do the 8 edges instead of all 26 surrounding blocks
 			
-			for (int x = block.getX()-1; x<= block.getX()+1; x++) {
-				for (int y = block.getY()-1; y<= block.getY()+1; y++) {
-					for (int z = block.getZ()-1; z<= block.getZ()+1; z++) {
-						if (x == block.getX() && y == block.getY() && z == block.getZ()) {
-							continue;
-						}
-						if (leafBreak(world.getBlockAt(x,y,z))) {
-							return;
-						}
-					}
-				}
-			}
+			leafBreak(world.getBlockAt(x-1, y-1, z-1));
+			leafBreak(world.getBlockAt(x-1, y-1, z+1));
+			leafBreak(world.getBlockAt(x-1, y+1, z-1));
+			leafBreak(world.getBlockAt(x-1, y+1, z+1));
+			leafBreak(world.getBlockAt(x+1, y-1, z-1));
+			leafBreak(world.getBlockAt(x+1, y-1, z+1));
+			leafBreak(world.getBlockAt(x+1, y+1, z-1));
+			leafBreak(world.getBlockAt(x+1, y+1, z+1));
 		}
 		
 		
@@ -108,9 +109,8 @@ public class TreeAssistBlockListener implements Listener
 	 * a 8 block radius FloatingLeaf removal
 	 * 
 	 * @param blockAt the block to check
-	 * @return 
 	 */
-	private boolean leafBreak(Block blockAt) 
+	private void leafBreak(Block blockAt) 
 	{
 		if(blockAt.getTypeId() == 18 || isCustomTreeBlock(blockAt))
 		{
@@ -130,9 +130,7 @@ public class TreeAssistBlockListener implements Listener
 					FloatingLeaf(world.getBlockAt(x+x2, y-2, z+z2));
 				}
 			}
-			return true;
 		}
-		return false;
 	}
 
 	private boolean isCustomTreeBlock(Block blockAt) {
@@ -172,7 +170,7 @@ public class TreeAssistBlockListener implements Listener
 		
 		for (int x = blockAt.getX()-2; x<=blockAt.getX()+2; x++) {
 			for (int y = blockAt.getY()-2; y<=blockAt.getY()+2; y++) {
-				for (int z = blockAt.getZ()-2; x<=blockAt.getZ()+2; z++) {
+				for (int z = blockAt.getZ()-2; z<=blockAt.getZ()+2; z++) {
 					fail+=Air(world.getBlockAt(x, y, z));
 					if (fail > 4) {
 						return; // fail threshold -> out!
@@ -243,7 +241,7 @@ public class TreeAssistBlockListener implements Listener
 				{
 					if(oneabove.getType() == Material.AIR || oneabove.getType() == Material.LOG)
 					{
-						Runnable b = new TreeAssistReplant(plugin, block, block.getData());
+						Runnable b = new TreeAssistReplant(plugin, block, Material.LOG.getId(), block.getData());
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
 					}
 				}	
@@ -271,7 +269,7 @@ public class TreeAssistBlockListener implements Listener
 				{
 					if(oneabove.getType() == Material.LOG)
 					{
-						Runnable b = new TreeAssistReplant(plugin, block, block.getData());
+						Runnable b = new TreeAssistReplant(plugin, block, Material.LOG.getId(), block.getData());
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
 					}
 				}	
@@ -533,7 +531,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
-		if(plugin.config.getBoolean("Main.Sapling Replant") && !event.isCancelled() && replantType(data)) 
+		if(plugin.config.getBoolean("Main.Sapling Replant") && !event.isCancelled() && (isCustomLog(bottom) || replantType(data))) 
 		{
 			if((plugin.config.getBoolean("Main.Use Permissions") && player.hasPermission("treeassist.replant")) ||  !(plugin.config.getBoolean("Main.Use Permissions")))
 			{
@@ -553,7 +551,7 @@ public class TreeAssistBlockListener implements Listener
 					}
 					if(block.getWorld().getBlockAt(bottom.getX(), bottom.getY() - 1, bottom.getZ()).getType() == Material.DIRT || block.getWorld().getBlockAt(bottom.getX(), bottom.getY() - 1, bottom.getZ()).getType() == Material.GRASS || block.getWorld().getBlockAt(bottom.getX(), bottom.getY() - 1, bottom.getZ()).getType() == Material.CLAY)
 					{
-						Runnable b = new TreeAssistReplant(plugin, bottom, data);
+						Runnable b = new TreeAssistReplant(plugin, bottom, typeid, data);
 						
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20*delay);
 						
@@ -569,7 +567,7 @@ public class TreeAssistBlockListener implements Listener
 							{
 								if(jungle[rts] != null)
 								{
-									Runnable t = new TreeAssistReplant(plugin, jungle[rts], data);
+									Runnable t = new TreeAssistReplant(plugin, jungle[rts], typeid, data);
 									plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20*delay);
 								
 									if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
@@ -596,7 +594,7 @@ public class TreeAssistBlockListener implements Listener
 					{
 						if(!plugin.getConfig().getBoolean("Sapling Replant.Bottom Block has to be Broken First"))
 						{
-							Runnable b = new TreeAssistReplant(plugin, block, data);
+							Runnable b = new TreeAssistReplant(plugin, block, typeid, data);
 							plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20*delay);
 							
 							if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
@@ -612,7 +610,7 @@ public class TreeAssistBlockListener implements Listener
 								{
 									if(jungle[rts] != null && jungle[rts].getTypeId() == 0)
 									{
-										Runnable t = new TreeAssistReplant(plugin, jungle[rts], data);
+										Runnable t = new TreeAssistReplant(plugin, jungle[rts], typeid, data);
 										plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20*delay);
 									
 										if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
@@ -652,7 +650,7 @@ public class TreeAssistBlockListener implements Listener
 								}
 								if(extrablockcount < 3)
 								{
-									Runnable b = new TreeAssistReplant(plugin, block, data);
+									Runnable b = new TreeAssistReplant(plugin, block, typeid, data);
 									plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20*delay);
 									if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
 									{
@@ -666,7 +664,7 @@ public class TreeAssistBlockListener implements Listener
 										{
 											if(jungle[rts] != null && jungle[rts].getTypeId() == 0)
 											{
-												Runnable t = new TreeAssistReplant(plugin, jungle[rts], data);
+												Runnable t = new TreeAssistReplant(plugin, jungle[rts], typeid, data);
 												plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, t, 20*delay);
 											
 												if(plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0)
@@ -1026,15 +1024,8 @@ public class TreeAssistBlockListener implements Listener
 		total += isLeaf(world.getBlockAt(x-1, y-1, z-1));
 		total += isLeaf(world.getBlockAt(x-1, y-1, z));
 		total += isLeaf(world.getBlockAt(x, y-1, z));
-		
-		if(total > 3)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+
+		return total > 3;
 	}
 
 	private int isLeaf(Block blockAt) 
