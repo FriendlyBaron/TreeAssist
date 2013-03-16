@@ -175,6 +175,7 @@ public class TreeAssist extends JavaPlugin
 		//5.3 additions
 		items.put("Modding.Custom Logs", "LIST");
 		items.put("Modding.Custom Tree Blocks", "LIST");
+		items.put("Modding.Custom Saplings", "LIST");
 		return items;
 	}
 
