@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -73,6 +75,13 @@ public class TreeAssist extends JavaPlugin
 		
 		getServer().getPluginManager().registerEvents(listener, this);
 		reloadLists();
+		
+		try {
+		    MetricsLite metrics = new MetricsLite(this);
+		    metrics.start();
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+		}
 	}
 
 	private void reloadLists() {
@@ -176,6 +185,10 @@ public class TreeAssist extends JavaPlugin
 		items.put("Modding.Custom Logs", "LIST");
 		items.put("Modding.Custom Tree Blocks", "LIST");
 		items.put("Modding.Custom Saplings", "LIST");
+		
+		//5.4 additions
+		items.put("Automatic Tree Destruction.Tree Types.BigJungle", "true");
+		items.put("Sapling Replant.Tree Types to Replant.BigJungle", "true");
 		return items;
 	}
 

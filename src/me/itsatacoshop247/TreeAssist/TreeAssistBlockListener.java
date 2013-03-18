@@ -436,7 +436,12 @@ public class TreeAssistBlockListener implements Listener
 					validTypes.add((Integer) obj);
 					continue;
 				}
-				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
+				try {
+					validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
+				} catch (NumberFormatException e) {
+					// don't warn or even error every block break. just don't :D
+					continue;
+				}
 			}
 			for (Object obj : plugin.config.getList("Modding.Custom Tree Blocks")) {
 				if (obj instanceof Integer) {
@@ -511,7 +516,7 @@ public class TreeAssistBlockListener implements Listener
 						success = true;
 					}
 					
-					if(blockdata == 3)
+					if(blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.BigJungle"))
 					{
 						int x = bottom.getX();
 						int y = bottom.getY();
@@ -561,7 +566,7 @@ public class TreeAssistBlockListener implements Listener
 							Runnable X = new TreeAssistProtect(plugin, bottom.getLocation());
 							plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, X, 20*plugin.config.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
 						}
-						if(data == 3 && j > 1)
+						if(data == 3 && j > 1 && plugin.config.getBoolean("Sapling Replant.Tree Types to Replant.BigJungle"))
 						{
 							for(int rts = 1; rts < 4; rts++)
 							{
@@ -628,7 +633,7 @@ public class TreeAssistBlockListener implements Listener
 							if(oneabove1.getType() == Material.LOG || isCustomLog(oneabove1)) 
 							{
 								int x = 1;
-								int extrablockcount = 1;
+								int extrablockcount = 1; 
 								Block blockAbove = player.getWorld().getBlockAt(block.getX(), (block.getY() + 1), block.getZ());
 								
 								int typeId = oneabove1.getTypeId();
@@ -901,9 +906,11 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		
+		boolean isBig = block.getData() == 3 && isBig(block);
+		
 		breakBlock(block, tool, p);
 			
-		if(block.getData() == 3)
+		if(block.getData() == 3  && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.BigJungle"))
 		{
 			checkBlock(world.getBlockAt(x-2, y+1, z-2), Top, tool, p, OrigData);
 			checkBlock(world.getBlockAt(x-1, y+1, z-2), Top, tool, p, OrigData);
@@ -921,6 +928,8 @@ public class TreeAssistBlockListener implements Listener
 			checkBlock(world.getBlockAt(x-2, y+1, z+1), Top, tool, p, OrigData);
 			checkBlock(world.getBlockAt(x-2, y+1, z), Top, tool, p, OrigData);
 			checkBlock(world.getBlockAt(x-2, y+1, z-1), Top, tool, p, OrigData);
+		} else if (isBig) {
+			return;
 		}
 		checkBlock(world.getBlockAt(x-1, y, z+1), Top, tool, p, OrigData);
 		checkBlock(world.getBlockAt(x, y, z+1), Top, tool, p, OrigData);
@@ -940,6 +949,18 @@ public class TreeAssistBlockListener implements Listener
 		checkBlock(world.getBlockAt(x-1, y+1, z-1), Top, tool, p, OrigData);
 		checkBlock(world.getBlockAt(x-1, y+1, z), Top, tool, p, OrigData);
 		checkBlock(world.getBlockAt(x, y+1, z), Top, tool, p, OrigData);
+	}
+
+	private boolean isBig(Block block) {
+		BlockFace field[] = {BlockFace.NORTH_EAST, BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
+		
+		for (BlockFace face : field) {
+			if (block.getRelative(face).getTypeId() == block.getTypeId()) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	private void breakBlock(Block block, ItemStack tool, Player play) 
