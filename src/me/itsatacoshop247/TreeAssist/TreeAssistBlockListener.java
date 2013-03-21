@@ -436,17 +436,24 @@ public class TreeAssistBlockListener implements Listener
 					validTypes.add((Integer) obj);
 					continue;
 				}
-				try {
-					validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
-				} catch (NumberFormatException e) {
-					// don't warn or even error every block break. just don't :D
-					continue;
+				if (obj.equals("LIST ITEMS GO HERE")) {
+					List<Object> list = new ArrayList<Object>();
+					list.add(-1);
+					plugin.config.set("Modding.Custom Logs", list);
+					plugin.saveConfig();
 				}
+				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
 			}
 			for (Object obj : plugin.config.getList("Modding.Custom Tree Blocks")) {
 				if (obj instanceof Integer) {
 					validTypes.add((Integer) obj);
 					continue;
+				}
+				if (obj.equals("LIST ITEMS GO HERE")) {
+					List<Object> list = new ArrayList<Object>();
+					list.add(-1);
+					plugin.config.set("Modding.Custom Tree Blocks", list);
+					plugin.saveConfig();
 				}
 				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
 			}
