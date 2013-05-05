@@ -285,7 +285,6 @@ public class TreeAssistBlockListener implements Listener
 		Block bottom = block;
 		Block top = block;
 		Player player = event.getPlayer();
-		Block[] blocksToRemove  = new Block[400];
 		World world = player.getWorld();
 		int typeid = block.getTypeId();
 		byte data = block.getData();
@@ -311,7 +310,7 @@ public class TreeAssistBlockListener implements Listener
 			List<String> list = new ArrayList<String>();
 			list = (List<String>) plugin.data.getList("Blocks");
 			
-			if(list.contains(check))
+			if(list != null && list.contains(check))
 			{
 				plugin.data.getList("Blocks").remove(check);
 				plugin.saveData();
@@ -441,6 +440,7 @@ public class TreeAssistBlockListener implements Listener
 					list.add(-1);
 					plugin.config.set("Modding.Custom Logs", list);
 					plugin.saveConfig();
+					break;
 				}
 				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
 			}
@@ -454,6 +454,7 @@ public class TreeAssistBlockListener implements Listener
 					list.add(-1);
 					plugin.config.set("Modding.Custom Tree Blocks", list);
 					plugin.saveConfig();
+					break;
 				}
 				validTypes.add(Integer.parseInt(((String)obj).split(":")[0]));
 			}
@@ -471,6 +472,7 @@ public class TreeAssistBlockListener implements Listener
 			if(!plugin.playerList.contains(player.getName()))
 			{
 				byte blockdata = block.getData();
+				/*
 				if((blockdata == 1 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Spruce")) || (blockdata == 2 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Birch"))) //simpler calculation for birch and pine trees :D
 				{
 					
@@ -494,7 +496,12 @@ public class TreeAssistBlockListener implements Listener
 					success = true;
 					
 				}
-				if(isCustomLog(bottom) || (blockdata == 0 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Oak")) || (blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Jungle")) || blockdata > 3) //ugly branch messes
+				*/
+				if(isCustomLog(bottom) ||
+						(blockdata == 0 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Oak")) ||
+						(blockdata == 1 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Spruce")) ||
+						(blockdata == 2 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Birch")) ||
+						(blockdata == 3 && plugin.config.getBoolean("Automatic Tree Destruction.Tree Types.Jungle")) || blockdata > 3) //ugly branch messes
 				{
 					if(plugin.config.getBoolean("Main.Apply Full Tool Damage"))
 					{
