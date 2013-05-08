@@ -7,6 +7,9 @@ Main:
   Use mcMMO if Available: true
   Destroy Only Blocks Above: false
 Automatic Tree Destruction:
+  Forced Removal: false
+  Initial Delay (seconds): 10
+  Delay (ticks): 0
   Tree Types:
     Birch: true
     Jungle: true

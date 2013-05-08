@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.acl.Permission;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
+import me.itsatacoshop247.TreeAssist.modding.ModUtils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -51,6 +53,8 @@ public class TreeAssist extends JavaPlugin
 	{
 		checkMcMMO();
 		
+		TreeAssistTree.plugin = this;
+		
 		this.configFile = new File(getDataFolder(), "config.yml");
 		this.dataFile = new File(getDataFolder(), "data.yml");
 		try 
@@ -83,9 +87,9 @@ public class TreeAssist extends JavaPlugin
 	}
 
 	private void reloadLists() {
-		listener.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
-		listener.customLogs = config.getList("Modding.Custom Logs");
-		listener.customSaplings = config.getList("Modding.Custom Saplings");
+		ModUtils.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
+		ModUtils.customLogs = config.getList("Modding.Custom Logs");
+		ModUtils.customSaplings = config.getList("Modding.Custom Saplings");
 	}
 
 	private void updateConfig() 
@@ -187,6 +191,12 @@ public class TreeAssist extends JavaPlugin
 		//5.4 additions
 		items.put("Automatic Tree Destruction.Tree Types.BigJungle", "true");
 		items.put("Sapling Replant.Tree Types to Replant.BigJungle", "true");
+		
+		//5.5 additions
+		items.put("Automatic Tree Destruction.Delay (ticks)", "0");
+		items.put("Automatic Tree Destruction.Forced Removal", "false");
+		items.put("Automatic Tree Destruction.Initial Delay (seconds)", "10");
+		
 		return items;
 	}
 
@@ -194,15 +204,7 @@ public class TreeAssist extends JavaPlugin
 	{
         if(getConfig().getBoolean("Main.Use mcMMO if Available")) 
         {
-            boolean isMcMMOEnabled = getServer().getPluginManager().isPluginEnabled("mcMMO");
-            if(isMcMMOEnabled) 
-            {
-                    this.mcMMO = true;
-            } 
-            else 
-            {
-            	    this.mcMMO = false;
-            }
+            this.mcMMO = getServer().getPluginManager().isPluginEnabled("mcMMO");
         } 
         else 
         {
