@@ -5,17 +5,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.acl.Permission;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-
+import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
 import me.itsatacoshop247.TreeAssist.modding.ModUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -46,8 +45,6 @@ public class TreeAssist extends JavaPlugin
 	FileConfiguration data;
 	
 	TreeAssistBlockListener listener;
-	
-	public Logger log = Logger.getLogger("Minecraft");
 	
 	public void onEnable() 
 	{
@@ -84,6 +81,7 @@ public class TreeAssist extends JavaPlugin
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
 		}
+		Debugger.load(this, Bukkit.getConsoleSender());
 	}
 
 	private void reloadLists() {
@@ -103,7 +101,7 @@ public class TreeAssist extends JavaPlugin
 		{
 			if(this.config.get(item.getKey()) == null)
 			{
-				this.log.info(item.getKey());
+				getLogger().info(item.getKey());
 				if(item.getValue().equalsIgnoreCase("LIST"))
 				{
 					List<String> list = Arrays.asList("LIST ITEMS GO HERE");
@@ -130,7 +128,7 @@ public class TreeAssist extends JavaPlugin
 		}
 		if(num > 0)
 		{
-			this.log.info("[TreeAssist] " + num + " missing items added to config file.");
+			getLogger().info(num + " missing items added to config file.");
 		}
 		this.saveConfig();
 	}
@@ -215,6 +213,7 @@ public class TreeAssist extends JavaPlugin
 	public void onDisable() 
 	{
 		this.getServer().getScheduler().cancelTasks(this);
+		Debugger.destroy();
 	}
 	
 	private void firstRun() throws Exception 
@@ -307,9 +306,7 @@ public class TreeAssist extends JavaPlugin
 					reloadLists();
 					sender.sendMessage(ChatColor.GREEN + "TreeAssist has been reloaded.");
 					return true;
-				}
-				if(args[0].equalsIgnoreCase("Toggle"))
-				{
+				} else if(args[0].equalsIgnoreCase("Toggle")) {
 					if(!sender.hasPermission("treeassist.toggle"))
 					{
 						sender.sendMessage("You don't have treeassist.toggle");
@@ -326,9 +323,7 @@ public class TreeAssist extends JavaPlugin
 						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for you!");
 					}
 					return true;
-				}
-				if(args[0].equalsIgnoreCase("Global"))
-				{
+				} else if(args[0].equalsIgnoreCase("Global")) {
 					if(!sender.hasPermission("treeassist.toggle.global"))
 					{
 						sender.sendMessage("You don't have treeassist.toggle.global");
@@ -343,6 +338,15 @@ public class TreeAssist extends JavaPlugin
 					{
 						this.Enabled = false;
 						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off globally!");
+					}
+					return true;
+				} else if (args[0].equalsIgnoreCase("Debug")) {
+					if (args.length < 2) {
+						getConfig().set("Debug", "none");
+						Debugger.load(this, sender);
+					} else {
+						getConfig().set("Debug", args[1]);
+						Debugger.load(this, sender);
 					}
 					return true;
 				}

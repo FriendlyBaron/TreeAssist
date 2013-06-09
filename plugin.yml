@@ -1,13 +1,13 @@
 name: TreeAssist
 main: me.itsatacoshop247.TreeAssist.TreeAssist
-version: 5.5.0
+version: 5.5.2
 author: itsatacoshop247
 description: TreeAssist
 dev-url: http://dev.bukkit.org/server-mods/tree-assist/
 commands:
   TreeAssist:
     description: Turn TreeAssist Featues on or off
-    usage: /<command> toggle/global
+    usage: /<command> toggle/global/debug
 permissions:
   treeassist.destroy.*:
     description: allows to use tree-assist for all trees

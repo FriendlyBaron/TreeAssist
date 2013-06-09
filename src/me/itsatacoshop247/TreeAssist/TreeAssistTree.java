@@ -3,6 +3,8 @@ package me.itsatacoshop247.TreeAssist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.modding.ModUtils;
 
 import org.bukkit.Bukkit;
@@ -32,6 +34,8 @@ public class TreeAssistTree {
 
 	private final List<Block> removeBlocks;
 	private final List<Block> totalBlocks;
+	
+	private static Debugger debug;
 
 	public static TreeAssistTree calculate(TreeAssist plugin,
 			TreeAssistBlockListener listener, BlockBreakEvent event) {
@@ -605,6 +609,9 @@ public class TreeAssistTree {
 	private TreeAssistTree(TreeAssist plugin, TreeAssistBlockListener listener,
 			Block block) {
 		TreeAssistTree.plugin = plugin;
+		if (TreeAssistTree.debug == null) {
+			TreeAssistTree.debug = new Debugger(plugin, 5);
+		}
 		this.listener = listener;
 
 		Block bottom = getBottom(block);
@@ -631,7 +638,8 @@ public class TreeAssistTree {
 			public void run() {
 				for (Block block : removeBlocks) {
 					if (block.getType() == Material.LOG) {
-						block.setTypeIdAndData(Material.GLASS.getId(), (byte) 0, true);
+						//block.setTypeIdAndData(Material.GLASS.getId(), (byte) 0, true);
+						block.breakNaturally();
 					} else if (block.getType() != Material.GLASS) {
 						block.breakNaturally();
 					}
@@ -656,10 +664,15 @@ public class TreeAssistTree {
 			final Block bottom, final Block top, final Player player,
 			boolean damage) {
 		this.listener = listener;
+		
+		if (TreeAssistTree.debug == null) {
+			TreeAssistTree.debug = new Debugger((TreeAssist) Bukkit.getPluginManager().getPlugin("TreeAssist"), 5);
+		}
 
 		if (bottom == null || top == null) {
 			removeBlocks = new ArrayList<Block>();
 			totalBlocks = new ArrayList<Block>();
+			debug.i("bottom or top is null !");
 			return;
 		}
 
@@ -685,7 +698,8 @@ public class TreeAssistTree {
 			public void run() {
 				for (Block block : removeBlocks) {
 					if (block.getType() == Material.LOG) {
-						block.setTypeIdAndData(Material.GLASS.getId(), (byte) 0, true);
+						//block.setTypeIdAndData(Material.GLASS.getId(), (byte) 0, true);
+						block.breakNaturally();
 					} else if (block.getType() != Material.GLASS) {
 						breakBlock(block, tool, player);
 					}
@@ -788,59 +802,67 @@ public class TreeAssistTree {
 	 *            the initial broken block's data
 	 */
 	private static void checkBlock(List<Block> list, Block block,
-			Block top, boolean deep) {
+			Block top, boolean deep, byte origData) {
 
+		debug.i("cB " + Debugger.parse(block.getLocation()));
 		if (block.getTypeId() != 17 && !ModUtils.isCustomLog(block)) {
+			debug.i("no log!");
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
 					list.add(block);
+					debug.i("cB: adding leaf " + block.getY());
 				}
 			}
+			debug.i("out!");
 			return;
 		}
 
-		if (!ModUtils.isCustomLog(block) && block.getData() != top.getData()) {
+		if (!ModUtils.isCustomLog(block) && block.getData() != origData) {
+			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
 			if (top.getData() != 0 || block.getData() <= 3) {
+				debug.i("out!");
 				return;
 			}
 		}
 		
 		if (block.getX() == top.getX() && block.getZ() == top.getZ()) {
+			debug.i("main trunk!");
 			if (!deep) {
 				// something else caught the main, return, this will be done later!
+				debug.i("not deep; out!");
 				return;
 			}
 		}
 
-		/*
+		
 		
 		if (block.getRelative(0, 1, 0).getTypeId() == 17
-				|| ModUtils.isCustomLog(block.getRelative(0, 1, 0))
-				|| block.getRelative(0, 1, 0).getTypeId() == 17
 				|| ModUtils.isCustomLog(block.getRelative(0, 1, 0))) { // might
 																		// be a
 																		// trunk
-			// either one below or above is a tree block
+			debug.i("trunk?");
+			// one above is a tree block
 			if (block.getX() != top.getX() && block.getZ() != top.getZ()) {
-
-				// unneeded calculations:
-				/*
+				debug.i("not main!");
+				
 				if (block.getData() < 3) {
+					debug.i("no jungle!");
 					
 					int failCount = 0;
 					for (int cont = -4; cont < 5; cont++) {
-						if (world.getBlockAt(x, y + cont, z).getTypeId() == 17
-								|| ModUtils.isCustomLog(world.getBlockAt(x, y
-										+ cont, z))) {
+						if (block.getRelative(0, cont, 0).getTypeId() == 17
+								|| ModUtils.isCustomLog(block.getRelative(0, cont, 0))) {
 							failCount++;
 						}
 					}
 					if (failCount > 3) {
+						debug.i("fail count "+failCount+"! out!");
 						return;
 					}
 
 
 				} else {
+					debug.i("jungle!");
 
 					boolean diff = true;
 					for (int Cx = -1; Cx < 2; Cx++) {
@@ -856,24 +878,21 @@ public class TreeAssistTree {
 					if (diff) {
 						int failCount = 0;
 						for (int cont = -4; cont < 5; cont++) {
-							if (world.getBlockAt(x, y + cont, z).getTypeId() == 17
-									|| ModUtils.isCustomLog(world.getBlockAt(x,
-											y + cont, z))) {
+							if (block.getRelative(0, cont, 0).getTypeId() == 17
+									|| ModUtils.isCustomLog(block.getRelative(0, cont, 0))) {
 								failCount++;
 							}
 						}
 						if (failCount > 3) {
+							debug.i("fail count "+failCount+"! out!");
 							return;
 						}
 					}
 
-					// same story, the bottom block calculation makes this
-					// redundant
-
 					Bukkit.getLogger().warning("[TreeAssist] Custom log fail!");
-				}* /
+				}
 			}
-		}*/
+		}
 
 		boolean isBig = block.getData() == 3 && isBig(block);
 
@@ -882,12 +901,15 @@ public class TreeAssistTree {
 						.getBoolean("Automatic Tree Destruction.Tree Types.BigJungle");
 
 		if (!destroyBig && isBig) {
+			debug.i("!destroy & isBig; out!");
 			return;
 		}
 
 		if (list.contains(block)) {
+			debug.i("already added!");
 			return;
 		} else {
+			debug.i(">>>>>>>>>> adding! <<<<<<<<<<<");
 			list.add(block);
 		}
 		
@@ -895,42 +917,44 @@ public class TreeAssistTree {
 				BlockFace.NORTH_EAST,BlockFace.SOUTH_EAST,BlockFace.NORTH_WEST,BlockFace.SOUTH_WEST};
 
 		for (BlockFace face : faces) {
-			checkBlock(list, block.getRelative(face), top, false);
+			checkBlock(list, block.getRelative(face), top, false, origData);
 
-			checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
-			checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
+			checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false, origData);
+			checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false, origData);
 			if (isBig) {
-				checkBlock(list, block.getRelative(face, 2), top, false);
+				checkBlock(list, block.getRelative(face, 2), top, false, origData);
 			}
 		}
 
 		if (!deep) {
+			debug.i("not deep, out!");
 			return;
 		}
 
 		if (block.getY() > top.getY()) {
+			debug.i("over the top! (hah) out!");
 			return;
 		}
 
 		if (destroyBig) {
-			checkBlock(list, block.getRelative(-2, 0, -2), top, false);
-			checkBlock(list, block.getRelative(-1, 0, -2), top, false);
-			checkBlock(list, block.getRelative(0, 0, -2), top, false);
-			checkBlock(list, block.getRelative(1, 0, -2), top, false);
-			checkBlock(list, block.getRelative(2, 0, -2), top, false);
-			checkBlock(list, block.getRelative(2, 0, -1), top, false);
-			checkBlock(list, block.getRelative(2, 0, 0), top, false);
-			checkBlock(list, block.getRelative(2, 0, 1), top, false);
-			checkBlock(list, block.getRelative(2, 0, 2), top, false);
-			checkBlock(list, block.getRelative(1, 0, 2), top, false);
-			checkBlock(list, block.getRelative(0, 0, 2), top, false);
-			checkBlock(list, block.getRelative(-1, 0, 2), top, false);
-			checkBlock(list, block.getRelative(-2, 0, 2), top, false);
-			checkBlock(list, block.getRelative(-2, 0, 1), top, false);
-			checkBlock(list, block.getRelative(-2, 0, 0), top, false);
-			checkBlock(list, block.getRelative(-2, 0, -1), top, false);
+			checkBlock(list, block.getRelative(-2, 0, -2), top, false, origData);
+			checkBlock(list, block.getRelative(-1, 0, -2), top, false, origData);
+			checkBlock(list, block.getRelative(0, 0, -2), top, false, origData);
+			checkBlock(list, block.getRelative(1, 0, -2), top, false, origData);
+			checkBlock(list, block.getRelative(2, 0, -2), top, false, origData);
+			checkBlock(list, block.getRelative(2, 0, -1), top, false, origData);
+			checkBlock(list, block.getRelative(2, 0, 0), top, false, origData);
+			checkBlock(list, block.getRelative(2, 0, 1), top, false, origData);
+			checkBlock(list, block.getRelative(2, 0, 2), top, false, origData);
+			checkBlock(list, block.getRelative(1, 0, 2), top, false, origData);
+			checkBlock(list, block.getRelative(0, 0, 2), top, false, origData);
+			checkBlock(list, block.getRelative(-1, 0, 2), top, false, origData);
+			checkBlock(list, block.getRelative(-2, 0, 2), top, false, origData);
+			checkBlock(list, block.getRelative(-2, 0, 1), top, false, origData);
+			checkBlock(list, block.getRelative(-2, 0, 0), top, false, origData);
+			checkBlock(list, block.getRelative(-2, 0, -1), top, false, origData);
 		}
-		checkBlock(list, block.getRelative(0, 1, 0), top, true);
+		checkBlock(list, block.getRelative(0, 1, 0), top, true, origData);
 	}
 
 	/**
@@ -1206,8 +1230,9 @@ public class TreeAssistTree {
 	}
 
 	private List<Block> calculate(final Block bottom, final Block top) {
+		debug.i("calculating from " + bottom.getY() + " to " + top.getY());
 		List<Block> list = new ArrayList<Block>();
-		checkBlock(list, bottom, top, true);
+		checkBlock(list, bottom, top, true, bottom.getData());
 		return list;
 	}
 

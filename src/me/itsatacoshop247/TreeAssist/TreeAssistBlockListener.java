@@ -108,7 +108,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 			Block block = event.getBlock();
 			List<String> list = new ArrayList<String>();
-			list = (List<String>) plugin.data.getList("Blocks");
+			list = (List<String>) plugin.data.getList("Blocks", new ArrayList<String>());
 			list.add("" + block.getX() + ";" + block.getY() + ";" + block.getZ() + ";" + block.getWorld().getName());
 			plugin.data.set("Blocks", list);
 			plugin.saveData();
