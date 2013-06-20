@@ -74,6 +74,9 @@ public class TreeAssist extends JavaPlugin
 		this.updateConfig();
 		
 		getServer().getPluginManager().registerEvents(listener, this);
+		if (config.getBoolean("Main.Auto Plant Dropped Saplings")) {
+			getServer().getPluginManager().registerEvents(new TreeAssistSpawnListener(this), this);
+		}
 		reloadLists();
 		
 		try {
@@ -195,6 +198,11 @@ public class TreeAssist extends JavaPlugin
 		items.put("Automatic Tree Destruction.Delay (ticks)", "0");
 		items.put("Automatic Tree Destruction.Forced Removal", "false");
 		items.put("Automatic Tree Destruction.Initial Delay (seconds)", "10");
+		
+		//5.6 additions
+		items.put("Main.Auto Plant Dropped Saplings", "false");
+		items.put("Auto Plant Dropped Saplings.Chance (percent)", "10");
+		items.put("Auto Plant Dropped Saplings.Delay (seconds)", "5");
 		
 		return items;
 	}
@@ -361,5 +369,6 @@ public class TreeAssist extends JavaPlugin
 		config.getList("Worlds.Enabled Worlds").contains(
 			world.getName());
 	}
+		
 }
 	

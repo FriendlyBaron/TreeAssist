@@ -3,6 +3,7 @@ package me.itsatacoshop247.TreeAssist;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import me.itsatacoshop247.TreeAssist.modding.ModUtils;
@@ -11,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Item;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,12 +22,11 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 
 public class TreeAssistBlockListener implements Listener  
 {
 	public TreeAssist plugin;
-	
-	public int derp = 0;
 	
 	public TreeAssistBlockListener(TreeAssist instance)
 	{

@@ -6,6 +6,7 @@ Main:
   Ignore User Placed Blocks: false
   Use mcMMO if Available: true
   Destroy Only Blocks Above: false
+  Auto Plant Dropped Saplings: false
 Automatic Tree Destruction:
   Forced Removal: false
   Initial Delay (seconds): 10
@@ -16,6 +17,9 @@ Automatic Tree Destruction:
     BigJungle: true
     Oak: true
     Spruce: true
+Auto Plant Dropped Saplings:
+  Chance (percent): 10
+  Delay (seconds): 5
 Leaf Decay:
   Fast Leaf Decay: true
 Sapling Replant:

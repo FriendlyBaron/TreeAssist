@@ -417,12 +417,7 @@ public class TreeAssistTree {
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
-					if (block.getType() == Material.LOG) {
-						//block.setTypeIdAndData(Material.GLASS.getId(), (byte) 0, true);
-						block.breakNaturally();
-					} else if (block.getType() != Material.GLASS) {
-						block.breakNaturally();
-					}
+					block.breakNaturally();
 					removeBlocks.remove(block);
 					return;
 				}
@@ -477,10 +472,9 @@ public class TreeAssistTree {
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
-					if (block.getType() == Material.LOG) {
-						//block.setTypeIdAndData(Material.GLASS.getId(), (byte) 0, true);
+					if (tool == null) {
 						block.breakNaturally();
-					} else if (block.getType() != Material.GLASS) {
+					} else {
 						breakBlock(block, tool, player);
 					}
 					removeBlocks.remove(block);
@@ -543,7 +537,7 @@ public class TreeAssistTree {
 		if (!leaf && plugin.mcMMO && player != null) {
 			mcMMOaddExp(player, block);
 		}
-		block.breakNaturally();
+		block.breakNaturally(tool);
 
 		if (!leaf && tool != null && player != null) {
 			if (toolgood.contains(player.getItemInHand().getTypeId())) {
@@ -555,15 +549,6 @@ public class TreeAssistTree {
 			}
 		}
 	}
-
-	/**
-	 * Break a log at the block's position
-	 * 
-	 * @param block
-	 *            the block to break / private void breakLog(Block block) { if
-	 *            (block.getTypeId() == 17 || ModUtils.isCustomLog(block)) {
-	 *            block.breakNaturally(); } }
-	 */
 
 	/**
 	 * check a block and recursively check neighbors if the block is a log
@@ -652,8 +637,6 @@ public class TreeAssistTree {
 							return;
 						}
 					}
-
-					Bukkit.getLogger().warning("[TreeAssist] Custom log fail!");
 				}
 			}
 		}
