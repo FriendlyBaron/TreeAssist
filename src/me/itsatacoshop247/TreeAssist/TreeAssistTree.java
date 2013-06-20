@@ -31,6 +31,9 @@ public class TreeAssistTree {
 	private static List<Integer> toolbad = Arrays.asList(256, 257, 267, 268,
 			269, 270, 272, 273, 274, 276, 277, 278, 283, 284, 285, 290, 291,
 			292, 293, 294);
+	
+	private final static BlockFace[] NEIGHBORFACES = {BlockFace.NORTH,BlockFace.EAST,BlockFace.SOUTH,BlockFace.WEST,
+			BlockFace.NORTH_EAST,BlockFace.SOUTH_EAST,BlockFace.NORTH_WEST,BlockFace.SOUTH_WEST};
 
 	private final List<Block> removeBlocks;
 	private final List<Block> totalBlocks;
@@ -52,30 +55,21 @@ public class TreeAssistTree {
 		boolean success = false;
 		boolean damage = false;
 
-		if (plugin.config.getBoolean("Worlds.Enable Per World")) {
-			if (!plugin.config.getList("Worlds.Enabled Worlds").contains(
-					world.getName())) {
-				return null;
-			}
+		if (!plugin.isActive(world)) {
+			return null;
 		}
 
 		if (!hasPerms(player, data)) {
 			// no perms to use TA, still could be a tree
 
-			if (plugin.config.getBoolean("Main.Automatic Tree Destruction")
-					&& plugin.config
-							.getBoolean("Automatic Tree Destruction.Forced Removal")) {
-				// check if it is a tree we should restore
-				return new TreeAssistTree(plugin, listener, block);
-			}
-			return null; // don't care
+			return newTree(listener, block);
 		}
 
 		if (plugin.config.getBoolean("Main.Ignore User Placed Blocks")) {
 			String check = "" + block.getX() + ";" + block.getY() + ";"
 					+ block.getZ() + ";" + block.getWorld().getName();
 			List<String> list = new ArrayList<String>();
-			list = (List<String>) plugin.data.getList("Blocks");
+			list = (List<String>) plugin.data.getStringList("Blocks");
 
 			if (list != null && list.contains(check)) {
 				plugin.data.getList("Blocks").remove(check);
@@ -111,13 +105,7 @@ public class TreeAssistTree {
 		}
 
 		if (mcMMOTreeFeller(player)) {
-			if (plugin.config.getBoolean("Main.Automatic Tree Destruction")
-					&& plugin.config
-							.getBoolean("Automatic Tree Destruction.Forced Removal")) {
-				// check if it is a tree we should restore
-				return new TreeAssistTree(plugin, listener, block);
-			}
-			return null; // don't care
+			return newTree(listener, block);
 		}
 
 		if (!plugin.config.getBoolean("Main.Destroy Only Blocks Above")) {
@@ -138,61 +126,15 @@ public class TreeAssistTree {
 
 		if (data == 3) {
 			jungle[0] = bottom;
-			if (world.getBlockAt(bottom.getX() - 1, bottom.getY(),
-					bottom.getZ()).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX() - 1, bottom.getY(),
-						bottom.getZ());
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX() + 1, bottom.getY(),
-					bottom.getZ()).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX() + 1, bottom.getY(),
-						bottom.getZ());
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX(), bottom.getY(),
-					bottom.getZ() - 1).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX(), bottom.getY(),
-						bottom.getZ() - 1);
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX(), bottom.getY(),
-					bottom.getZ() + 1).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX(), bottom.getY(),
-						bottom.getZ() + 1);
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX() - 1, bottom.getY(),
-					bottom.getZ() + 1).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX() - 1, bottom.getY(),
-						bottom.getZ() + 1);
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX() + 1, bottom.getY(),
-					bottom.getZ() - 1).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX() + 1, bottom.getY(),
-						bottom.getZ() - 1);
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX() + 1, bottom.getY(),
-					bottom.getZ() + 1).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX() + 1, bottom.getY(),
-						bottom.getZ() + 1);
-				j++;
-			}
-			if (world.getBlockAt(bottom.getX() - 1, bottom.getY(),
-					bottom.getZ() - 1).getTypeId() == 17
-					&& j < 4) {
-				jungle[j] = world.getBlockAt(bottom.getX() - 1, bottom.getY(),
-						bottom.getZ() - 1);
-				j++;
+			
+			for (BlockFace face : NEIGHBORFACES) {
+				if (bottom.getRelative(face).getTypeId() == 17 && j<4) {
+					jungle[j] = bottom.getRelative(face);
+					j++;
+				}
+				if (j == 4) {
+					break;
+				}
 			}
 		}
 
@@ -202,14 +144,7 @@ public class TreeAssistTree {
 					.getBoolean("Tools.Tree Destruction Require Tools")) {
 				ItemStack inHand = player.getItemInHand();
 				if (!isRequiredTool(inHand)) {
-					if (plugin.config
-							.getBoolean("Main.Automatic Tree Destruction")
-							&& plugin.config
-									.getBoolean("Automatic Tree Destruction.Forced Removal")) {
-						// check if it is a tree we should restore
-						return new TreeAssistTree(plugin, listener, block);
-					}
-					return null; // don't care
+					return newTree(listener, block);
 				}
 			}
 
@@ -219,35 +154,11 @@ public class TreeAssistTree {
 					2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111,
 					78, 12, 50, 66)); // if it's not one of these blocks, it's
 										// safe to assume its a house/building
-			for (Object obj : plugin.config.getList("Modding.Custom Logs")) {
-				if (obj instanceof Integer) {
-					validTypes.add((Integer) obj);
-					continue;
-				}
-				if (obj.equals("LIST ITEMS GO HERE")) {
-					List<Object> list = new ArrayList<Object>();
-					list.add(-1);
-					plugin.config.set("Modding.Custom Logs", list);
-					plugin.saveConfig();
-					break;
-				}
-				validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
-			}
-			for (Object obj : plugin.config
-					.getList("Modding.Custom Tree Blocks")) {
-				if (obj instanceof Integer) {
-					validTypes.add((Integer) obj);
-					continue;
-				}
-				if (obj.equals("LIST ITEMS GO HERE")) {
-					List<Object> list = new ArrayList<Object>();
-					list.add(-1);
-					plugin.config.set("Modding.Custom Tree Blocks", list);
-					plugin.saveConfig();
-					break;
-				}
-				validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
-			}
+			
+			initiateList("Modding.Custom Logs", validTypes);
+			
+			initiateList("Modding.Custom Tree Blocks", validTypes);
+			
 			for (int x = 0; x < directions.length; x++) {
 				if (!validTypes.contains(block.getRelative(
 						BlockFace.valueOf(directions[x])).getTypeId())) {
@@ -260,31 +171,6 @@ public class TreeAssistTree {
 
 			if (!plugin.playerList.contains(player.getName())) {
 				byte blockdata = block.getData();
-				/*
-				 * if((blockdata == 1 && plugin.config.getBoolean(
-				 * "Automatic Tree Destruction.Tree Types.Spruce")) ||
-				 * (blockdata == 2 && plugin.config.getBoolean(
-				 * "Automatic Tree Destruction.Tree Types.Birch"))) //simpler
-				 * calculation for birch and pine trees :D {
-				 * 
-				 * blocksToRemove[0] = bottom; Block NextBlockUp =
-				 * world.getBlockAt(bottom.getX(), bottom.getY() + 1,
-				 * bottom.getZ()); for(int q = 1; NextBlockUp.getTypeId() == 17
-				 * || listener.isCustomLog(NextBlockUp); q++) {
-				 * blocksToRemove[q] = NextBlockUp; NextBlockUp =
-				 * world.getBlockAt(NextBlockUp.getX(), NextBlockUp.getY() + 1,
-				 * NextBlockUp.getZ()); }
-				 * 
-				 * int total = removeBlocks(blocksToRemove, player);
-				 * if(plugin.config.getBoolean("Main.Apply Full Tool Damage")) {
-				 * int type = player.getItemInHand().getTypeId(); if(type == 258
-				 * || type == 271 || type == 275 || type == 279 || type == 286)
-				 * { player.getItemInHand().setDurability((short)
-				 * (player.getItemInHand().getDurability()+total)); } } success
-				 * = true;
-				 * 
-				 * }
-				 */
 				if (ModUtils.isCustomLog(bottom)
 						|| (blockdata == 0 && plugin.config
 								.getBoolean("Automatic Tree Destruction.Tree Types.Oak"))
@@ -296,32 +182,8 @@ public class TreeAssistTree {
 								.getBoolean("Automatic Tree Destruction.Tree Types.Jungle"))
 						|| blockdata > 3) // ugly branch messes
 				{
-					if (plugin.config.getBoolean("Main.Apply Full Tool Damage")) {
-						// checkBlock(bottom, top, player.getItemInHand(),
-						// player, top.getData());
-						success = true;
-						damage = true;
-					} else {
-						// checkBlock(bottom, top, null, player, top.getData());
-						success = true;
-						damage = false;
-					}
-					/*
-					 * if(blockdata == 3 && plugin.config.getBoolean(
-					 * "Automatic Tree Destruction.Tree Types.BigJungle")) { int
-					 * x = bottom.getX(); int y = bottom.getY(); int z =
-					 * bottom.getZ();
-					 * 
-					 * breakLog(world.getBlockAt(x-1, y-1, z+1));
-					 * breakLog(world.getBlockAt(x, y-1, z+1));
-					 * breakLog(world.getBlockAt(x+1, y-1, z+1));
-					 * breakLog(world.getBlockAt(x+1, y-1, z));
-					 * breakLog(world.getBlockAt(x+1, y-1, z-1));
-					 * breakLog(world.getBlockAt(x, y-1, z-1));
-					 * breakLog(world.getBlockAt(x-1, y-1, z-1));
-					 * breakLog(world.getBlockAt(x-1, y-1, z));
-					 * breakLog(world.getBlockAt(x, y-1, z)); }
-					 */
+					success = true;
+					damage = plugin.config.getBoolean("Main.Apply Full Tool Damage");
 				}
 			}
 		}
@@ -332,18 +194,12 @@ public class TreeAssistTree {
 			if ((plugin.config.getBoolean("Main.Use Permissions") && player
 					.hasPermission("treeassist.replant"))
 					|| !(plugin.config.getBoolean("Main.Use Permissions"))) {
+				
 				if (plugin.config
 						.getBoolean("Tools.Sapling Replant Require Tools")) {
 					ItemStack inHand = player.getItemInHand();
 					if (!isRequiredTool(inHand)) {
-						if (plugin.config
-								.getBoolean("Main.Automatic Tree Destruction")
-								&& plugin.config
-										.getBoolean("Automatic Tree Destruction.Forced Removal")) {
-							// check if it is a tree we should restore
-							return new TreeAssistTree(plugin, listener, block);
-						}
-						return null; // don't care
+						return newTree(listener, block);
 					}
 				}
 				if (plugin.config.getBoolean("Main.Automatic Tree Destruction")) {
@@ -352,70 +208,36 @@ public class TreeAssistTree {
 					if (delay < 1) {
 						delay = 1;
 					}
-					if (block
-							.getWorld()
-							.getBlockAt(bottom.getX(), bottom.getY() - 1,
-									bottom.getZ()).getType() == Material.DIRT
-							|| block.getWorld()
-									.getBlockAt(bottom.getX(),
-											bottom.getY() - 1, bottom.getZ())
-									.getType() == Material.GRASS
-							|| block.getWorld()
-									.getBlockAt(bottom.getX(),
-											bottom.getY() - 1, bottom.getZ())
-									.getType() == Material.CLAY) {
-						Runnable b = new TreeAssistReplant(plugin, bottom,
-								typeid, data);
-
-						plugin.getServer().getScheduler()
-								.scheduleSyncDelayedTask(plugin, b, 20 * delay);
-
-						if (plugin.config
-								.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-							plugin.blockList.add(bottom.getLocation());
-							Runnable X = new TreeAssistProtect(plugin,
-									bottom.getLocation());
-							plugin.getServer()
-									.getScheduler()
-									.scheduleSyncDelayedTask(
-											plugin,
-											X,
-											20 * plugin.config
-													.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-						}
+					if (block.getRelative(BlockFace.DOWN).getType() == Material.DIRT
+							|| block.getRelative(BlockFace.DOWN).getType() == Material.GRASS
+							|| block.getRelative(BlockFace.DOWN).getType() == Material.CLAY) {
+						// block IS bottom
+						
+						handleSaplingReplace(typeid, data, delay, bottom);
 						if (data == 3
 								&& j > 1
 								&& plugin.config
 										.getBoolean("Sapling Replant.Tree Types to Replant.BigJungle")) {
-							for (int rts = 1; rts < 4; rts++) {
-								if (jungle[rts] != null) {
-									Runnable t = new TreeAssistReplant(plugin,
-											jungle[rts], typeid, data);
-									plugin.getServer()
-											.getScheduler()
-											.scheduleSyncDelayedTask(plugin, t,
-													20 * delay);
-
-									if (plugin.config
-											.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-										plugin.blockList.add(jungle[rts]
-												.getLocation());
-										Runnable X2 = new TreeAssistProtect(
-												plugin,
-												jungle[rts].getLocation());
-										plugin.getServer()
-												.getScheduler()
-												.scheduleSyncDelayedTask(
-														plugin,
-														X2,
-														20 * plugin.config
-																.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-									}
-								}
-							}
+							handleJungleSaplingReplace(jungle, typeid, data, delay);
 						}
-					}
+					} else if (!plugin
+							.getConfig()
+							.getBoolean(
+									"Sapling Replant.Bottom Block has to be Broken First")) {
+						
+						// bottom is found
+						
+						handleSaplingReplace(typeid, data, delay, bottom);
+						if (data == 3
+								&& j > 1
+								&& plugin.config
+										.getBoolean("Sapling Replant.Tree Types to Replant.BigJungle")) {
+							handleJungleSaplingReplace(jungle, typeid, data, delay);
+						}
+					} // else: no sapling, because bottom block was needed and wasnt destroyed
 				} else {
+					// no automatic destruction
+					
 					int delay = plugin.config
 							.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
 					if (delay < 1) {
@@ -432,56 +254,10 @@ public class TreeAssistTree {
 								.getConfig()
 								.getBoolean(
 										"Sapling Replant.Bottom Block has to be Broken First")) {
-							Runnable b = new TreeAssistReplant(plugin, block,
-									typeid, data);
-							plugin.getServer()
-									.getScheduler()
-									.scheduleSyncDelayedTask(plugin, b,
-											20 * delay);
-
-							if (plugin.config
-									.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-								plugin.blockList.add(block.getLocation());
-								Runnable X = new TreeAssistProtect(plugin,
-										block.getLocation());
-
-								plugin.getServer()
-										.getScheduler()
-										.scheduleSyncDelayedTask(
-												plugin,
-												X,
-												20 * plugin.config
-														.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-							}
+							
+							handleSaplingReplace(typeid, data, delay, bottom);
 							if (block.getData() == 3 && j == 4) {
-								for (int rts = 1; rts < 4; rts++) {
-									if (jungle[rts] != null
-											&& jungle[rts].getTypeId() == 0) {
-										Runnable t = new TreeAssistReplant(
-												plugin, jungle[rts], typeid,
-												data);
-										plugin.getServer()
-												.getScheduler()
-												.scheduleSyncDelayedTask(
-														plugin, t, 20 * delay);
-
-										if (plugin.config
-												.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-											plugin.blockList.add(jungle[rts]
-													.getLocation());
-											Runnable X2 = new TreeAssistProtect(
-													plugin,
-													jungle[rts].getLocation());
-											plugin.getServer()
-													.getScheduler()
-													.scheduleSyncDelayedTask(
-															plugin,
-															X2,
-															20 * plugin.config
-																	.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-										}
-									}
-								}
+								handleJungleSaplingReplace(jungle, typeid, data, delay);
 							}
 						} else {
 							if (oneabove1.getType() == Material.LOG
@@ -527,58 +303,9 @@ public class TreeAssistTree {
 									extrablockcount = 0;
 								}
 								if (extrablockcount < 3) {
-									Runnable b = new TreeAssistReplant(plugin,
-											block, typeid, data);
-									plugin.getServer()
-											.getScheduler()
-											.scheduleSyncDelayedTask(plugin, b,
-													20 * delay);
-									if (plugin.config
-											.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-										plugin.blockList.add(block
-												.getLocation());
-										Runnable X = new TreeAssistProtect(
-												plugin, block.getLocation());
-										plugin.getServer()
-												.getScheduler()
-												.scheduleSyncDelayedTask(
-														plugin,
-														X,
-														20 * plugin.config
-																.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-									}
+									handleSaplingReplace(typeid, data, delay, bottom);
 									if (block.getData() == 3 && j == 4) {
-										for (int rts = 1; rts < 4; rts++) {
-											if (jungle[rts] != null
-													&& jungle[rts].getTypeId() == 0) {
-												Runnable t = new TreeAssistReplant(
-														plugin, jungle[rts],
-														typeid, data);
-												plugin.getServer()
-														.getScheduler()
-														.scheduleSyncDelayedTask(
-																plugin, t,
-																20 * delay);
-
-												if (plugin.config
-														.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-													plugin.blockList
-															.add(jungle[rts]
-																	.getLocation());
-													Runnable X2 = new TreeAssistProtect(
-															plugin,
-															jungle[rts]
-																	.getLocation());
-													plugin.getServer()
-															.getScheduler()
-															.scheduleSyncDelayedTask(
-																	plugin,
-																	X2,
-																	20 * plugin.config
-																			.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-												}
-											}
-										}
+										handleJungleSaplingReplace(jungle, typeid, data, delay);
 									}
 								}
 							}
@@ -597,6 +324,10 @@ public class TreeAssistTree {
 			}
 			return new TreeAssistTree(listener, bottom, top, player, damage);
 		}
+		return newTree(listener, block);
+	}
+
+	private static TreeAssistTree newTree(TreeAssistBlockListener listener, Block block) {
 		if (plugin.config.getBoolean("Main.Automatic Tree Destruction")
 				&& plugin.config
 						.getBoolean("Automatic Tree Destruction.Forced Removal")) {
@@ -604,6 +335,55 @@ public class TreeAssistTree {
 			return new TreeAssistTree(plugin, listener, block);
 		}
 		return null; // don't care
+	}
+
+	private static void initiateList(String string, List<Integer> validTypes) {
+		for (Object obj : plugin.config.getList(string)) {
+			if (obj instanceof Integer) {
+				validTypes.add((Integer) obj);
+				continue;
+			}
+			if (obj.equals("LIST ITEMS GO HERE")) {
+				List<Object> list = new ArrayList<Object>();
+				list.add(-1);
+				plugin.config.set(string, list);
+				plugin.saveConfig();
+				break;
+			}
+			validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
+		}
+	}
+
+	private static void handleSaplingReplace(int typeid, byte data, int delay, Block block) {
+		
+		Runnable b = new TreeAssistReplant(plugin, block, typeid, data);
+		plugin.getServer()
+				.getScheduler()
+				.scheduleSyncDelayedTask(plugin, b,
+						20 * delay);
+
+		if (plugin.config
+				.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
+			plugin.blockList.add(block.getLocation());
+			Runnable X = new TreeAssistProtect(plugin,
+					block.getLocation());
+
+			plugin.getServer()
+					.getScheduler()
+					.scheduleSyncDelayedTask(
+							plugin,
+							X,
+							20 * plugin.config
+									.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
+		}
+	}
+
+	private static void handleJungleSaplingReplace(Block[] jungle, int typeid, byte data, int delay) {
+		for (int rts = 1; rts < 4; rts++) {
+			if (jungle[rts] != null) {
+				handleSaplingReplace(typeid, data, delay, jungle[rts]);
+			}
+		}
 	}
 
 	private TreeAssistTree(TreeAssist plugin, TreeAssistBlockListener listener,
@@ -848,15 +628,7 @@ public class TreeAssistTree {
 				if (block.getData() < 3) {
 					debug.i("no jungle!");
 					
-					int failCount = 0;
-					for (int cont = -4; cont < 5; cont++) {
-						if (block.getRelative(0, cont, 0).getTypeId() == 17
-								|| ModUtils.isCustomLog(block.getRelative(0, cont, 0))) {
-							failCount++;
-						}
-					}
-					if (failCount > 3) {
-						debug.i("fail count "+failCount+"! out!");
+					if (checkFail(block)) {
 						return;
 					}
 
@@ -876,15 +648,7 @@ public class TreeAssistTree {
 						}
 					}
 					if (diff) {
-						int failCount = 0;
-						for (int cont = -4; cont < 5; cont++) {
-							if (block.getRelative(0, cont, 0).getTypeId() == 17
-									|| ModUtils.isCustomLog(block.getRelative(0, cont, 0))) {
-								failCount++;
-							}
-						}
-						if (failCount > 3) {
-							debug.i("fail count "+failCount+"! out!");
+						if (checkFail(block)) {
 							return;
 						}
 					}
@@ -913,10 +677,7 @@ public class TreeAssistTree {
 			list.add(block);
 		}
 		
-		final BlockFace[] faces = {BlockFace.NORTH,BlockFace.EAST,BlockFace.SOUTH,BlockFace.WEST,
-				BlockFace.NORTH_EAST,BlockFace.SOUTH_EAST,BlockFace.NORTH_WEST,BlockFace.SOUTH_WEST};
-
-		for (BlockFace face : faces) {
+		for (BlockFace face : NEIGHBORFACES) {
 			checkBlock(list, block.getRelative(face), top, false, origData);
 
 			checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false, origData);
@@ -955,6 +716,21 @@ public class TreeAssistTree {
 			checkBlock(list, block.getRelative(-2, 0, -1), top, false, origData);
 		}
 		checkBlock(list, block.getRelative(0, 1, 0), top, true, origData);
+	}
+
+	private static boolean checkFail(Block block) {
+		int failCount = 0;
+		for (int cont = -4; cont < 5; cont++) {
+			if (block.getRelative(0, cont, 0).getTypeId() == 17
+					|| ModUtils.isCustomLog(block.getRelative(0, cont, 0))) {
+				failCount++;
+			}
+		}
+		if (failCount > 3) {
+			debug.i("fail count "+failCount+"! out!");
+			return true;
+		}
+		return false;
 	}
 
 	/**

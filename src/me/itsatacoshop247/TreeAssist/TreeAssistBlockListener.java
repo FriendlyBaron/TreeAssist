@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -38,12 +39,8 @@ public class TreeAssistBlockListener implements Listener
 		{
 			Block block = event.getBlock();
 			World world = block.getWorld();
-			if(plugin.config.getBoolean("Worlds.Enable Per World"))
-			{
-				if(!plugin.config.getList("Worlds.Enabled Worlds").contains(world.getName()))
-				{
-					return;
-				}
+			if (!plugin.isActive(world)) {
+				return;
 			}
 			int x = block.getX();
 			int y = block.getY();
@@ -118,9 +115,18 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockIgnite(BlockIgniteEvent event)
 	{
+		checkFire(event, event.getBlock());
+	}
+	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onBlockBurn(BlockBurnEvent event)
+	{
+		checkFire(event, event.getBlock());
+	}
+	
+	private void checkFire(Cancellable event, Block block) {
+
 		if(plugin.config.getBoolean("Sapling Replant.Replant When Tree Burns Down") && plugin.Enabled)
 		{
-			Block block = event.getBlock();
 			if(plugin.config.getBoolean("Worlds.Enable Per World"))
 			{
 				if(!plugin.config.getList("Worlds.Enabled Worlds").contains(block.getWorld().getName()))
@@ -130,8 +136,8 @@ public class TreeAssistBlockListener implements Listener
 			}
 			if(block.getType() == Material.LOG) 
 			{
-				Block onebelow = event.getBlock().getRelative(BlockFace.DOWN, 1);
-				Block oneabove = event.getBlock().getRelative(BlockFace.UP, 1);
+				Block onebelow = block.getRelative(BlockFace.DOWN, 1);
+				Block oneabove = block.getRelative(BlockFace.UP, 1);
 				if(onebelow.getType() == Material.DIRT || onebelow.getType() == Material.GRASS)
 				{
 					if(oneabove.getType() == Material.AIR || oneabove.getType() == Material.LOG)
@@ -143,35 +149,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 	}
-	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onBlockBurn(BlockBurnEvent event)
-	{
-		if(plugin.config.getBoolean("Sapling Replant.Replant When Tree Burns Down") && plugin.Enabled)
-		{
-			Block block = event.getBlock();
-			if(plugin.config.getBoolean("Worlds.Enable Per World"))
-			{
-				if(!plugin.config.getList("Worlds.Enabled Worlds").contains(block.getWorld().getName()))
-				{
-					return;
-				}
-			}
-			if(block.getType() == Material.LOG) 
-			{
-				Block onebelow = event.getBlock().getRelative(BlockFace.DOWN, 1);
-				Block oneabove = event.getBlock().getRelative(BlockFace.UP, 1);
-				if(onebelow.getType() == Material.DIRT || onebelow.getType() == Material.GRASS)
-				{
-					if(oneabove.getType() == Material.LOG)
-					{
-						Runnable b = new TreeAssistReplant(plugin, block, Material.LOG.getId(), block.getData());
-						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
-					}
-				}	
-			}
-		}
-	}
-	
+
 	protected final static Set<TreeAssistTree> trees = new HashSet<TreeAssistTree>();
 	
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)

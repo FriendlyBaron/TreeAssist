@@ -31,9 +31,10 @@ public class TreeAssistReplant implements Runnable {
 		for (Object o : ModUtils.customSaplings) {
 			saplings[pos++] = o;
 		}
-		
+
 		if (typeid == Material.LOG.getId() || (!ModUtils.customLogs.contains(typeid) && !ModUtils.customLogs.contains(typeid+":"+importData))) {
 			type = Material.SAPLING.getId();
+			System.out.print("Standard; " + block.getY());
 			return;
 		}
 		
