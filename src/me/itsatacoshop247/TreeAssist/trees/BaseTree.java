@@ -2,6 +2,7 @@ package me.itsatacoshop247.TreeAssist.trees;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import me.itsatacoshop247.TreeAssist.TreeAssist;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public abstract class BaseTree implements Tree {
 	protected enum TreeType {
@@ -336,7 +338,21 @@ public abstract class BaseTree implements Tree {
 		if (!leaf && Utils.plugin.mcMMO && player != null) {
 			Utils.mcMMOaddExp(player, block);
 		}
-		block.breakNaturally(tool);
+		
+		int chance = 100;
+		
+		if (tool != null && !leaf) {
+			chance = Utils.plugin.getConfig().getInt("Tools.Drop Chance."+tool.getType().name(), 100);
+			if (chance < 1) {
+				chance = 1;
+			}
+		}
+		
+		if (chance > 99 || (new Random()).nextInt(100) < chance) {
+			block.breakNaturally(tool);
+		} else {
+			block.setType(Material.AIR);
+		}
 
 		if (!leaf && tool != null && player != null) {
 			if (Utils.toolgood.contains(player.getItemInHand().getTypeId())) {
@@ -430,8 +446,7 @@ public abstract class BaseTree implements Tree {
 
 		}
 
-		Bukkit.getScheduler().runTaskTimer(Utils.plugin, new RemoveRunner(), delay,
-				offset + 1);
+		(new RemoveRunner()).runTaskTimer(Utils.plugin, delay, offset + 1);
 	}
 
 	protected void removeLater(final Player player, final boolean damage) {
@@ -477,14 +492,12 @@ public abstract class BaseTree implements Tree {
 				try {
 					this.cancel();
 				} catch (Exception e) {
-
+					e.printStackTrace();
 				}
 			}
 
 		}
-
-		Bukkit.getScheduler().runTaskTimer(Utils.plugin, new InstantRunner(), offset,
-				offset);
+		(new InstantRunner()).runTaskTimer(Utils.plugin, offset, offset);
 
 		class CleanRunner extends BukkitRunnable {
 
@@ -504,8 +517,7 @@ public abstract class BaseTree implements Tree {
 
 		}
 
-		Bukkit.getScheduler().runTaskTimer(Utils.plugin, new CleanRunner(), delay,
-				offset);
+		(new CleanRunner()).runTaskTimer(Utils.plugin, delay, offset);
 	}
 
 	public boolean contains(Block block) {

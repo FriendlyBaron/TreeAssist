@@ -110,7 +110,6 @@ public class Debugger {
 			return;
 		}
 		logger.info(System.currentTimeMillis()%1000 + " " + string);
-		System.out.print(string);
 	}
 	
 	public static void load(final TreeAssist instance, final CommandSender sender) {

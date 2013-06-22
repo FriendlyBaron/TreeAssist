@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 
 public class TreeAssistSpawnListener implements Listener {
 
@@ -26,6 +27,14 @@ public class TreeAssistSpawnListener implements Listener {
 					plugin.getConfig().getInt("Auto Plant Dropped Saplings.Chance (percent)",10)) {
 				new TreeAssistSaplingSelfPlant(plugin, drop);
 			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void itemSpawnEvent(PlayerPickupItemEvent event) {
+		Item item = event.getItem();
+		if (item.getItemStack().getType() == Material.SAPLING) {
+			TreeAssistSaplingSelfPlant.remove(item);
 		}
 	}
 }

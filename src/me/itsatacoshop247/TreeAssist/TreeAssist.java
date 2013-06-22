@@ -223,6 +223,14 @@ public class TreeAssist extends JavaPlugin
 		//5.7 additions
 		items.put("Automatic Tree Destruction.Tree Types.Brown Shroom", "true");
 		items.put("Automatic Tree Destruction.Tree Types.Red Shroom", "true");
+
+		//5.7.1 additions
+		items.put("Tools.Drop Chance.DIAMOND_AXE", "100");
+		items.put("Tools.Drop Chance.WOOD_AXE", "100");
+		items.put("Tools.Drop Chance.GOLD_AXE", "100");
+		items.put("Tools.Drop Chance.IRON_AXE", "100");
+		items.put("Tools.Drop Chance.STONE_AXE", "100");
+		
 		return items;
 	}
 
