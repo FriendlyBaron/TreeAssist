@@ -12,7 +12,12 @@ import java.util.List;
 import java.util.Map;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
-import me.itsatacoshop247.TreeAssist.modding.ModUtils;
+import me.itsatacoshop247.TreeAssist.trees.BaseTree;
+import me.itsatacoshop247.TreeAssist.trees.CustomTree;
+import me.itsatacoshop247.TreeAssist.trees.InvalidTree;
+import me.itsatacoshop247.TreeAssist.trees.MushroomTree;
+import me.itsatacoshop247.TreeAssist.trees.Utils;
+import me.itsatacoshop247.TreeAssist.trees.VanillaTree;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,7 +56,7 @@ public class TreeAssist extends JavaPlugin
 	{
 		checkMcMMO();
 		
-		TreeAssistTree.plugin = this;
+		Utils.plugin = this;
 		
 		this.configFile = new File(getDataFolder(), "config.yml");
 		this.dataFile = new File(getDataFolder(), "data.yml");
@@ -66,6 +71,7 @@ public class TreeAssist extends JavaPlugin
 		this.config = new YamlConfiguration();
 		this.data = new YamlConfiguration();
 		this.listener = new TreeAssistBlockListener(this);
+		
 		loadYamls();
 		config.options().copyDefaults(true);
 		//check for defaults to set newly
@@ -85,13 +91,23 @@ public class TreeAssist extends JavaPlugin
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
 		}
+
+		BaseTree.debug = new Debugger(this, 1);
+		CustomTree.debugger = new Debugger(this, 2);
+		InvalidTree.debugger = new Debugger(this, 3);
+		MushroomTree.debugger = new Debugger(this, 4);
+		VanillaTree.debugger = new Debugger(this, 5);
 		Debugger.load(this, Bukkit.getConsoleSender());
+		
+
+		initiateList("Modding.Custom Logs", Utils.validTypes);
+		initiateList("Modding.Custom Tree Blocks", Utils.validTypes);
 	}
 
 	private void reloadLists() {
-		ModUtils.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
-		ModUtils.customLogs = config.getList("Modding.Custom Logs");
-		ModUtils.customSaplings = config.getList("Modding.Custom Saplings");
+		CustomTree.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
+		CustomTree.customLogs = config.getList("Modding.Custom Logs");
+		CustomTree.customSaplings = config.getList("Modding.Custom Saplings");
 	}
 
 	private void updateConfig() 
@@ -204,6 +220,9 @@ public class TreeAssist extends JavaPlugin
 		items.put("Auto Plant Dropped Saplings.Chance (percent)", "10");
 		items.put("Auto Plant Dropped Saplings.Delay (seconds)", "5");
 		
+		//5.7 additions
+		items.put("Automatic Tree Destruction.Tree Types.Brown Shroom", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Red Shroom", "true");
 		return items;
 	}
 
@@ -369,6 +388,30 @@ public class TreeAssist extends JavaPlugin
 		config.getList("Worlds.Enabled Worlds").contains(
 			world.getName());
 	}
-		
+	
+	public FileConfiguration getData() {
+		return data;
+	}
+
+	public boolean isForceAutoDestroy() {
+		return getConfig().getBoolean("Main.Automatic Tree Destruction")
+				&& getConfig().getBoolean("Automatic Tree Destruction.Forced Removal");
+	}
+	private void initiateList(String string, List<Integer> validTypes) {
+		for (Object obj : config.getList(string)) {
+			if (obj instanceof Integer) {
+				validTypes.add((Integer) obj);
+				continue;
+			}
+			if (obj.equals("LIST ITEMS GO HERE")) {
+				List<Object> list = new ArrayList<Object>();
+				list.add(-1);
+				config.set(string, list);
+				saveConfig();
+				break;
+			}
+			validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
+		}
+	}
 }
 	

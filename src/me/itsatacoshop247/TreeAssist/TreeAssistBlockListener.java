@@ -3,16 +3,15 @@ package me.itsatacoshop247.TreeAssist;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
-import me.itsatacoshop247.TreeAssist.modding.ModUtils;
+import me.itsatacoshop247.TreeAssist.trees.BaseTree;
+import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Item;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,7 +21,6 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
 
 public class TreeAssistBlockListener implements Listener  
 {
@@ -95,7 +93,7 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getTypeId() == 17 || ModUtils.isCustomLog(event.getBlock())))
+		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getTypeId() == 17 || CustomTree.isCustomLog(event.getBlock())))
 		{
 			if(plugin.config.getBoolean("Worlds.Enable Per World"))
 			{
@@ -118,6 +116,7 @@ public class TreeAssistBlockListener implements Listener
 	{
 		checkFire(event, event.getBlock());
 	}
+	
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBurn(BlockBurnEvent event)
 	{
@@ -151,20 +150,20 @@ public class TreeAssistBlockListener implements Listener
 		}
 	}
 
-	protected final static Set<TreeAssistTree> trees = new HashSet<TreeAssistTree>();
+	protected final static Set<BaseTree> trees = new HashSet<BaseTree>();
 	
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event)
 	{
-		for (TreeAssistTree tree : trees) {
+		for (BaseTree tree : trees) {
 			if (tree.contains(event.getBlock())) {
 				return;
 			}
 		}
 		
-		TreeAssistTree tree = TreeAssistTree.calculate(plugin, this, event);
+		BaseTree tree = BaseTree.calculate(event);
 		
-		if (tree != null) {
+		if (tree.isValid()) {
 			trees.add(tree);
 		}
 	}
@@ -176,7 +175,7 @@ public class TreeAssistBlockListener implements Listener
 	 */
 	private void breakIfLonelyLeaf(Block blockAt) 
 	{
-		if(blockAt.getTypeId() != 18 && !ModUtils.isCustomTreeBlock(blockAt))
+		if(blockAt.getTypeId() != 18 && !CustomTree.isCustomTreeBlock(blockAt))
 		{
 			return;
 		}
@@ -206,7 +205,7 @@ public class TreeAssistBlockListener implements Listener
 	 */
 	private void breakRadiusIfLeaf(Block blockAt) 
 	{
-		if(blockAt.getTypeId() == 18 || ModUtils.isCustomTreeBlock(blockAt))
+		if(blockAt.getTypeId() == 18 || CustomTree.isCustomTreeBlock(blockAt))
 		{
 			blockAt.breakNaturally();
 			World world = blockAt.getWorld();
@@ -233,7 +232,7 @@ public class TreeAssistBlockListener implements Listener
 		{
 			return 0;
 		}
-		else if(blockAt.getTypeId() == 17 || ModUtils.isCustomLog(blockAt))
+		else if(blockAt.getTypeId() == 17 || CustomTree.isCustomLog(blockAt))
 		{
 			return 5;
 		}

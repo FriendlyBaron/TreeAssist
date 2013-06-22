@@ -17,6 +17,8 @@ Automatic Tree Destruction:
     BigJungle: true
     Oak: true
     Spruce: true
+    Brown Shroom: true
+    Red Shroom: true
 Auto Plant Dropped Saplings:
   Chance (percent): 10
   Delay (seconds): 5
@@ -34,6 +36,8 @@ Sapling Replant:
     BigJungle: true
     Oak: true
     Spruce: true
+    Brown Shroom: true
+    Red Shroom: true
 Tools:
   Sapling Replant Require Tools: true
   Tree Destruction Require Tools: true

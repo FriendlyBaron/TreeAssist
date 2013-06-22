@@ -1,6 +1,6 @@
 package me.itsatacoshop247.TreeAssist;
 
-import me.itsatacoshop247.TreeAssist.modding.ModUtils;
+import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,19 +20,19 @@ public class TreeAssistReplant implements Runnable {
 		Object[] logs;
 		Object[] saplings;
 		
-		logs = new Object[ModUtils.customLogs.size()];
+		logs = new Object[CustomTree.customLogs.size()];
 		int pos = 0;
-		for (Object o : ModUtils.customLogs) {
+		for (Object o : CustomTree.customLogs) {
 			logs[pos++] = o;
 		}
 
-		saplings = new Object[ModUtils.customSaplings.size()];
+		saplings = new Object[CustomTree.customSaplings.size()];
 		pos = 0;
-		for (Object o : ModUtils.customSaplings) {
+		for (Object o : CustomTree.customSaplings) {
 			saplings[pos++] = o;
 		}
 
-		if (typeid == Material.LOG.getId() || (!ModUtils.customLogs.contains(typeid) && !ModUtils.customLogs.contains(typeid+":"+importData))) {
+		if (typeid == Material.LOG.getId() || (!CustomTree.customLogs.contains(typeid) && !CustomTree.customLogs.contains(typeid+":"+importData))) {
 			type = Material.SAPLING.getId();
 			return;
 		}
