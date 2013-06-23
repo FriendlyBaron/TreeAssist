@@ -377,11 +377,11 @@ public abstract class BaseTree implements Tree {
 					
 					if ((new Random()).nextInt(100000) < customChance) {
 						if (key.equalsIgnoreCase("LEAVES")) {
-							block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, data));
+							block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, 1, data));
 						} else {
 							try {
 								Material mat = Material.valueOf(key.toUpperCase());
-								block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(mat, data));
+								block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(mat));
 							} catch (Exception e) {
 								Utils.plugin.getLogger().warning("Invalid config value: Custom Drops."+key+" is not a valid Material!");
 							}
