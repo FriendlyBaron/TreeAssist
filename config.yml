@@ -61,6 +61,9 @@ Worlds:
   Enabled Worlds:
   - world
   - world2
+Custom Drops:
+  APPLE: 0.1
+  GOLDEN_APPLE: 0.0
 Modding:
   Custom Logs:
   - -1

@@ -22,6 +22,7 @@ import me.itsatacoshop247.TreeAssist.trees.VanillaTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -142,6 +143,10 @@ public class TreeAssist extends JavaPlugin
 				{
 					this.config.addDefault(item.getKey(), Integer.parseInt(item.getValue()));
 				}
+				else if(isDouble(item.getValue()))
+				{
+					this.config.addDefault(item.getKey(), Double.parseDouble(item.getValue()));
+				}
 				else
 				{
 					this.config.addDefault(item.getKey(), item.getValue());
@@ -155,6 +160,19 @@ public class TreeAssist extends JavaPlugin
 		}
 		this.saveConfig();
 	}
+
+	public boolean isDouble(String input)  
+	{  
+	   try  
+	   {  
+		   Double.parseDouble(input);  
+	      return true;  
+	   }  
+	   catch(Exception e)  
+	   {  
+	      return false; 
+	   }  
+	} 
 
 	public boolean isInteger(String input)  
 	{  
@@ -237,6 +255,9 @@ public class TreeAssist extends JavaPlugin
 		//5.7.2 additions
 		items.put("Automatic Tree Destruction.Cooldown (seconds)", "0");
 		
+		//5.7.3 additions
+		items.put("Custom Drops.APPLE", "0.1");
+		items.put("Custom Drops.GOLDEN_APPLE", "0.0");
 		
 		return items;
 	}

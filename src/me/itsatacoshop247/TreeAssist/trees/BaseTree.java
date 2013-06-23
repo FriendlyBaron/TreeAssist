@@ -13,6 +13,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -366,7 +367,28 @@ public abstract class BaseTree implements Tree {
 		}
 		
 		if (chance > 99 || (new Random()).nextInt(100) < chance) {
+			byte data = block.getData();
 			block.breakNaturally(tool);
+			
+			if (leaf) {
+				ConfigurationSection cs = Utils.plugin.getConfig().getConfigurationSection("Custom Drops");
+				for (String key : cs.getKeys(false)) {
+					int customChance = (int) (cs.getDouble(key, 0.0d) * 100000d);
+					
+					if ((new Random()).nextInt(100000) < customChance) {
+						if (key.equalsIgnoreCase("LEAVES")) {
+							block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, data));
+						} else {
+							try {
+								Material mat = Material.valueOf(key.toUpperCase());
+								block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(mat, data));
+							} catch (Exception e) {
+								Utils.plugin.getLogger().warning("Invalid config value: Custom Drops."+key+" is not a valid Material!");
+							}
+						}
+					}
+				}
+			}
 		} else {
 			block.setType(Material.AIR);
 		}
