@@ -156,6 +156,22 @@ public abstract class BaseTree implements Tree {
 			}
 			return new InvalidTree();
 		}
+		
+		if (Utils.plugin.hasCoolDown(player)) {
+			debug.i("Cooldown!");
+			player.sendMessage(ChatColor.GREEN
+					+ "TreeAssist is cooling down!");
+			if (plugin.isForceAutoDestroy()) {
+				resultTree.findYourBlocks(block);
+				debug.i("But still, remove later, maybe");
+				if (resultTree.isValid()) {
+					resultTree.removeLater();
+					debug.i("Not maybe. For sure!");
+				}
+				return resultTree;
+			}
+			return new InvalidTree();
+		}
 
 		Block bottom = block;
 		Block top = block;
@@ -304,6 +320,7 @@ public abstract class BaseTree implements Tree {
 		}
 		return new InvalidTree();
 	}
+
 
 	abstract protected List<Block> calculate(Block bottom, Block top);
 	abstract protected boolean checkFail(Block block);
@@ -476,6 +493,8 @@ public abstract class BaseTree implements Tree {
 		
 		final ItemStack tool = (damage && player.getGameMode() != GameMode.CREATIVE) ? player.getItemInHand() : null;
 
+		Utils.plugin.setCoolDown(player);
+		
 		class InstantRunner extends BukkitRunnable {
 
 			@Override

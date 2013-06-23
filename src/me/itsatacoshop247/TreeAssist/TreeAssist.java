@@ -27,8 +27,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 
 //Running changelog
@@ -231,6 +234,10 @@ public class TreeAssist extends JavaPlugin
 		items.put("Tools.Drop Chance.IRON_AXE", "100");
 		items.put("Tools.Drop Chance.STONE_AXE", "100");
 		
+		//5.7.2 additions
+		items.put("Automatic Tree Destruction.Cooldown (seconds)", "0");
+		
+		
 		return items;
 	}
 
@@ -420,6 +427,31 @@ public class TreeAssist extends JavaPlugin
 			}
 			validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
 		}
+	}
+	
+	private Map<String, BukkitTask> coolDowns = new HashMap<String, BukkitTask>();
+
+	public boolean hasCoolDown(Player player) {
+		return coolDowns.containsKey(player.getName());
+	}
+	
+	public void setCoolDown(Player player) {
+		final int coolDown = getConfig().getInt("Automatic Tree Destruction.Cooldown (seconds)", 0);
+		if (coolDown < 1) {
+			return;
+		}
+		class RemoveRunner extends BukkitRunnable {
+			private final String name;
+			RemoveRunner(Player player) {
+				name = player.getName();
+			}
+			@Override
+			public void run() {
+				coolDowns.remove(name);
+			}
+			
+		}
+		coolDowns.put(player.getName(), ((new RemoveRunner(player)).runTaskLater(this, coolDown * 20L)));
 	}
 }
 	

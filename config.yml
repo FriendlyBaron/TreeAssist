@@ -19,6 +19,7 @@ Automatic Tree Destruction:
     Spruce: true
     Brown Shroom: true
     Red Shroom: true
+  Cooldown (seconds): 0
 Auto Plant Dropped Saplings:
   Chance (percent): 10
   Delay (seconds): 5

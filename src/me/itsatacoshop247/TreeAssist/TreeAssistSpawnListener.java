@@ -31,7 +31,7 @@ public class TreeAssistSpawnListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void itemSpawnEvent(PlayerPickupItemEvent event) {
+	public void playerPickupItemEvent(PlayerPickupItemEvent event) {
 		Item item = event.getItem();
 		if (item.getItemStack().getType() == Material.SAPLING) {
 			TreeAssistSaplingSelfPlant.remove(item);
