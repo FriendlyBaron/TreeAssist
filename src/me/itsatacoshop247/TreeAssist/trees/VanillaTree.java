@@ -6,6 +6,7 @@ import java.util.List;
 import me.itsatacoshop247.TreeAssist.TreeAssistProtect;
 import me.itsatacoshop247.TreeAssist.TreeAssistReplant;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Utils;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -169,7 +170,7 @@ public class VanillaTree extends BaseTree {
 
 		if (Utils.plugin.getConfig()
 				.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-			Utils.plugin.blockList.add(bottom.getLocation());
+			Utils.plugin.saplingLocationList.add(bottom.getLocation());
 			Runnable X = new TreeAssistProtect(Utils.plugin,
 					bottom.getLocation());
 

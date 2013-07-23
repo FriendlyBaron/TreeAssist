@@ -1,6 +1,6 @@
 name: TreeAssist
 main: me.itsatacoshop247.TreeAssist.TreeAssist
-version: 5.7.3.1
+version: 5.7.5
 author: itsatacoshop247
 description: TreeAssist
 dev-url: http://dev.bukkit.org/server-mods/tree-assist/
@@ -31,3 +31,12 @@ permissions:
     description: allows to use tree-assist for brown shrooms
   treeassist.destroy.redshroom:
     description: allows to use tree-assist for red shrooms
+  treeassist.toggle:
+    descroption: allows to toggle TreeAssist usage
+    default: op
+  treeassist.toggle.global:
+    descroption: allows to toggle global TreeAssist usage
+    default: op
+  treeassist.reload:
+    descroption: allows to reload the TreeAssist config
+    default: op

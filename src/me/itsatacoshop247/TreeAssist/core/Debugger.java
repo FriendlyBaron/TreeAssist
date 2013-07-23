@@ -36,7 +36,13 @@ public class Debugger {
 	public Debugger(TreeAssist plugin, int id) {
 		debugID = id;
 		this.plugin = plugin;
-		
+	}
+	private boolean debugs() {
+		return override || check.contains(debugID);
+	}
+	
+	private Logger getLogger() {
+
 		if (logger == null) {
 	        logger = Logger.getAnonymousLogger();
 	        logger.setLevel(Level.ALL);
@@ -66,9 +72,7 @@ public class Debugger {
 	        	plugin.getLogger().log(Level.SEVERE, null, ex);
 	        }
         }
-	}
-	private boolean debugs() {
-		return override || check.contains(debugID);
+		return logger;
 	}
 	
     static class LogFileFormatter extends Formatter {
@@ -109,7 +113,7 @@ public class Debugger {
 		if (!debugs()) {
 			return;
 		}
-		logger.info(System.currentTimeMillis()%1000 + " " + string);
+		getLogger().info(System.currentTimeMillis()%1000 + " " + string);
 	}
 	
 	public static void load(final TreeAssist instance, final CommandSender sender) {

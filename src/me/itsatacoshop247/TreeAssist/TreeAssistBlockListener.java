@@ -1,10 +1,9 @@
 package me.itsatacoshop247.TreeAssist;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 
@@ -89,7 +88,6 @@ public class TreeAssistBlockListener implements Listener
 		*/	
 	}
 
-	@SuppressWarnings("unchecked")
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
@@ -103,11 +101,8 @@ public class TreeAssistBlockListener implements Listener
 				}
 			}
 			Block block = event.getBlock();
-			List<String> list = new ArrayList<String>();
-			list = (List<String>) plugin.data.getList("Blocks", new ArrayList<String>());
-			list.add("" + block.getX() + ";" + block.getY() + ";" + block.getZ() + ";" + block.getWorld().getName());
-			plugin.data.set("Blocks", list);
-			plugin.saveData();
+			plugin.blockList.addBlock(block);
+			plugin.blockList.save();
 		}
 	}
 	
@@ -155,6 +150,9 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event)
 	{
+		if (!plugin.Enabled) {
+			return;
+		}
 		for (BaseTree tree : trees) {
 			if (tree.contains(event.getBlock())) {
 				return;
@@ -194,6 +192,7 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 
+		Utils.plugin.blockList.logBreak(blockAt, null);
 		blockAt.breakNaturally();
 	}
 	
@@ -207,6 +206,7 @@ public class TreeAssistBlockListener implements Listener
 	{
 		if(blockAt.getTypeId() == 18 || CustomTree.isCustomTreeBlock(blockAt))
 		{
+			Utils.plugin.blockList.logBreak(blockAt, null);
 			blockAt.breakNaturally();
 			World world = blockAt.getWorld();
 			int x = blockAt.getX();

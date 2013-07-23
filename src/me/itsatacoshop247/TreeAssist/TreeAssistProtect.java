@@ -15,9 +15,9 @@ public class TreeAssistProtect implements Runnable {
 	@Override
 	public void run() 
 	{
-		if(plugin.isEnabled() && plugin.blockList.contains(this.location))
+		if(plugin.isEnabled() && plugin.saplingLocationList.contains(this.location))
 		{
-			plugin.blockList.remove(this.location);
+			plugin.saplingLocationList.remove(this.location);
 		}
 	}
 }

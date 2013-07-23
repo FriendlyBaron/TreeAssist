@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Utils;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

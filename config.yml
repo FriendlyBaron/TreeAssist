@@ -64,6 +64,8 @@ Worlds:
 Custom Drops:
   APPLE: 0.1
   GOLDEN_APPLE: 0.0
+Placed Blocks:
+  Handler Plugin Name: TreeAssist
 Modding:
   Custom Logs:
   - -1

@@ -10,13 +10,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import me.itsatacoshop247.TreeAssist.blocklists.BlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.EmptyBlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.FlatFileBlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.PrismBlockList;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 import me.itsatacoshop247.TreeAssist.trees.InvalidTree;
 import me.itsatacoshop247.TreeAssist.trees.MushroomTree;
-import me.itsatacoshop247.TreeAssist.trees.Utils;
 import me.itsatacoshop247.TreeAssist.trees.VanillaTree;
 
 import org.bukkit.Bukkit;
@@ -44,15 +49,15 @@ import org.bukkit.scheduler.BukkitTask;
 public class TreeAssist extends JavaPlugin 
 {
 	public List<String> playerList = new ArrayList<String>();
-	public List<Location> blockList = new ArrayList<Location>();
+	public List<Location> saplingLocationList = new ArrayList<Location>();
 	
 	public boolean Enabled = true;
 	public boolean mcMMO = false;
 	
 	File configFile;
-	File dataFile;
 	FileConfiguration config;
-	FileConfiguration data;
+	
+	public BlockList blockList;
 	
 	TreeAssistBlockListener listener;
 	
@@ -63,7 +68,6 @@ public class TreeAssist extends JavaPlugin
 		Utils.plugin = this;
 		
 		this.configFile = new File(getDataFolder(), "config.yml");
-		this.dataFile = new File(getDataFolder(), "data.yml");
 		try 
 		{
 			firstRun();
@@ -73,13 +77,12 @@ public class TreeAssist extends JavaPlugin
 			e.printStackTrace();
 		}
 		this.config = new YamlConfiguration();
-		this.data = new YamlConfiguration();
+		
 		this.listener = new TreeAssistBlockListener(this);
 		
 		loadYamls();
 		config.options().copyDefaults(true);
 		//check for defaults to set newly
-		data.options().copyDefaults(true);
 		
 		this.updateConfig();
 		
@@ -106,6 +109,19 @@ public class TreeAssist extends JavaPlugin
 
 		initiateList("Modding.Custom Logs", Utils.validTypes);
 		initiateList("Modding.Custom Tree Blocks", Utils.validTypes);
+		
+		if (getConfig().getBoolean("Main.Ignore User Placed Blocks")) {
+			String pluginName = getConfig().getString(
+					"Placed Blocks.Handler Plugin Name", "TreeAssist");
+			if ("TreeAssist".equalsIgnoreCase(pluginName)) {
+				blockList = new FlatFileBlockList();
+			} else if ("Prism".equalsIgnoreCase(pluginName)) {
+				blockList = new PrismBlockList();
+			}
+		} else {
+			blockList = new EmptyBlockList();
+		}
+		blockList.initiate();
 	}
 
 	private void reloadLists() {
@@ -259,6 +275,9 @@ public class TreeAssist extends JavaPlugin
 		items.put("Custom Drops.APPLE", "0.1");
 		items.put("Custom Drops.GOLDEN_APPLE", "0.0");
 		
+		//5.8 additions
+		items.put("Placed Blocks.Handler Plugin Name","TreeAssist");
+		
 		return items;
 	}
 
@@ -282,11 +301,6 @@ public class TreeAssist extends JavaPlugin
 	
 	private void firstRun() throws Exception 
 	{
-		if (!this.dataFile.exists()) 
-		{
-			this.dataFile.getParentFile().mkdirs();
-			copy(getResource("data.yml"), this.dataFile);
-		}
 		if (!this.configFile.exists()) 
 		{
 			this.configFile.getParentFile().mkdirs();
@@ -319,7 +333,6 @@ public class TreeAssist extends JavaPlugin
 		try 
 		{
 			this.config.load(this.configFile);
-			this.data.load(this.dataFile);
 		} 
 		catch (Exception e) 
 		{
@@ -332,18 +345,6 @@ public class TreeAssist extends JavaPlugin
 		try 
 		{
 			this.config.save(this.configFile);
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void saveData() 
-	{
-		try 
-		{
-			this.data.save(this.dataFile);
 		} 
 		catch (IOException e) 
 		{
@@ -365,7 +366,8 @@ public class TreeAssist extends JavaPlugin
 						sender.sendMessage("You don't have treeassist.reload");
 						return true;
 					}
-					this.saveData();
+					blockList.save();
+					reloadConfig();
 					this.loadYamls();
 					reloadLists();
 					sender.sendMessage(ChatColor.GREEN + "TreeAssist has been reloaded.");
@@ -424,10 +426,6 @@ public class TreeAssist extends JavaPlugin
 		config.getList("Worlds.Enabled Worlds").contains(
 			world.getName());
 	}
-	
-	public FileConfiguration getData() {
-		return data;
-	}
 
 	public boolean isForceAutoDestroy() {
 		return getConfig().getBoolean("Main.Automatic Tree Destruction")
@@ -469,6 +467,10 @@ public class TreeAssist extends JavaPlugin
 			@Override
 			public void run() {
 				coolDowns.remove(name);
+				Player player = Bukkit.getPlayer(name);
+				if (player != null) {
+					player.sendMessage(ChatColor.GREEN + "TreeAssist cooled down!");
+				}
 			}
 			
 		}

@@ -6,8 +6,8 @@ import java.util.Random;
 
 import me.itsatacoshop247.TreeAssist.TreeAssist;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Utils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -18,9 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
-public abstract class BaseTree implements Tree {
+public abstract class BaseTree {
 	protected enum TreeType {
 		OAK, BIRCH, SPRUCE, JUNGLE, SHROOM, CUSTOM;
 	}
@@ -44,21 +43,21 @@ public abstract class BaseTree implements Tree {
 					player.sendMessage(ChatColor.GREEN
 							+ "You cannot break saplings on this server!");
 					event.setCancelled(true);
-				} else if (Utils.plugin.blockList.contains(block.getLocation())) {
+				} else if (Utils.plugin.saplingLocationList.contains(block.getLocation())) {
 					player.sendMessage(ChatColor.GREEN
 							+ "This sapling is protected!");
 					event.setCancelled(true);
 				}
 			} else if (typeid == 2 || typeid == 3 || typeid == 82) {
-				if (Utils.plugin.blockList.contains(block
+				if (Utils.plugin.saplingLocationList.contains(block
 						.getRelative(BlockFace.UP, 1).getLocation())) {
 					player.sendMessage(ChatColor.GREEN
 							+ "This sapling is protected!");
 					event.setCancelled(true);
 				}
 			} else if (typeid != 6
-					&& Utils.plugin.blockList.contains(block.getLocation())) {
-				Utils.plugin.blockList.remove(block.getLocation());
+					&& Utils.plugin.saplingLocationList.contains(block.getLocation())) {
+				Utils.plugin.saplingLocationList.remove(block.getLocation());
 			}
 		}
 	}
@@ -129,17 +128,13 @@ public abstract class BaseTree implements Tree {
 		Block block = event.getBlock();
 		
 		if (plugin.getConfig().getBoolean("Main.Ignore User Placed Blocks")) {
-			String check = "" + block.getX() + ";" + block.getY() + ";"
-					+ block.getZ() + ";" + block.getWorld().getName();
-			List<String> list = new ArrayList<String>();
-			list = (List<String>) plugin.getData().getStringList("Blocks");
-	
-			if (list != null && list.contains(check)) {
+			if (plugin.blockList.isPlayerPlaced(block)) {
 				debug.i("placed blocks. Removing!");
-				plugin.getData().getList("Blocks").remove(check);
-				plugin.saveData();
+				plugin.blockList.removeBlock(block);
+				plugin.blockList.save();
 				return new InvalidTree(); // placed block. ignore!
 			}
+			
 		}
 
 		Player player = event.getPlayer();
@@ -368,6 +363,7 @@ public abstract class BaseTree implements Tree {
 		
 		if (chance > 99 || (new Random()).nextInt(100) < chance) {
 			byte data = block.getData();
+			Utils.plugin.blockList.logBreak(block, player);
 			block.breakNaturally(tool);
 			
 			if (leaf) {
@@ -472,6 +468,7 @@ public abstract class BaseTree implements Tree {
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
+					Utils.plugin.blockList.logBreak(block, null);
 					block.breakNaturally();
 					removeBlocks.remove(block);
 					return;
@@ -523,6 +520,7 @@ public abstract class BaseTree implements Tree {
 			public void run() {
 				for (Block block : removeBlocks) {
 					if (tool == null) {
+						Utils.plugin.blockList.logBreak(block, player);
 						block.breakNaturally();
 					} else {
 						breakBlock(block, tool, player);
