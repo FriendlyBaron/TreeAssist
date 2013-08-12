@@ -101,7 +101,12 @@ public class VanillaTree extends BaseTree {
 		}
 		bottoms = new Block[4];
 		bottoms[0] = bottom;
-		int j = 0;
+		int j = 1;
+		
+		if (bottom == null) {
+			System.out.print("Warning! bottom is null!");
+			return;
+		}
 		
 		for (BlockFace face : Utils.NEIGHBORFACES) {
 			if (bottom.getRelative(face).getTypeId() == 17 && j<4) {
@@ -136,10 +141,7 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected boolean willReplant() {
-		if (!Utils.replantType(data)) {
-			return false;
-		}
-		return true;
+		return Utils.replantType(data);
 	}
 
 	@Override
@@ -157,6 +159,9 @@ public class VanillaTree extends BaseTree {
 	}
 
 	private void replaceSapling(int delay, Block bottom) {
+		if (bottom == null) {
+			return;
+		}
 		// make sure that the block is not being removed later
 		bottom.setType(Material.AIR);
 		removeBlocks.remove(bottom);

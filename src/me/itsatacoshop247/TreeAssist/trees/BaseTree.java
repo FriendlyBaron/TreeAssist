@@ -169,8 +169,8 @@ public abstract class BaseTree {
 			return new InvalidTree();
 		}
 
-		Block bottom = block;
-		Block top = block;
+		resultTree.bottom = block;
+		resultTree.top = block;
 		if (Utils.mcMMOTreeFeller(player)) {
 			debug.i("MCMMO Tree Feller!");
 			if (plugin.isForceAutoDestroy()) {
@@ -186,25 +186,24 @@ public abstract class BaseTree {
 		}
 	
 		if (!plugin.getConfig().getBoolean("Main.Destroy Only Blocks Above")) {
-			bottom = resultTree.getBottom(block);
+			resultTree.bottom = resultTree.getBottom(block);
 		}
-		top = resultTree.getTop(block);
-		if (bottom == null) {
+		resultTree.top = resultTree.getTop(block);
+		if (resultTree.bottom == null) {
 			debug.i("bottom is null!");
 			return new InvalidTree();// not a valid tree
 		}
 		
 		if (plugin.getConfig().getBoolean("Main.Automatic Tree Destruction")) {
-			if (top == null) {
+			if (resultTree.top == null) {
 				debug.i("and not a tree anyways...");
 				return new InvalidTree(); // not a valid tree
 			}
-			if (top.getY() - bottom.getY() < 3) {
+			if (resultTree.top.getY() - resultTree.bottom.getY() < 3) {
 				debug.i("and too short anyways...");
 				return new InvalidTree(); // not a valid tree
 			}
 		}
-
 		resultTree.getTrunks();
 
 		boolean success = false;
@@ -248,14 +247,17 @@ public abstract class BaseTree {
 				damage = plugin.getConfig().getBoolean("Main.Apply Full Tool Damage");
 			}
 		}
-		
+
+		debug.i("replant perms?");
 	
 		if (plugin.getConfig().getBoolean("Main.Sapling Replant")
 				&& !event.isCancelled()
 				&& (resultTree.willReplant())) {
 			
-			if (!(plugin.getConfig().getBoolean("Main.Use Permissions")
-					|| player.hasPermission("treeassist.replant"))) {
+			if (!plugin.getConfig().getBoolean("Main.Use Permissions")
+					|| player.hasPermission("treeassist.replant")) {
+
+				debug.i("replant perms ok!");
 				
 				if (plugin.getConfig()
 						.getBoolean("Tools.Sapling Replant Require Tools")) {
@@ -276,7 +278,7 @@ public abstract class BaseTree {
 				if (delay < 1) {
 					delay = 1;
 				}
-				if (block == bottom) {
+				if (block == resultTree.bottom) {
 					// block is bottom
 					resultTree.handleSaplingReplace(delay);
 				} else if (!plugin.getConfig().getBoolean(
@@ -491,10 +493,20 @@ public abstract class BaseTree {
 			return;
 		}
 
+		debug.i("valid tree! removing!");
+
 		// valid tree, first calculate all blocks to remove
 		if (removeBlocks.size() == 0) {
-			removeBlocks = calculate(bottom, top);
+			removeBlocks = calculate(bottom.getRelative(BlockFace.UP), top);
 		}
+
+		debug.i("size: " + removeBlocks.size());
+		debug.i("from: " + bottom.getY());
+		debug.i("tp: " + top.getY());
+
+		debug.i("size: " + removeBlocks.size());
+		debug.i("from: " + bottom.getY());
+		debug.i("tp: " + top.getY());
 
 		if (totalBlocks.size() == 0) {
 			totalBlocks = (bottom == getBottom(bottom)) ? new ArrayList<Block>()

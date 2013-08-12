@@ -56,7 +56,6 @@ public class PrismBlockList implements BlockList {
 				for(Handler a : results){
 					// An example that prints the player name and the action type.
 					// full action details will be available to you here.
-					System.out.print("Player " + a.getPlayerName() + " caused action " + a.getType().toString() );
 					if (a.getType().getShortName().equals("block-break")) {
 						return true;
 					}

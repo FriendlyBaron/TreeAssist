@@ -1,6 +1,6 @@
 name: TreeAssist
 main: me.itsatacoshop247.TreeAssist.TreeAssist
-version: 5.7.5
+version: 5.7.8
 author: itsatacoshop247
 description: TreeAssist
 dev-url: http://dev.bukkit.org/server-mods/tree-assist/
@@ -39,4 +39,7 @@ permissions:
     default: op
   treeassist.reload:
     descroption: allows to reload the TreeAssist config
+    default: op
+  treeassist.replant:
+    descroption: allows to replant trees
     default: op
