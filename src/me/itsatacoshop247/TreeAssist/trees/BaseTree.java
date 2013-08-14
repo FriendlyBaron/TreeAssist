@@ -247,50 +247,51 @@ public abstract class BaseTree {
 				damage = plugin.getConfig().getBoolean("Main.Apply Full Tool Damage");
 			}
 		}
-
-		debug.i("replant perms?");
-	
-		if (plugin.getConfig().getBoolean("Main.Sapling Replant")
-				&& !event.isCancelled()
-				&& (resultTree.willReplant())) {
-			
-			if (!plugin.getConfig().getBoolean("Main.Use Permissions")
-					|| player.hasPermission("treeassist.replant")) {
-
-				debug.i("replant perms ok!");
-				
-				if (plugin.getConfig()
-						.getBoolean("Tools.Sapling Replant Require Tools")) {
-					ItemStack inHand = player.getItemInHand();
-					if (!Utils.isRequiredTool(inHand)) {
-						if (plugin.isForceAutoDestroy()) {
-							resultTree.findYourBlocks(block);
-							if (resultTree.isValid()) {
-								resultTree.removeLater();
-							}
-							return resultTree;
-						}
-						return new InvalidTree();
-					}
-				}
-				int delay = plugin.getConfig()
-						.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
-				if (delay < 1) {
-					delay = 1;
-				}
-				if (block == resultTree.bottom) {
-					// block is bottom
-					resultTree.handleSaplingReplace(delay);
-				} else if (!plugin.getConfig().getBoolean(
-								"Sapling Replant.Bottom Block has to be Broken First")) {
-					// block is not bottom, but not needed
-					resultTree.handleSaplingReplace(delay);
-				} // else: no sapling, because bottom block was needed and wasnt destroyed
-			}
-		}
 		if (success) {
 			debug.i("success!");
-			event.setCancelled(true);
+			
+
+
+			debug.i("replant perms?");
+		
+			if (plugin.getConfig().getBoolean("Main.Sapling Replant")
+					&& !event.isCancelled()
+					&& (resultTree.willReplant())) {
+				
+				if (!plugin.getConfig().getBoolean("Main.Use Permissions")
+						|| player.hasPermission("treeassist.replant")) {
+
+					debug.i("replant perms ok!");
+					
+					if (plugin.getConfig()
+							.getBoolean("Tools.Sapling Replant Require Tools")) {
+						ItemStack inHand = player.getItemInHand();
+						if (!Utils.isRequiredTool(inHand)) {
+							if (plugin.isForceAutoDestroy()) {
+								resultTree.findYourBlocks(block);
+								if (resultTree.isValid()) {
+									resultTree.removeLater();
+								}
+								return resultTree;
+							}
+							return new InvalidTree();
+						}
+					}
+					int delay = plugin.getConfig()
+							.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
+					if (delay < 1) {
+						delay = 1;
+					}
+					if (block == resultTree.bottom) {
+						// block is bottom
+						resultTree.handleSaplingReplace(delay);
+					} else if (!plugin.getConfig().getBoolean(
+									"Sapling Replant.Bottom Block has to be Broken First")) {
+						// block is not bottom, but not needed
+						resultTree.handleSaplingReplace(delay);
+					} // else: no sapling, because bottom block was needed and wasnt destroyed
+				}
+			}
 	
 			if (player.getItemInHand().getDurability() > player.getItemInHand()
 					.getType().getMaxDurability()
