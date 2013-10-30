@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>net.slipcor</groupId>
-	<artifactId>pvparena</artifactId>
-	<version>1.0</version>
-	<name>PVP Arena</name>
+	<groupId>me.itsatacoshop247.TreeAssist</groupId>
+	<artifactId>TreeAssist</artifactId>
+	<version>5.8</version>
+	<name>TreeAssist</name>
 
 	<repositories>
 		<repository>
