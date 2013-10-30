@@ -213,8 +213,7 @@ public abstract class BaseTree {
 				&& plugin.getConfig().getBoolean("Main.Automatic Tree Destruction")) {
 			if (plugin.getConfig()
 					.getBoolean("Tools.Tree Destruction Require Tools")) {
-				ItemStack inHand = player.getItemInHand();
-				if (!Utils.isRequiredTool(inHand)) {
+				if (!Utils.isRequiredTool(player.getItemInHand())) {
 					debug.i("Player has not the right tool!");
 					if (plugin.isForceAutoDestroy()) {
 						resultTree.findYourBlocks(block);
@@ -254,43 +253,9 @@ public abstract class BaseTree {
 
 			debug.i("replant perms?");
 		
-			if (plugin.getConfig().getBoolean("Main.Sapling Replant")
-					&& !event.isCancelled()
-					&& (resultTree.willReplant())) {
-				
-				if (!plugin.getConfig().getBoolean("Main.Use Permissions")
-						|| player.hasPermission("treeassist.replant")) {
-
-					debug.i("replant perms ok!");
-					
-					if (plugin.getConfig()
-							.getBoolean("Tools.Sapling Replant Require Tools")) {
-						ItemStack inHand = player.getItemInHand();
-						if (!Utils.isRequiredTool(inHand)) {
-							if (plugin.isForceAutoDestroy()) {
-								resultTree.findYourBlocks(block);
-								if (resultTree.isValid()) {
-									resultTree.removeLater();
-								}
-								return resultTree;
-							}
-							return new InvalidTree();
-						}
-					}
-					int delay = plugin.getConfig()
-							.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
-					if (delay < 1) {
-						delay = 1;
-					}
-					if (block == resultTree.bottom) {
-						// block is bottom
-						resultTree.handleSaplingReplace(delay);
-					} else if (!plugin.getConfig().getBoolean(
-									"Sapling Replant.Bottom Block has to be Broken First")) {
-						// block is not bottom, but not needed
-						resultTree.handleSaplingReplace(delay);
-					} // else: no sapling, because bottom block was needed and wasnt destroyed
-				}
+			BaseTree tree = maybeReplant(plugin, event, resultTree, player, block);
+			if (tree != null) {
+				return tree;
 			}
 	
 			if (player.getItemInHand().getDurability() > player.getItemInHand()
@@ -301,13 +266,18 @@ public abstract class BaseTree {
 			resultTree.findYourBlocks(block);
 			if (resultTree.isValid()) {
 				debug.i("removing...");
-				resultTree.removeLater(player, damage);
+				resultTree.removeLater(player, damage, player.getItemInHand());
 				return resultTree;
 			}
 			debug.i("... but invalid -.-");
 			return new InvalidTree();
 		}
+		
 		debug.i("no success!");
+		BaseTree tree = maybeReplant(plugin, event, resultTree, player, block);
+		if (tree != null) {
+			return tree;
+		}
 		if (plugin.isForceAutoDestroy()) {
 			resultTree.findYourBlocks(block);
 			debug.i("But still, remove later, maybe");
@@ -320,6 +290,46 @@ public abstract class BaseTree {
 		return new InvalidTree();
 	}
 
+	private static BaseTree maybeReplant(TreeAssist plugin, BlockBreakEvent event, BaseTree resultTree, Player player, Block block) {
+		if (plugin.getConfig().getBoolean("Main.Sapling Replant")
+				&& !event.isCancelled()
+				&& (resultTree.willReplant())) {
+			
+			if (!plugin.getConfig().getBoolean("Main.Use Permissions")
+					|| player.hasPermission("treeassist.replant")) {
+
+				debug.i("replant perms ok!");
+				
+				if (plugin.getConfig()
+						.getBoolean("Tools.Sapling Replant Require Tools")) {
+					if (!Utils.isRequiredTool(player.getItemInHand())) {
+						if (plugin.isForceAutoDestroy()) {
+							resultTree.findYourBlocks(block);
+							if (resultTree.isValid()) {
+								resultTree.removeLater();
+							}
+							return resultTree;
+						}
+						return new InvalidTree();
+					}
+				}
+				int delay = plugin.getConfig()
+						.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
+				if (delay < 1) {
+					delay = 1;
+				}
+				if (block == resultTree.bottom) {
+					// block is bottom
+					resultTree.handleSaplingReplace(delay);
+				} else if (!plugin.getConfig().getBoolean(
+								"Sapling Replant.Bottom Block has to be Broken First")) {
+					// block is not bottom, but not needed
+					resultTree.handleSaplingReplace(delay);
+				} // else: no sapling, because bottom block was needed and wasnt destroyed
+			}
+		}
+		return null;
+	}
 
 	abstract protected List<Block> calculate(Block bottom, Block top);
 	abstract protected boolean checkFail(Block block);
@@ -393,12 +403,12 @@ public abstract class BaseTree {
 		}
 
 		if (!leaf && tool != null && player != null) {
-			if (Utils.toolgood.contains(player.getItemInHand().getTypeId())) {
-				player.getItemInHand().setDurability(
-						(short) (player.getItemInHand().getDurability() + 1));
-			} else if (Utils.toolbad.contains(player.getItemInHand().getTypeId())) {
-				player.getItemInHand().setDurability(
-						(short) (player.getItemInHand().getDurability() + 2));
+			if (Utils.toolgood.contains(tool.getTypeId())) {
+				tool.setDurability(
+						(short) (tool.getDurability() + 1));
+			} else if (Utils.toolbad.contains(tool.getTypeId())) {
+				tool.setDurability(
+						(short) (tool.getDurability() + 2));
 			}
 		}
 	}
@@ -488,7 +498,7 @@ public abstract class BaseTree {
 		(new RemoveRunner()).runTaskTimer(Utils.plugin, delay, offset + 1);
 	}
 
-	protected void removeLater(final Player player, final boolean damage) {
+	protected void removeLater(final Player player, final boolean damage, final ItemStack playerTool) {
 		if (!valid) {
 			(new Exception("invalid tree!!")).printStackTrace();
 			return;
@@ -523,7 +533,7 @@ public abstract class BaseTree {
 		final int offset = Utils.plugin.getConfig()
 				.getInt("Automatic Tree Destruction.Delay (ticks)");
 		
-		final ItemStack tool = (damage && player.getGameMode() != GameMode.CREATIVE) ? player.getItemInHand() : null;
+		final ItemStack tool = (damage && player.getGameMode() != GameMode.CREATIVE) ? playerTool : null;
 
 		Utils.plugin.setCoolDown(player);
 		
@@ -531,15 +541,27 @@ public abstract class BaseTree {
 
 			@Override
 			public void run() {
-				for (Block block : removeBlocks) {
-					if (tool == null) {
-						Utils.plugin.blockList.logBreak(block, player);
-						block.breakNaturally();
-					} else {
-						breakBlock(block, tool, player);
+				if (offset < 0) {
+					for (Block block : removeBlocks) {
+						if (tool == null) {
+							Utils.plugin.blockList.logBreak(block, player);
+							block.breakNaturally();
+						} else {
+							breakBlock(block, tool, player);
+						}
 					}
-					removeBlocks.remove(block);
-					return;
+					removeBlocks.clear();
+				} else {
+					for (Block block : removeBlocks) {
+						if (tool == null) {
+							Utils.plugin.blockList.logBreak(block, player);
+							block.breakNaturally();
+						} else {
+							breakBlock(block, tool, player);
+						}
+						removeBlocks.remove(block);
+						return;
+					}
 				}
 				try {
 					this.cancel();
@@ -552,14 +574,21 @@ public abstract class BaseTree {
 		(new InstantRunner()).runTaskTimer(Utils.plugin, offset, offset);
 
 		class CleanRunner extends BukkitRunnable {
-
 			@Override
 			public void run() {
-				for (Block block : totalBlocks) {
-					breakBlock(block, null, null);
-					totalBlocks.remove(block);
-					return;
+				if (offset < 0) {
+					for (Block block : totalBlocks) {
+						breakBlock(block, null, null);
+					}
+					removeBlocks.clear();
+				} else {
+					for (Block block : totalBlocks) {
+						breakBlock(block, null, null);
+						totalBlocks.remove(block);
+						return;
+					}
 				}
+				
 				try {
 					this.cancel();
 				} catch (Exception e) {

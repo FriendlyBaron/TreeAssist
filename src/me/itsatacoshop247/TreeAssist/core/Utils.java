@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.gmail.nossr50.api.AbilityAPI;
 import com.gmail.nossr50.api.ExperienceAPI;
+import com.gmail.nossr50.datatypes.skills.SkillType;
 
 public final class Utils {
 	private Utils() {
@@ -103,18 +104,40 @@ public final class Utils {
 	public static void mcMMOaddExp(Player player, Block block) {
 		Plugin mcmmo = Utils.plugin.getServer().getPluginManager().getPlugin("mcMMO");
 
-		if (block.getData() == 0) {
-			ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
-					.getInt("Experience.Woodcutting.Oak"));
-		} else if (block.getData() == 1) {
-			ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
-					.getInt("Experience.Woodcutting.Spruce"));
-		} else if (block.getData() == 2) {
-			ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
-					.getInt("Experience.Woodcutting.Birch"));
-		} else if (block.getData() == 3) {
-			ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
-					.getInt("Experience.Woodcutting.Jungle"));
+		if (player == null) {
+			return;
+		}
+		
+		if (player.isOnline()) {
+		
+			if (block.getData() == 0) {
+				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Oak"));
+			} else if (block.getData() == 1) {
+				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Spruce"));
+			} else if (block.getData() == 2) {
+				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Birch"));
+			} else if (block.getData() == 3) {
+				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Jungle"));
+			}
+		} else {
+			
+			if (block.getData() == 0) {
+				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Oak"));
+			} else if (block.getData() == 1) {
+				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Spruce"));
+			} else if (block.getData() == 2) {
+				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Birch"));
+			} else if (block.getData() == 3) {
+				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
+						.getInt("Experience.Woodcutting.Jungle"));
+			}
 		}
 	}
 
