@@ -6,13 +6,23 @@ Main:
   Ignore User Placed Blocks: false
   Use mcMMO if Available: true
   Destroy Only Blocks Above: false
+  Auto Plant Dropped Saplings: false
 Automatic Tree Destruction:
+  Forced Removal: false
+  Initial Delay (seconds): 10
+  Delay (ticks): 0
   Tree Types:
     Birch: true
     Jungle: true
     BigJungle: true
     Oak: true
     Spruce: true
+    Brown Shroom: true
+    Red Shroom: true
+  Cooldown (seconds): 0
+Auto Plant Dropped Saplings:
+  Chance (percent): 10
+  Delay (seconds): 5
 Leaf Decay:
   Fast Leaf Decay: true
 Sapling Replant:
@@ -27,6 +37,8 @@ Sapling Replant:
     BigJungle: true
     Oak: true
     Spruce: true
+    Brown Shroom: true
+    Red Shroom: true
 Tools:
   Sapling Replant Require Tools: true
   Tree Destruction Require Tools: true
@@ -38,11 +50,22 @@ Tools:
   - STONE_AXE
   - 5
   - 293
+  Drop Chance:
+    DIAMOND_AXE: 100
+    WOOD_AXE: 100
+    GOLD_AXE: 100
+    IRON_AXE: 100
+    STONE_AXE: 100
 Worlds:
   Enable Per World: false
   Enabled Worlds:
   - world
   - world2
+Custom Drops:
+  APPLE: 0.1
+  GOLDEN_APPLE: 0.0
+Placed Blocks:
+  Handler Plugin Name: TreeAssist
 Modding:
   Custom Logs:
   - -1
@@ -50,4 +73,5 @@ Modding:
   - -1
   Custom Saplings:
   - -1
+Debug: none
 Config Help: dev.bukkit.org/server-mods/tree-assist/pages/config-walkthrough/

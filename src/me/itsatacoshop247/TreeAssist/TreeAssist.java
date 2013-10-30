@@ -10,18 +10,34 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import me.itsatacoshop247.TreeAssist.blocklists.BlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.EmptyBlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.FlatFileBlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.PrismBlockList;
+import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
+import me.itsatacoshop247.TreeAssist.trees.BaseTree;
+import me.itsatacoshop247.TreeAssist.trees.CustomTree;
+import me.itsatacoshop247.TreeAssist.trees.InvalidTree;
+import me.itsatacoshop247.TreeAssist.trees.MushroomTree;
+import me.itsatacoshop247.TreeAssist.trees.VanillaTree;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 
 //Running changelog
@@ -33,26 +49,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class TreeAssist extends JavaPlugin 
 {
 	public List<String> playerList = new ArrayList<String>();
-	public List<Location> blockList = new ArrayList<Location>();
+	public List<Location> saplingLocationList = new ArrayList<Location>();
 	
 	public boolean Enabled = true;
 	public boolean mcMMO = false;
 	
 	File configFile;
-	File dataFile;
 	FileConfiguration config;
-	FileConfiguration data;
+	
+	public BlockList blockList;
 	
 	TreeAssistBlockListener listener;
-	
-	public Logger log = Logger.getLogger("Minecraft");
 	
 	public void onEnable() 
 	{
 		checkMcMMO();
 		
+		Utils.plugin = this;
+		
 		this.configFile = new File(getDataFolder(), "config.yml");
-		this.dataFile = new File(getDataFolder(), "data.yml");
 		try 
 		{
 			firstRun();
@@ -62,16 +77,19 @@ public class TreeAssist extends JavaPlugin
 			e.printStackTrace();
 		}
 		this.config = new YamlConfiguration();
-		this.data = new YamlConfiguration();
+		
 		this.listener = new TreeAssistBlockListener(this);
+		
 		loadYamls();
 		config.options().copyDefaults(true);
 		//check for defaults to set newly
-		data.options().copyDefaults(true);
 		
 		this.updateConfig();
 		
 		getServer().getPluginManager().registerEvents(listener, this);
+		if (config.getBoolean("Main.Auto Plant Dropped Saplings")) {
+			getServer().getPluginManager().registerEvents(new TreeAssistSpawnListener(this), this);
+		}
 		reloadLists();
 		
 		try {
@@ -80,12 +98,36 @@ public class TreeAssist extends JavaPlugin
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
 		}
+
+		BaseTree.debug = new Debugger(this, 1);
+		CustomTree.debugger = new Debugger(this, 2);
+		InvalidTree.debugger = new Debugger(this, 3);
+		MushroomTree.debugger = new Debugger(this, 4);
+		VanillaTree.debugger = new Debugger(this, 5);
+		Debugger.load(this, Bukkit.getConsoleSender());
+		
+
+		initiateList("Modding.Custom Logs", Utils.validTypes);
+		initiateList("Modding.Custom Tree Blocks", Utils.validTypes);
+		
+		if (getConfig().getBoolean("Main.Ignore User Placed Blocks")) {
+			String pluginName = getConfig().getString(
+					"Placed Blocks.Handler Plugin Name", "TreeAssist");
+			if ("TreeAssist".equalsIgnoreCase(pluginName)) {
+				blockList = new FlatFileBlockList();
+			} else if ("Prism".equalsIgnoreCase(pluginName)) {
+				blockList = new PrismBlockList();
+			}
+		} else {
+			blockList = new EmptyBlockList();
+		}
+		blockList.initiate();
 	}
 
 	private void reloadLists() {
-		listener.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
-		listener.customLogs = config.getList("Modding.Custom Logs");
-		listener.customSaplings = config.getList("Modding.Custom Saplings");
+		CustomTree.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
+		CustomTree.customLogs = config.getList("Modding.Custom Logs");
+		CustomTree.customSaplings = config.getList("Modding.Custom Saplings");
 	}
 
 	private void updateConfig() 
@@ -99,7 +141,7 @@ public class TreeAssist extends JavaPlugin
 		{
 			if(this.config.get(item.getKey()) == null)
 			{
-				this.log.info(item.getKey());
+				getLogger().info(item.getKey());
 				if(item.getValue().equalsIgnoreCase("LIST"))
 				{
 					List<String> list = Arrays.asList("LIST ITEMS GO HERE");
@@ -117,6 +159,10 @@ public class TreeAssist extends JavaPlugin
 				{
 					this.config.addDefault(item.getKey(), Integer.parseInt(item.getValue()));
 				}
+				else if(isDouble(item.getValue()))
+				{
+					this.config.addDefault(item.getKey(), Double.parseDouble(item.getValue()));
+				}
 				else
 				{
 					this.config.addDefault(item.getKey(), item.getValue());
@@ -126,10 +172,23 @@ public class TreeAssist extends JavaPlugin
 		}
 		if(num > 0)
 		{
-			this.log.info("[TreeAssist] " + num + " missing items added to config file.");
+			getLogger().info(num + " missing items added to config file.");
 		}
 		this.saveConfig();
 	}
+
+	public boolean isDouble(String input)  
+	{  
+	   try  
+	   {  
+		   Double.parseDouble(input);  
+	      return true;  
+	   }  
+	   catch(Exception e)  
+	   {  
+	      return false; 
+	   }  
+	} 
 
 	public boolean isInteger(String input)  
 	{  
@@ -187,6 +246,38 @@ public class TreeAssist extends JavaPlugin
 		//5.4 additions
 		items.put("Automatic Tree Destruction.Tree Types.BigJungle", "true");
 		items.put("Sapling Replant.Tree Types to Replant.BigJungle", "true");
+		
+		//5.5 additions
+		items.put("Automatic Tree Destruction.Delay (ticks)", "0");
+		items.put("Automatic Tree Destruction.Forced Removal", "false");
+		items.put("Automatic Tree Destruction.Initial Delay (seconds)", "10");
+		
+		//5.6 additions
+		items.put("Main.Auto Plant Dropped Saplings", "false");
+		items.put("Auto Plant Dropped Saplings.Chance (percent)", "10");
+		items.put("Auto Plant Dropped Saplings.Delay (seconds)", "5");
+		
+		//5.7 additions
+		items.put("Automatic Tree Destruction.Tree Types.Brown Shroom", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Red Shroom", "true");
+
+		//5.7.1 additions
+		items.put("Tools.Drop Chance.DIAMOND_AXE", "100");
+		items.put("Tools.Drop Chance.WOOD_AXE", "100");
+		items.put("Tools.Drop Chance.GOLD_AXE", "100");
+		items.put("Tools.Drop Chance.IRON_AXE", "100");
+		items.put("Tools.Drop Chance.STONE_AXE", "100");
+		
+		//5.7.2 additions
+		items.put("Automatic Tree Destruction.Cooldown (seconds)", "0");
+		
+		//5.7.3 additions
+		items.put("Custom Drops.APPLE", "0.1");
+		items.put("Custom Drops.GOLDEN_APPLE", "0.0");
+		
+		//5.8 additions
+		items.put("Placed Blocks.Handler Plugin Name","TreeAssist");
+		
 		return items;
 	}
 
@@ -194,15 +285,7 @@ public class TreeAssist extends JavaPlugin
 	{
         if(getConfig().getBoolean("Main.Use mcMMO if Available")) 
         {
-            boolean isMcMMOEnabled = getServer().getPluginManager().isPluginEnabled("mcMMO");
-            if(isMcMMOEnabled) 
-            {
-                    this.mcMMO = true;
-            } 
-            else 
-            {
-            	    this.mcMMO = false;
-            }
+            this.mcMMO = getServer().getPluginManager().isPluginEnabled("mcMMO");
         } 
         else 
         {
@@ -213,15 +296,11 @@ public class TreeAssist extends JavaPlugin
 	public void onDisable() 
 	{
 		this.getServer().getScheduler().cancelTasks(this);
+		Debugger.destroy();
 	}
 	
 	private void firstRun() throws Exception 
 	{
-		if (!this.dataFile.exists()) 
-		{
-			this.dataFile.getParentFile().mkdirs();
-			copy(getResource("data.yml"), this.dataFile);
-		}
 		if (!this.configFile.exists()) 
 		{
 			this.configFile.getParentFile().mkdirs();
@@ -254,7 +333,6 @@ public class TreeAssist extends JavaPlugin
 		try 
 		{
 			this.config.load(this.configFile);
-			this.data.load(this.dataFile);
 		} 
 		catch (Exception e) 
 		{
@@ -267,18 +345,6 @@ public class TreeAssist extends JavaPlugin
 		try 
 		{
 			this.config.save(this.configFile);
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void saveData() 
-	{
-		try 
-		{
-			this.data.save(this.dataFile);
 		} 
 		catch (IOException e) 
 		{
@@ -300,14 +366,13 @@ public class TreeAssist extends JavaPlugin
 						sender.sendMessage("You don't have treeassist.reload");
 						return true;
 					}
-					this.saveData();
+					blockList.save();
+					reloadConfig();
 					this.loadYamls();
 					reloadLists();
 					sender.sendMessage(ChatColor.GREEN + "TreeAssist has been reloaded.");
 					return true;
-				}
-				if(args[0].equalsIgnoreCase("Toggle"))
-				{
+				} else if(args[0].equalsIgnoreCase("Toggle")) {
 					if(!sender.hasPermission("treeassist.toggle"))
 					{
 						sender.sendMessage("You don't have treeassist.toggle");
@@ -324,9 +389,7 @@ public class TreeAssist extends JavaPlugin
 						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for you!");
 					}
 					return true;
-				}
-				if(args[0].equalsIgnoreCase("Global"))
-				{
+				} else if(args[0].equalsIgnoreCase("Global")) {
 					if(!sender.hasPermission("treeassist.toggle.global"))
 					{
 						sender.sendMessage("You don't have treeassist.toggle.global");
@@ -343,10 +406,75 @@ public class TreeAssist extends JavaPlugin
 						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off globally!");
 					}
 					return true;
+				} else if (args[0].equalsIgnoreCase("Debug")) {
+					if (args.length < 2) {
+						getConfig().set("Debug", "none");
+						Debugger.load(this, sender);
+					} else {
+						getConfig().set("Debug", args[1]);
+						Debugger.load(this, sender);
+					}
+					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	public boolean isActive(World world) {
+		return (!config.getBoolean("Worlds.Enable Per World")) ||
+		config.getList("Worlds.Enabled Worlds").contains(
+			world.getName());
+	}
+
+	public boolean isForceAutoDestroy() {
+		return getConfig().getBoolean("Main.Automatic Tree Destruction")
+				&& getConfig().getBoolean("Automatic Tree Destruction.Forced Removal");
+	}
+	private void initiateList(String string, List<Integer> validTypes) {
+		for (Object obj : config.getList(string)) {
+			if (obj instanceof Integer) {
+				validTypes.add((Integer) obj);
+				continue;
+			}
+			if (obj.equals("LIST ITEMS GO HERE")) {
+				List<Object> list = new ArrayList<Object>();
+				list.add(-1);
+				config.set(string, list);
+				saveConfig();
+				break;
+			}
+			validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
+		}
+	}
+	
+	private Map<String, BukkitTask> coolDowns = new HashMap<String, BukkitTask>();
+
+	public boolean hasCoolDown(Player player) {
+		return coolDowns.containsKey(player.getName());
+	}
+	
+	public void setCoolDown(Player player) {
+		final int coolDown = getConfig().getInt("Automatic Tree Destruction.Cooldown (seconds)", 0);
+		if (coolDown < 1) {
+			return;
+		}
+		class RemoveRunner extends BukkitRunnable {
+			private final String name;
+			RemoveRunner(Player player) {
+				name = player.getName();
+			}
+			@Override
+			public void run() {
+				coolDowns.remove(name);
+				Player player = Bukkit.getPlayer(name);
+				if (player != null) {
+					player.sendMessage(ChatColor.GREEN + "TreeAssist cooled down!");
+				}
+			}
+			
+		}
+		coolDowns.put(player.getName(), ((new RemoveRunner(player)).runTaskLater(this, coolDown * 20L)));
 	}
 }
 	

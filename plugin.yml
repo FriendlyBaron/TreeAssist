@@ -1,13 +1,13 @@
 name: TreeAssist
 main: me.itsatacoshop247.TreeAssist.TreeAssist
-version: 5.4.3
+version: 5.7.12
 author: itsatacoshop247
 description: TreeAssist
 dev-url: http://dev.bukkit.org/server-mods/tree-assist/
 commands:
   TreeAssist:
     description: Turn TreeAssist Featues on or off
-    usage: /<command> toggle/global
+    usage: /<command> toggle/global/debug
 permissions:
   treeassist.destroy.*:
     description: allows to use tree-assist for all trees
@@ -16,16 +16,30 @@ permissions:
       treeassist.destroy.jungle: true
       treeassist.destroy.oak: true
       treeassist.destroy.spruce: true
-    default: true
+      treeassist.destroy.brownshroom: true
+      treeassist.destroy.redshroom: true
+    default: false
   treeassist.destroy.birch:
     description: allows to use tree-assist for birch trees
-    default: true
   treeassist.destroy.jungle:
     description: allows to use tree-assist for jungle trees
-    default: true
   treeassist.destroy.oak:
     description: allows to use tree-assist for oak trees
-    default: true
   treeassist.destroy.spruce:
     description: allows to use tree-assist for spruce trees
-    default: true
+  treeassist.destroy.brownshroom:
+    description: allows to use tree-assist for brown shrooms
+  treeassist.destroy.redshroom:
+    description: allows to use tree-assist for red shrooms
+  treeassist.toggle:
+    descroption: allows to toggle TreeAssist usage
+    default: op
+  treeassist.toggle.global:
+    descroption: allows to toggle global TreeAssist usage
+    default: op
+  treeassist.reload:
+    descroption: allows to reload the TreeAssist config
+    default: op
+  treeassist.replant:
+    descroption: allows to replant trees
+    default: op
