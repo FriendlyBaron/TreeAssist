@@ -318,7 +318,10 @@ public abstract class BaseTree {
 				if (delay < 1) {
 					delay = 1;
 				}
-				if (block == resultTree.bottom) {
+				if (block.equals(resultTree.bottom) && block != resultTree.bottom) {
+					debug.i("I knew it!");
+				}
+				if (block.equals(resultTree.bottom)) {
 					// block is bottom
 					resultTree.handleSaplingReplace(delay);
 				} else if (!plugin.getConfig().getBoolean(
@@ -326,6 +329,10 @@ public abstract class BaseTree {
 					// block is not bottom, but not needed
 					resultTree.handleSaplingReplace(delay);
 				} // else: no sapling, because bottom block was needed and wasnt destroyed
+				else {
+
+					debug.i("not the needed bottom!");
+				}
 			}
 		}
 		return null;
