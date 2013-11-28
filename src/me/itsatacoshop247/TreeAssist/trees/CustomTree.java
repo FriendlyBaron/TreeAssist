@@ -19,11 +19,11 @@ public class CustomTree extends BaseTree {
 	public static List<?> customSaplings = null;
 	public static Debugger debugger;
 	private final int typeID;
-	private final byte dataValue;
+	//private final byte dataValue;
 
 	public CustomTree(int typeId, byte data) {
 		typeID = typeId;
-		dataValue = data;
+		//dataValue = data;
 	}
 
 	public static boolean isCustomLog(Block blockAt) {
@@ -112,7 +112,7 @@ public class CustomTree extends BaseTree {
 
 	@Override
 	protected void handleSaplingReplace(int delay) {
-		
+		debug.i("handling custom sapling replace");
 		int pos = 0;
 		
 		for (Object o : customLogs) {
@@ -123,6 +123,7 @@ public class CustomTree extends BaseTree {
 			}
 			pos++;
 		}
+		debug.i("pos: "+pos+"/"+customLogs.size()+" ("+customSaplings.size()+")");
 		
 		if (pos < customLogs.size()) {
 			for (Object o : customSaplings) {
@@ -201,10 +202,10 @@ public class CustomTree extends BaseTree {
 		if (block.getRelative(0, 1, 0).getTypeId() == typeID) { // might
 																		// be a
 																		// trunk
-//			debug.i("trunk?");
+
 			// one above is a tree block
 			if (block.getX() != top.getX() && block.getZ() != top.getZ()) {
-//				debug.i("not main!");
+
 				
 				if (checkFail(block)) {
 					return;
