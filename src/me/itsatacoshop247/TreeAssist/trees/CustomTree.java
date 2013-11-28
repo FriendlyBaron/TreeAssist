@@ -3,6 +3,8 @@ package me.itsatacoshop247.TreeAssist.trees;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.itsatacoshop247.TreeAssist.TreeAssistProtect;
+import me.itsatacoshop247.TreeAssist.TreeAssistReplant;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 
@@ -25,23 +27,12 @@ public class CustomTree extends BaseTree {
 	}
 
 	public static boolean isCustomLog(Block blockAt) {
-		if (blockAt.getData() > 0) {
-			if (CustomTree.customLogs.contains(blockAt.getTypeId())) {
-				return true;
-			}
-			return CustomTree.customLogs.contains(blockAt.getTypeId()+":"+blockAt.getData());
-		}
-		return CustomTree.customLogs.contains(blockAt.getTypeId());
+		return CustomTree.customLogs.contains(blockAt.getTypeId()+":"+blockAt.getData()) || CustomTree.customLogs.contains(blockAt.getTypeId());
 	}
 
 	public static boolean isCustomTreeBlock(Block blockAt) {
-		if (blockAt.getData() > 0) {
-			if (CustomTree.customTreeBlocks.contains(blockAt.getTypeId())) {
-				return true;
-			}
-			return CustomTree.customTreeBlocks.contains(blockAt.getTypeId()+":"+blockAt.getData());
-		}
-		return CustomTree.customTreeBlocks.contains(blockAt.getTypeId());
+		return CustomTree.customTreeBlocks.contains(blockAt.getTypeId()+":"+blockAt.getData()) || CustomTree.customTreeBlocks.contains(blockAt.getTypeId());
+		
 	}
 
 	@Override
@@ -121,29 +112,74 @@ public class CustomTree extends BaseTree {
 
 	@Override
 	protected void handleSaplingReplace(int delay) {
-		// TODO Auto-generated method stub
+		
+		int pos = 0;
+		
+		for (Object o : customLogs) {
+			if (o.toString().contains(bottom.getTypeId()+":"+bottom.getData())
+					||
+					o.toString().contains(String.valueOf(bottom.getTypeId()))) {
+				break;
+			}
+			pos++;
+		}
+		
+		if (pos < customLogs.size()) {
+			for (Object o : customSaplings) {
+				if(--pos<0) {
+					String value = o.toString();
+					
+					if (value.contains(":")) {
+						String[] split = value.split(":");
+						replaceSapling(Integer.parseInt(split[0]), delay,
+								bottom, Byte.parseByte(split[1]));
+					}
+				}
+			}
+		}
+	}
+
+	private void replaceSapling(int materialID, int delay, Block bottom, byte data) {
+		if (bottom == null) {
+			return;
+		}
 		// make sure that the block is not being removed later
 		bottom.setType(Material.AIR);
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		//TODO add custom saplings!
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, materialID, data);
+		Utils.plugin.getServer()
+				.getScheduler()
+				.scheduleSyncDelayedTask(Utils.plugin, b,
+						20 * delay);
+		
+		if (Utils.plugin.getConfig()
+				.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
+			Utils.plugin.saplingLocationList.add(bottom.getLocation());
+			Runnable X = new TreeAssistProtect(Utils.plugin,
+					bottom.getLocation());
+
+			Utils.plugin.getServer()
+					.getScheduler()
+					.scheduleSyncDelayedTask(
+							Utils.plugin,
+							X,
+							20 * Utils.plugin.getConfig()
+									.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
+		}
 	}
 
 	@Override
 	protected void checkBlock(List<Block> list, Block block,
 			Block top, boolean deep, byte origData) {
 
-//		debug.i("cB " + Debugger.parse(block.getLocation()));
 		if (block.getTypeId() != typeID) {
-//			debug.i("no log!");
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
 					list.add(block);
-//					debug.i("cB: adding leaf " + block.getY());
 				}
 			}
-//			debug.i("out!");
 			return;
 		}
 
