@@ -16,7 +16,8 @@ public class TreeAssistReplant implements Runnable {
 		this.plugin = instance;
 		this.block = importBlock;
 		this.data = importData;
-
+		this.type = typeid;
+/*
 		Object[] logs;
 		Object[] saplings;
 		
@@ -31,12 +32,12 @@ public class TreeAssistReplant implements Runnable {
 		for (Object o : CustomTree.customSaplings) {
 			saplings[pos++] = o;
 		}
-
+* /
 		if (typeid == Material.LOG.getId() || (!CustomTree.customLogs.contains(typeid) && !CustomTree.customLogs.contains(typeid+":"+importData))) {
 			type = Material.SAPLING.getId();
 			return;
 		}
-		
+		/*
 		for (pos = 0; pos < logs.length && pos < saplings.length; pos++) {
 			if (logs[pos].equals(typeid) || logs[pos].equals(typeid+':'+importData)) {
 				Object o = saplings[pos];
@@ -54,9 +55,11 @@ public class TreeAssistReplant implements Runnable {
 				importData = Byte.parseByte(split[1]);
 				return;
 			}
-		}
+		}*/
 		
-		type = Material.SAPLING.getId();
+		if (type == Material.LOG.getId()) {
+			type = Material.SAPLING.getId();
+		}
 	}
 
 	@Override
