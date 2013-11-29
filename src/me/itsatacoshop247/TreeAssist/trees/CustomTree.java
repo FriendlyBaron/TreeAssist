@@ -134,6 +134,9 @@ public class CustomTree extends BaseTree {
 						String[] split = value.split(":");
 						replaceSapling(Integer.parseInt(split[0]), delay,
 								bottom, Byte.parseByte(split[1]));
+					} else {
+						replaceSapling(Integer.parseInt(value), delay,
+								bottom, (byte)0);
 					}
 				}
 			}
