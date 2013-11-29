@@ -461,8 +461,8 @@ public abstract class BaseTree {
 
 		int total = 0;
 
-		for (int x = -1; x < 2; x++) {
-			for (int z = -1; z < 2; z++) {
+		for (int x = -2; x < 3; x++) {
+			for (int z = -2; z < 3; z++) {
 				for (int y = -1; y < 1; y++) {
 					total += isLeaf(block.getRelative(x, y, z));
 				}
