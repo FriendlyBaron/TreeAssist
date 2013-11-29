@@ -1,7 +1,5 @@
 package me.itsatacoshop247.TreeAssist;
 
-import me.itsatacoshop247.TreeAssist.trees.CustomTree;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 

@@ -141,6 +141,7 @@ public class CustomTree extends BaseTree {
 	}
 
 	private void replaceSapling(int materialID, int delay, Block bottom, byte data) {
+		debug.i("replacing custom sapling: " + delay + " sec; " + materialID + ":" + data);
 		if (bottom == null) {
 			return;
 		}
