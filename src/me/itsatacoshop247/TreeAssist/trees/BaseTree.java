@@ -71,6 +71,8 @@ public abstract class BaseTree {
 			return null;
 		}
 		
+		debug.i(type.name());
+		
 		switch (type) {
 			case OAK:
 			case BIRCH:

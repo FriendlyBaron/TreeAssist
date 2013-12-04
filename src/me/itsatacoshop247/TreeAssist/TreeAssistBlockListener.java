@@ -129,15 +129,20 @@ public class TreeAssistBlockListener implements Listener
 					return;
 				}
 			}
-			if(block.getType() == Material.LOG) 
+			if(block.getType() == Material.LOG || block.getType() == Material.LOG_2) 
 			{
+				Material logMat = block.getType();
+				byte saplingData = block.getData();
+				if (logMat == Material.LOG_2) {
+					saplingData += 4;
+				}
 				Block onebelow = block.getRelative(BlockFace.DOWN, 1);
 				Block oneabove = block.getRelative(BlockFace.UP, 1);
 				if(onebelow.getType() == Material.DIRT || onebelow.getType() == Material.GRASS)
 				{
-					if(oneabove.getType() == Material.AIR || oneabove.getType() == Material.LOG)
+					if(oneabove.getType() == Material.AIR || oneabove.getType() == logMat)
 					{
-						Runnable b = new TreeAssistReplant(plugin, block, Material.LOG.getId(), block.getData());
+						Runnable b = new TreeAssistReplant(plugin, block, logMat.getId(), saplingData);
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
 					}
 				}	
