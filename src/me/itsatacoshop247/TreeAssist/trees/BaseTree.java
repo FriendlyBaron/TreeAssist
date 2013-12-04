@@ -241,8 +241,12 @@ public abstract class BaseTree {
 			for (int x = 0; x < directions.length; x++) {
 				if (!Utils.validTypes.contains(block.getRelative(
 						BlockFace.valueOf(directions[x])).getTypeId())) {
-					if (!(block.getRelative(BlockFace.valueOf(directions[x]))
-							.getTypeId() == 17 && block.getData() == 3)) {
+					if (!((block.getRelative(BlockFace.valueOf(directions[x]))
+							.getType() == Material.LOG && block.getData() == 3)
+							||
+							(block.getRelative(BlockFace.valueOf(directions[x]))
+									.getType() == Material.LOG_2 && block.getData() == 1))) {
+						debug.i("invalid because of invalid types");
 						return new InvalidTree(); // not a valid tree
 					}
 				}
@@ -471,10 +475,12 @@ public abstract class BaseTree {
 				}
 			}
 			if (total > 3) {
+				debug.i("lC inner true");
 				return true;
 			}
 		}
 
+		debug.i("lC final "+(total > 3));
 		return total > 3;
 	}
 

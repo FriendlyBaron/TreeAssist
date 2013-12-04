@@ -29,7 +29,7 @@ public final class Utils {
 
 	public static List<Integer> validTypes = new ArrayList<Integer>(Arrays.asList(0,
 			2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111,
-			78, 12, 50, 66, 99, 100)); // if it's not one of these blocks, it's
+			78, 12, 50, 66, 99, 100, 161)); // if it's not one of these blocks, it's
 								// safe to assume its a house/building
 	
 	
@@ -143,52 +143,7 @@ public final class Utils {
 
 	public final static BlockFace[] NEIGHBORFACES = {BlockFace.NORTH,BlockFace.EAST,BlockFace.SOUTH,BlockFace.WEST,
 	BlockFace.NORTH_EAST,BlockFace.SOUTH_EAST,BlockFace.NORTH_WEST,BlockFace.SOUTH_WEST};
-	/**
-	 * calculate the bottom tree block out of a block
-	 * 
-	 * @param block
-	 *            a log block
-	 * @return the bottom block
-	 * /
-	static Block getBottom(final Block block) {
-		int counter = 1;
-		do {
-			if (block.getRelative(0, 0 - counter, 0).getTypeId() == 17
-					|| ModUtils.isCustomLog(block
-							.getRelative(0, 0 - counter, 0))) {
-				counter++;
-			} else {
-				return block.getRelative(0, 1 - counter, 0);
-			}
-		} while (block.getY() - counter > 0);
 	
-		return null;
-	}
-	
-	/**
-	 * Calculate the top log block of a tree
-	 * 
-	 * @param block
-	 *            a block of the tree to check
-	 * @return the top block
-	 * /
-	static Block getTop(final Block block) {
-		Block top = null;
-		int maxY = block.getWorld().getMaxHeight() + 10;
-		int counter = 1;
-	
-		while (block.getY() + counter < maxY) {
-			if (block.getRelative(0, counter, 0).getTypeId() == 18
-					|| ModUtils.isCustomTreeBlock(block.getRelative(0, counter,
-							0))) {
-				top = block.getRelative(0, counter - 1, 0);
-				break;
-			} else {
-				counter++;
-			}
-		}
-		return (top != null && leafCheck(top)) ? top.getRelative(0, 1, 0) : null;
-	}
 	
 	/**
 	 * check if a player is using the tree feller ability atm
@@ -231,6 +186,14 @@ public final class Utils {
 		if (data == 3) {
 			return Utils.plugin.getConfig()
 						.getBoolean("Sapling Replant.Tree Types to Replant.Jungle");
+		}
+		if (data == 4) {
+			return Utils.plugin.getConfig()
+						.getBoolean("Sapling Replant.Tree Types to Replant.Acacia");
+		}
+		if (data == 5) {
+			return Utils.plugin.getConfig()
+						.getBoolean("Sapling Replant.Tree Types to Replant.Dark Oak");
 		}
 		if (data == 99) {
 			return Utils.plugin.getConfig()

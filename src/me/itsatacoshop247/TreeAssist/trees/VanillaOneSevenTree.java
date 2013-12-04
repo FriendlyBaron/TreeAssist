@@ -63,7 +63,7 @@ public class VanillaOneSevenTree extends BaseTree {
 		int maxY = block.getWorld().getMaxHeight() + 10;
 		int counter = 1;
 
-		debug.i("trying to calculate the TOP block of a 1.7 tree!");
+//		debug.i("trying to calculate the TOP block of a 1.7 tree!");
 		
 		while (block.getY() + counter < maxY) {
 			if (block.getRelative(0, counter, 0).getType() != Material.LOG_2) {
@@ -74,7 +74,7 @@ public class VanillaOneSevenTree extends BaseTree {
 			}
 		}
 		
-		debug.i("> straight trunk for " + counter + " blocks; y="+top.getY());
+//		debug.i("> straight trunk for " + counter + " blocks; y="+top.getY());
 		
 		if (data == 0) {
 			// acacia might get really messy now; check!
@@ -82,7 +82,7 @@ public class VanillaOneSevenTree extends BaseTree {
 				top = getDiagonal(top);
 			}
 		}
-		debug.i("final top should be at y="+top.getY());
+//		debug.i("final top should be at y="+top.getY());
 		
 		return (top != null && leafCheck(top)) ? top : null;
 	}
@@ -90,34 +90,34 @@ public class VanillaOneSevenTree extends BaseTree {
 	private Block getDiagonal(Block block) {
 		// always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
 
-		debug.i("getting diagonal at y="+block.getY());
+//		debug.i("getting diagonal at y="+block.getY());
 		
 		if (Material.LOG_2 == block.getType()) {
-			debug.i("> UP");
+//			debug.i("> UP");
 			return block.getRelative(BlockFace.UP);
 		}
 		for (BlockFace bf : Utils.NEIGHBORFACES) {
 			if (Material.LOG_2 == block.getRelative(bf).getType()) {
-				debug.i("> "+bf.name());
+//				debug.i("> "+bf.name());
 				return block.getRelative(bf).getRelative(BlockFace.UP);
 			}
 		}
-		debug.i("> NULL");
+//		debug.i("> NULL");
 		return null; // should have had a diagonal, but didn't find it. derp!
 	}
 
 	private boolean hasDiagonals(Block block) {
 		// always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
 
-		debug.i("checking for diagonal at y="+block.getY());
+//		debug.i("checking for diagonal at y="+block.getY());
 		
 		if (Material.LOG_2 == block.getType()) {
-			debug.i("> UP");
+//			debug.i("> UP");
 			return true;
 		}
 		for (BlockFace bf : Utils.NEIGHBORFACES) {
 			if (Material.LOG_2 == block.getRelative(bf).getType()) {
-				debug.i("> "+bf.name());
+//				debug.i("> "+bf.name());
 				return true;
 			}
 		}
@@ -228,7 +228,7 @@ public class VanillaOneSevenTree extends BaseTree {
 	protected void checkBlock(List<Block> list, Block block,
 			Block top, boolean deep, byte origData) {
 
-		debug.i("cB " + Debugger.parse(block.getLocation()));
+//		debug.i("cB " + Debugger.parse(block.getLocation()));
 		if (block.getType() != this.logMat) {
 			
 			if (hasDiagonals(block)) {
@@ -236,30 +236,30 @@ public class VanillaOneSevenTree extends BaseTree {
 				return;
 			}
 			
-			debug.i("no log!");
+//			debug.i("no log!");
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
 					list.add(block);
 					debug.i("cB: adding leaf " + block.getY());
 				}
 			}
-			debug.i("out!");
+//			debug.i("out!");
 			return;
 		}
 
 		if (block.getData() != data) {
-			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
+//			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
 			if (top.getData() != 0 || block.getData() <= 1) {
-				debug.i("out!");
+//				debug.i("out!");
 				return;
 			}
 		}
 		
 		if (block.getX() == bottom.getX() && block.getZ() == bottom.getZ()) {
-			debug.i("main trunk!");
+//			debug.i("main trunk!");
 			if (!deep) {
 				// something else caught the main, return, this will be done later!
-				debug.i("not deep; out!");
+//				debug.i("not deep; out!");
 				return;
 			}
 		}
@@ -269,13 +269,13 @@ public class VanillaOneSevenTree extends BaseTree {
 		if (block.getRelative(0, 1, 0).getType() == logMat) { // might
 																		// be a
 																		// trunk
-			debug.i("trunk?");
+//			debug.i("trunk?");
 			// one above is a tree block
 			if (block.getX() != top.getX() && block.getZ() != top.getZ()) {
-				debug.i("not main!");
+//				debug.i("not main!");
 				
 				if (block.getData() < 1) {
-					debug.i("no big!");
+//					debug.i("no big!");
 					
 					if (checkFail(block)) {
 						return;
@@ -283,7 +283,7 @@ public class VanillaOneSevenTree extends BaseTree {
 
 
 				} else {
-					debug.i("big!");
+//					debug.i("big!");
 
 					boolean diff = true;
 					for (int Cx = -1; Cx < 2; Cx++) {

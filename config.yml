@@ -20,7 +20,7 @@ Automatic Tree Destruction:
     Brown Shroom: true
     Red Shroom: true
     Acacia: true
-    Big Oak: true
+    Dark Oak: true
   Cooldown (seconds): 0
 Auto Plant Dropped Saplings:
   Chance (percent): 10
@@ -42,7 +42,7 @@ Sapling Replant:
     Brown Shroom: true
     Red Shroom: true
     Acacia: true
-    Big Oak: true
+    Dark Oak: true
 Tools:
   Sapling Replant Require Tools: true
   Tree Destruction Require Tools: true
