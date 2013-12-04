@@ -22,6 +22,7 @@ import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 import me.itsatacoshop247.TreeAssist.trees.InvalidTree;
 import me.itsatacoshop247.TreeAssist.trees.MushroomTree;
+import me.itsatacoshop247.TreeAssist.trees.VanillaOneSevenTree;
 import me.itsatacoshop247.TreeAssist.trees.VanillaTree;
 
 import org.bukkit.Bukkit;
@@ -104,6 +105,7 @@ public class TreeAssist extends JavaPlugin
 		InvalidTree.debugger = new Debugger(this, 3);
 		MushroomTree.debugger = new Debugger(this, 4);
 		VanillaTree.debugger = new Debugger(this, 5);
+		VanillaOneSevenTree.debugger = new Debugger(this, 6);
 		Debugger.load(this, Bukkit.getConsoleSender());
 		
 

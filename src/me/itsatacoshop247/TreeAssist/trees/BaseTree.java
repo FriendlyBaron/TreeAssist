@@ -21,7 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class BaseTree {
 	protected enum TreeType {
-		OAK, BIRCH, SPRUCE, JUNGLE, SHROOM, CUSTOM;
+		OAK, BIRCH, SPRUCE, JUNGLE, SHROOM, CUSTOM, ONESEVEN;
 	}
 
 	public static Debugger debug;
@@ -70,12 +70,15 @@ public abstract class BaseTree {
 			checkAndDoSaplingProtect(event.getPlayer(), block, event);
 			return null;
 		}
+		
 		switch (type) {
 			case OAK:
 			case BIRCH:
 			case SPRUCE:
 			case JUNGLE:
 				return new VanillaTree((byte) type.ordinal());
+			case ONESEVEN:
+				return new VanillaOneSevenTree(block.getData());
 			case SHROOM:
 				return new MushroomTree(block.getTypeId());
 			case CUSTOM:
@@ -96,6 +99,8 @@ public abstract class BaseTree {
 			default:
 				return null;
 			}
+		} else if (block.getType() == Material.LOG_2) {
+			return TreeType.ONESEVEN;
 		} else if (CustomTree.isCustomLog(block)) {
 			return TreeType.CUSTOM;
 		}
