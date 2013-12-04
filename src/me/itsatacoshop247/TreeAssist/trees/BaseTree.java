@@ -462,10 +462,6 @@ public abstract class BaseTree {
 	}
 	
 	protected boolean leafCheck(final Block block) {
-		if (block.getData() > 2) {
-			return true;
-		}
-
 		int total = 0;
 
 		for (int x = -2; x < 3; x++) {
@@ -522,7 +518,8 @@ public abstract class BaseTree {
 
 		// valid tree, first calculate all blocks to remove
 		if (removeBlocks.size() == 0) {
-			removeBlocks = calculate(bottom.getRelative(BlockFace.UP), top);
+			removeBlocks = calculate(bottom, top);
+			removeBlocks.remove(bottom);
 		}
 
 		debug.i("size: " + removeBlocks.size());
