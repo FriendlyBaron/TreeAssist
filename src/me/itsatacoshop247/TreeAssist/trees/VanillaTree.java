@@ -69,7 +69,7 @@ public class VanillaTree extends BaseTree {
 		int counter = 1;
 
 		while (block.getY() + counter < maxY) {
-			if (block.getRelative(0, counter, 0).getTypeId() == 18) {
+			if (block.getRelative(0, counter, 0).getType() == Material.LEAVES) {
 				top = block.getRelative(0, counter - 1, 0);
 				break;
 			} else {
@@ -88,7 +88,7 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected int isLeaf(Block block) {
-		if (block.getTypeId() == 18) {
+		if (block.getType() == Material.LEAVES) {
 			return 1;
 		}
 		return 0;
@@ -109,7 +109,7 @@ public class VanillaTree extends BaseTree {
 		}
 		
 		for (BlockFace face : Utils.NEIGHBORFACES) {
-			if (bottom.getRelative(face).getTypeId() == 17 && j<4) {
+			if (bottom.getRelative(face).getType() == Material.LOG && j<4) {
 				bottoms[j] = bottom.getRelative(face);
 				j++;
 			}
@@ -167,7 +167,7 @@ public class VanillaTree extends BaseTree {
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING.getId(), data);
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, data);
 		Utils.plugin.getServer()
 				.getScheduler()
 				.scheduleSyncDelayedTask(Utils.plugin, b,
@@ -194,7 +194,7 @@ public class VanillaTree extends BaseTree {
 			Block top, boolean deep, byte origData) {
 
 //		debug.i("cB " + Debugger.parse(block.getLocation()));
-		if (block.getTypeId() != 17) {
+		if (block.getType() != Material.LOG) {
 //			debug.i("no log!");
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
@@ -225,7 +225,7 @@ public class VanillaTree extends BaseTree {
 
 		
 		
-		if (block.getRelative(0, 1, 0).getTypeId() == 17) { // might
+		if (block.getRelative(0, 1, 0).getType() == Material.LOG) { // might
 																		// be a
 																		// trunk
 //			debug.i("trunk?");
@@ -326,7 +326,7 @@ public class VanillaTree extends BaseTree {
 	protected boolean checkFail(Block block) {
 		int failCount = 0;
 		for (int cont = -4; cont < 5; cont++) {
-			if (block.getRelative(0, cont, 0).getTypeId() == 17) {
+			if (block.getRelative(0, cont, 0).getType() == Material.LOG) {
 				failCount++;
 			}
 		}

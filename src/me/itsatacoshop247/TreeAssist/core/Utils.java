@@ -15,7 +15,6 @@ import org.bukkit.plugin.Plugin;
 
 import com.gmail.nossr50.api.AbilityAPI;
 import com.gmail.nossr50.api.ExperienceAPI;
-import com.gmail.nossr50.datatypes.skills.SkillType;
 
 public final class Utils {
 	private Utils() {

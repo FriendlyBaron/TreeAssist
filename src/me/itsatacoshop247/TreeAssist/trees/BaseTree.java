@@ -35,9 +35,9 @@ public abstract class BaseTree {
 
 
 	private static void checkAndDoSaplingProtect(Player player, Block block, BlockBreakEvent event) {
-		int typeid = block.getTypeId();
-		if (typeid != 17 && !CustomTree.isCustomLog(block)) {
-			if (typeid == 6) {
+		Material blockMat = block.getType();
+		if (blockMat != Material.LOG && blockMat != Material.LOG_2 && !CustomTree.isCustomLog(block)) {
+			if (blockMat == Material.SAPLING) {
 				if (Utils.plugin.getConfig()
 						.getBoolean("Sapling Replant.Block all breaking of Saplings")) {
 					player.sendMessage(ChatColor.GREEN
@@ -48,14 +48,14 @@ public abstract class BaseTree {
 							+ "This sapling is protected!");
 					event.setCancelled(true);
 				}
-			} else if (typeid == 2 || typeid == 3 || typeid == 82) {
+			} else if (blockMat == Material.GRASS || blockMat == Material.DIRT || blockMat == Material.CLAY) {
 				if (Utils.plugin.saplingLocationList.contains(block
 						.getRelative(BlockFace.UP, 1).getLocation())) {
 					player.sendMessage(ChatColor.GREEN
 							+ "This sapling is protected!");
 					event.setCancelled(true);
 				}
-			} else if (typeid != 6
+			} else if (blockMat != Material.SAPLING
 					&& Utils.plugin.saplingLocationList.contains(block.getLocation())) {
 				Utils.plugin.saplingLocationList.remove(block.getLocation());
 			}
@@ -82,9 +82,9 @@ public abstract class BaseTree {
 			case ONESEVEN:
 				return new VanillaOneSevenTree(block.getData());
 			case SHROOM:
-				return new MushroomTree(block.getTypeId());
+				return new MushroomTree(block.getType());
 			case CUSTOM:
-				return new CustomTree(block.getTypeId(), block.getData());
+				return new CustomTree(block.getType(), block.getData());
 			default:
 				return null;
 		}
@@ -106,10 +106,10 @@ public abstract class BaseTree {
 		} else if (CustomTree.isCustomLog(block)) {
 			return TreeType.CUSTOM;
 		}
-		switch (block.getTypeId()) {
+		switch (block.getType()) {
 
-			case 99:
-			case 100:
+			case HUGE_MUSHROOM_1:
+			case HUGE_MUSHROOM_2:
 				return TreeType.SHROOM;
 			default:
 				return null;
@@ -272,7 +272,7 @@ public abstract class BaseTree {
 			if (player.getItemInHand().getDurability() > player.getItemInHand()
 					.getType().getMaxDurability()
 					&& Utils.isVanillaTool(player.getItemInHand())) {
-				player.setItemInHand(new ItemStack(0));
+				player.setItemInHand(new ItemStack(Material.AIR));
 			}
 			resultTree.findYourBlocks(block);
 			if (resultTree.isValid()) {

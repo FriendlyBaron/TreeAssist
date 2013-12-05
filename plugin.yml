@@ -16,6 +16,8 @@ permissions:
       treeassist.destroy.jungle: true
       treeassist.destroy.oak: true
       treeassist.destroy.spruce: true
+      treeassist.destroy.acacia: true
+      treeassist.destroy.darkoak: true
       treeassist.destroy.brownshroom: true
       treeassist.destroy.redshroom: true
     default: false
@@ -27,6 +29,10 @@ permissions:
     description: allows to use tree-assist for oak trees
   treeassist.destroy.spruce:
     description: allows to use tree-assist for spruce trees
+  treeassist.destroy.acacia:
+    description: allows to use tree-assist for acacia trees
+  treeassist.destroy.darkoak:
+    description: allows to use tree-assist for dark oak trees
   treeassist.destroy.brownshroom:
     description: allows to use tree-assist for brown shrooms
   treeassist.destroy.redshroom:

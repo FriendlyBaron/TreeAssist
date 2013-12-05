@@ -41,7 +41,7 @@ public class TreeAssistSaplingSelfPlant implements Runnable {
 						block.getRelative(BlockFace.DOWN).getType() == Material.MYCEL ||
 						block.getRelative(BlockFace.DOWN).getType() == Material.GRASS)) {
 
-			block.setTypeId(drop.getItemStack().getTypeId());
+			block.setType(drop.getItemStack().getType());
 			block.setData(drop.getItemStack().getData().getData());
 			drop.remove();
 		}

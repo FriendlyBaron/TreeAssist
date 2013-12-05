@@ -91,7 +91,7 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getTypeId() == 17 || CustomTree.isCustomLog(event.getBlock())))
+		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getType() == Material.LOG || event.getBlock().getType() == Material.LOG_2 || CustomTree.isCustomLog(event.getBlock())))
 		{
 			if(plugin.config.getBoolean("Worlds.Enable Per World"))
 			{
@@ -142,7 +142,7 @@ public class TreeAssistBlockListener implements Listener
 				{
 					if(oneabove.getType() == Material.AIR || oneabove.getType() == logMat)
 					{
-						Runnable b = new TreeAssistReplant(plugin, block, logMat.getId(), saplingData);
+						Runnable b = new TreeAssistReplant(plugin, block, logMat, saplingData);
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
 					}
 				}	
@@ -178,7 +178,7 @@ public class TreeAssistBlockListener implements Listener
 	 */
 	private void breakIfLonelyLeaf(Block blockAt) 
 	{
-		if(blockAt.getTypeId() != 18 && !CustomTree.isCustomTreeBlock(blockAt))
+		if(blockAt.getType() != Material.LEAVES && blockAt.getType() != Material.LEAVES_2 && !CustomTree.isCustomTreeBlock(blockAt))
 		{
 			return;
 		}
@@ -209,7 +209,7 @@ public class TreeAssistBlockListener implements Listener
 	 */
 	private void breakRadiusIfLeaf(Block blockAt) 
 	{
-		if(blockAt.getTypeId() == 18 || CustomTree.isCustomTreeBlock(blockAt))
+		if(blockAt.getType() == Material.LEAVES || blockAt.getType() == Material.LEAVES_2 || CustomTree.isCustomTreeBlock(blockAt))
 		{
 			Utils.plugin.blockList.logBreak(blockAt, null);
 			blockAt.breakNaturally();
@@ -233,11 +233,11 @@ public class TreeAssistBlockListener implements Listener
 
 	private int calcAir(Block blockAt) 
 	{
-		if(blockAt.getTypeId() == 0 || blockAt.getTypeId() == 106)
+		if(blockAt.getType() == Material.AIR || blockAt.getType() == Material.VINE)
 		{
 			return 0;
 		}
-		else if(blockAt.getTypeId() == 17 || CustomTree.isCustomLog(blockAt))
+		else if(blockAt.getType() == Material.LOG || blockAt.getType() == Material.LOG_2 || CustomTree.isCustomLog(blockAt))
 		{
 			return 5;
 		}

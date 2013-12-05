@@ -7,17 +7,22 @@ public class TreeAssistReplant implements Runnable {
 	public final TreeAssist plugin;
 	public Block block;
 	public byte data;
-	public int type;
+	public Material mat;
 	
-	public TreeAssistReplant(TreeAssist instance, Block importBlock, int typeid, byte importData)
+	public TreeAssistReplant(TreeAssist instance, Block importBlock, Material logMat, byte importData)
 	{
 		this.plugin = instance;
 		this.block = importBlock;
 		this.data = importData;
-		this.type = typeid;
+		this.mat = logMat;
 		
-		if (type == Material.LOG.getId()) {
-			type = Material.SAPLING.getId();
+		if (mat == Material.LOG) {
+			mat = Material.SAPLING;
+		} else if (mat == Material.LOG_2) {
+			mat = Material.SAPLING;
+			if (data < 4) {
+				data += 4;
+			}
 		}
 	}
 
@@ -26,7 +31,7 @@ public class TreeAssistReplant implements Runnable {
 	{
 		if(plugin.isEnabled())
 		{
-			this.block.setTypeId(type);
+			this.block.setType(mat);
 			this.block.setData(this.data);
 		}
 	}

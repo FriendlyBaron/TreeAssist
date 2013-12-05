@@ -18,12 +18,10 @@ public class CustomTree extends BaseTree {
 	public static List<?> customLogs = null;
 	public static List<?> customSaplings = null;
 	public static Debugger debugger;
-	private final int typeID;
-	//private final byte dataValue;
+	private final Material mat;
 
-	public CustomTree(int typeId, byte data) {
-		typeID = typeId;
-		//dataValue = data;
+	public CustomTree(Material material, byte data) {
+		mat = material;
 	}
 
 	public static boolean isCustomLog(Block blockAt) {
@@ -153,7 +151,7 @@ public class CustomTree extends BaseTree {
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, materialID, data);
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, mat, data);
 		Utils.plugin.getServer()
 				.getScheduler()
 				.scheduleSyncDelayedTask(Utils.plugin, b,
@@ -179,7 +177,7 @@ public class CustomTree extends BaseTree {
 	protected void checkBlock(List<Block> list, Block block,
 			Block top, boolean deep, byte origData) {
 
-		if (block.getTypeId() != typeID) {
+		if (block.getType() != mat) {
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
 					list.add(block);
@@ -203,7 +201,7 @@ public class CustomTree extends BaseTree {
 
 		
 		
-		if (block.getRelative(0, 1, 0).getTypeId() == typeID) { // might
+		if (block.getRelative(0, 1, 0).getType() == mat) { // might
 																		// be a
 																		// trunk
 
@@ -249,7 +247,7 @@ public class CustomTree extends BaseTree {
 	protected boolean checkFail(Block block) {
 		int failCount = 0;
 		for (int cont = -4; cont < 5; cont++) {
-			if (block.getRelative(0, cont, 0).getTypeId() == typeID) {
+			if (block.getRelative(0, cont, 0).getType() == mat) {
 				failCount++;
 			}
 		}

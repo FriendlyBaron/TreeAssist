@@ -202,7 +202,7 @@ public class VanillaOneSevenTree extends BaseTree {
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING.getId(), (byte) (data+4));
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, (byte) (data+4));
 		Utils.plugin.getServer()
 				.getScheduler()
 				.scheduleSyncDelayedTask(Utils.plugin, b,

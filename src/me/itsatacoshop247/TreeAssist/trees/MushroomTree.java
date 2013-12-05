@@ -15,10 +15,10 @@ import org.bukkit.entity.Player;
 
 public class MushroomTree extends BaseTree {
 	public static Debugger debugger;
-	private final int type;
+	private final Material mat;
 
-	public MushroomTree(int type) {
-		this.type = type;
+	public MushroomTree(Material material) {
+		this.mat = material;
 	}
 
 	@Override
@@ -31,10 +31,10 @@ public class MushroomTree extends BaseTree {
 		if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
 			return true;
 		}
-		if (type == 99) {
+		if (mat == Material.HUGE_MUSHROOM_1) {
 			return player.hasPermission("treeassist.destroy.brownshroom");
 		}
-		if (type == 100) {
+		if (mat == Material.HUGE_MUSHROOM_2) {
 			return player.hasPermission("treeassist.destroy.redshroom");
 		}
 		return false;
@@ -44,7 +44,7 @@ public class MushroomTree extends BaseTree {
 	protected Block getBottom(Block block) {
 		int counter = 1;
 		do {
-			if (block.getRelative(0, 0 - counter, 0).getTypeId() == type) {
+			if (block.getRelative(0, 0 - counter, 0).getType() == mat) {
 				counter++;
 			} else {
 				bottom = block.getRelative(0, 1 - counter, 0);
@@ -61,10 +61,10 @@ public class MushroomTree extends BaseTree {
 		int maxY = block.getWorld().getMaxHeight() + 10;
 		int counter = 1;
 		
-		debug.i("getting top; type " + type);
+		debug.i("getting top; type " + mat.name());
 
 		while (block.getY() + counter < maxY) {
-			if (block.getRelative(0, counter, 0).getTypeId() != type || counter > 6) {
+			if (block.getRelative(0, counter, 0).getType() != mat || counter > 6) {
 				top = block.getRelative(0, counter - 1, 0);
 				debug.i("++");
 				break;
@@ -95,11 +95,11 @@ public class MushroomTree extends BaseTree {
 
 	@Override
 	protected boolean willBeDestroyed() {
-		switch (type) {
-		case 99:
+		switch (mat) {
+		case HUGE_MUSHROOM_1:
 			return Utils.plugin.getConfig()
 					.getBoolean("Automatic Tree Destruction.Tree Types.Brown Shroom");
-		case 100:
+		case HUGE_MUSHROOM_2:
 			return Utils.plugin.getConfig()
 					.getBoolean("Automatic Tree Destruction.Tree Types.Red Shroom");
 		default:
@@ -109,7 +109,7 @@ public class MushroomTree extends BaseTree {
 
 	@Override
 	protected boolean willReplant() {
-		if (!Utils.replantType((byte) type)) {
+		if (!Utils.replantType((byte) mat.getId())) {
 			return false;
 		}
 		return true;
@@ -126,9 +126,9 @@ public class MushroomTree extends BaseTree {
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		int saplingID = (type == 99) ? 39 : 40;
+		Material saplingMat = (mat == Material.HUGE_MUSHROOM_1) ? Material.BROWN_MUSHROOM: Material.RED_MUSHROOM;
 		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, saplingID, (byte) 0);
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, saplingMat, (byte) 0);
 		Utils.plugin.getServer()
 				.getScheduler()
 				.scheduleSyncDelayedTask(Utils.plugin, b,
@@ -155,7 +155,7 @@ public class MushroomTree extends BaseTree {
 			Block top, boolean deep, byte origData) {
 
 //		debug.i("cB " + Debugger.parse(block.getLocation()));
-		if (block.getTypeId() != type) {
+		if (block.getType() != mat) {
 //			debug.i("out!");
 			return;
 		}
@@ -173,7 +173,7 @@ public class MushroomTree extends BaseTree {
 			return;
 		}
 		
-		int margin = type == 99 ? 3 : 2;
+		int margin = mat == Material.HUGE_MUSHROOM_1 ? 3 : 2;
 		
 		if (Math.abs(bottom.getX() - block.getX()) > margin
 				|| Math.abs(bottom.getZ() - block.getZ()) > margin) {
@@ -181,7 +181,7 @@ public class MushroomTree extends BaseTree {
 			return;
 		}
 		
-		if (type == 100 && block.getRelative(0, -1, 0).getTypeId() == type) {
+		if (mat == Material.HUGE_MUSHROOM_2 && block.getRelative(0, -1, 0).getType() == mat) {
 			// overhanging red blabla
 			if (block.getX() != top.getX() && block.getZ() != top.getZ()) {
 //				debug.i("not main!");
