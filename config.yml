@@ -52,8 +52,6 @@ Tools:
   - GOLD_AXE
   - IRON_AXE
   - STONE_AXE
-  - 5
-  - 293
   Drop Chance:
     DIAMOND_AXE: 100
     WOOD_AXE: 100
