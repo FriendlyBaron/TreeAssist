@@ -48,6 +48,11 @@ public class MushroomTree extends BaseTree {
 				counter++;
 			} else {
 				bottom = block.getRelative(0, 1 - counter, 0);
+				if (bottom.getRelative(BlockFace.DOWN).getType() == Material.AIR ||
+						bottom.getRelative(BlockFace.DOWN).getType() == Material.HUGE_MUSHROOM_1 ||
+						bottom.getRelative(BlockFace.DOWN).getType() == Material.HUGE_MUSHROOM_2) {
+					return null; // the shroom is already broken.
+				}
 				return bottom;
 			}
 		} while (block.getY() - counter > 0);
