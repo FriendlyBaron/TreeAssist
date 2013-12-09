@@ -50,6 +50,10 @@ public class VanillaOneSevenTree extends BaseTree {
 				counter++;
 			} else {
 				bottom = block.getRelative(0, 1 - counter, 0);
+				if (bottom.getRelative(BlockFace.DOWN).getType() == Material.AIR ||
+						bottom.getRelative(BlockFace.DOWN).getType() == Material.SAPLING) {
+					return null; // the tree is already broken.
+				}
 				return bottom;
 			}
 		} while (block.getY() - counter > 0);

@@ -54,7 +54,12 @@ public class VanillaTree extends BaseTree {
 			if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG) {
 				counter++;
 			} else {
+				
 				bottom = block.getRelative(0, 1 - counter, 0);
+				if (bottom.getRelative(BlockFace.DOWN).getType() == Material.AIR ||
+						bottom.getRelative(BlockFace.DOWN).getType() == Material.SAPLING) {
+					return null; // the tree is already broken.
+				}
 				return bottom;
 			}
 		} while (block.getY() - counter > 0);
