@@ -36,7 +36,7 @@ public abstract class BaseTree {
 
 	private static void checkAndDoSaplingProtect(Player player, Block block, BlockBreakEvent event) {
 		Material blockMat = block.getType();
-		if (blockMat != Material.LOG && blockMat != Material.LOG_2 && !CustomTree.isCustomLog(block)) {
+		if (blockMat != Material.LOG && !blockMat.name().equals("LOG_2") && !CustomTree.isCustomLog(block)) {
 			if (blockMat == Material.SAPLING) {
 				if (Utils.plugin.getConfig()
 						.getBoolean("Sapling Replant.Block all breaking of Saplings")) {
@@ -101,7 +101,7 @@ public abstract class BaseTree {
 			default:
 				return null;
 			}
-		} else if (block.getType() == Material.LOG_2) {
+		} else if (block.getType().name().equals("LOG_2")) {
 			return TreeType.ONESEVEN;
 		} else if (CustomTree.isCustomLog(block)) {
 			return TreeType.CUSTOM;
@@ -245,7 +245,7 @@ public abstract class BaseTree {
 							.getType() == Material.LOG && block.getData() == 3)
 							||
 							(block.getRelative(BlockFace.valueOf(directions[x]))
-									.getType() == Material.LOG_2 && block.getData() == 1))) {
+									.getType().name().equals("LOG_2") && block.getData() == 1))) {
 						debug.i("invalid because of invalid types");
 						return new InvalidTree(); // not a valid tree
 					}

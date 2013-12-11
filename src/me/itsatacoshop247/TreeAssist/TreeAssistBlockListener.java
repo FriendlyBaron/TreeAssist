@@ -91,7 +91,7 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getType() == Material.LOG || event.getBlock().getType() == Material.LOG_2 || CustomTree.isCustomLog(event.getBlock())))
+		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getType() == Material.LOG || event.getBlock().getType().name().equals("LOG_2") || CustomTree.isCustomLog(event.getBlock())))
 		{
 			if(plugin.config.getBoolean("Worlds.Enable Per World"))
 			{
@@ -133,7 +133,7 @@ public class TreeAssistBlockListener implements Listener
 			{
 				Material logMat = block.getType();
 				byte saplingData = block.getData();
-				if (logMat == Material.LOG_2) {
+				if (logMat.name().equals("LOG_2")) {
 					saplingData += 4;
 				}
 				Block onebelow = block.getRelative(BlockFace.DOWN, 1);
@@ -237,7 +237,7 @@ public class TreeAssistBlockListener implements Listener
 		{
 			return 0;
 		}
-		else if(blockAt.getType() == Material.LOG || blockAt.getType() == Material.LOG_2 || CustomTree.isCustomLog(blockAt))
+		else if(blockAt.getType() == Material.LOG || blockAt.getType().name().equals("LOG_2") || CustomTree.isCustomLog(blockAt))
 		{
 			return 5;
 		}

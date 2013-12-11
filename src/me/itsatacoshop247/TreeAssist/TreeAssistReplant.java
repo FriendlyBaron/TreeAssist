@@ -18,7 +18,7 @@ public class TreeAssistReplant implements Runnable {
 		
 		if (mat == Material.LOG) {
 			mat = Material.SAPLING;
-		} else if (mat == Material.LOG_2) {
+		} else if (mat.name().equals("LOG_2")) {
 			mat = Material.SAPLING;
 			if (data < 4) {
 				data += 4;
