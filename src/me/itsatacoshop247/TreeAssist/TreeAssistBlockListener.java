@@ -178,7 +178,7 @@ public class TreeAssistBlockListener implements Listener
 	 */
 	private void breakIfLonelyLeaf(Block blockAt) 
 	{
-		if(blockAt.getType() != Material.LEAVES && blockAt.getType() != Material.LEAVES_2 && !CustomTree.isCustomTreeBlock(blockAt))
+		if(blockAt.getType() != Material.LEAVES && !blockAt.getType().name().equals("LEAVES_2") && !CustomTree.isCustomTreeBlock(blockAt))
 		{
 			return;
 		}
@@ -209,7 +209,7 @@ public class TreeAssistBlockListener implements Listener
 	 */
 	private void breakRadiusIfLeaf(Block blockAt) 
 	{
-		if(blockAt.getType() == Material.LEAVES || blockAt.getType() == Material.LEAVES_2 || CustomTree.isCustomTreeBlock(blockAt))
+		if(blockAt.getType() == Material.LEAVES || blockAt.getType().name().equals("LEAVES_2") || CustomTree.isCustomTreeBlock(blockAt))
 		{
 			Utils.plugin.blockList.logBreak(blockAt, null);
 			blockAt.breakNaturally();
