@@ -127,7 +127,7 @@ public class MushroomTree extends BaseTree {
 
 	private void replaceSapling(int delay, Block bottom) {
 		// make sure that the block is not being removed later
-		bottom.setType(Material.AIR);
+		
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		

@@ -169,7 +169,7 @@ public class VanillaTree extends BaseTree {
 			return;
 		}
 		// make sure that the block is not being removed later
-		bottom.setType(Material.AIR);
+		
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
@@ -199,32 +199,32 @@ public class VanillaTree extends BaseTree {
 	protected void checkBlock(List<Block> list, Block block,
 			Block top, boolean deep, byte origData) {
 
-//		debug.i("cB " + Debugger.parse(block.getLocation()));
+		debug.i("cB " + Debugger.parse(block.getLocation()));
 		if (block.getType() != Material.LOG) {
-//			debug.i("no log!");
+			debug.i("no log: " + block.getType().name());
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
 					list.add(block);
-//					debug.i("cB: adding leaf " + block.getY());
+					debug.i("cB: adding leaf " + block.getY());
 				}
 			}
-//			debug.i("out!");
+			debug.i("out!");
 			return;
 		}
 
 		if (block.getData() != data) {
-//			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
+			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
 			if (top.getData() != 0 || block.getData() <= 3) {
-//				debug.i("out!");
+				debug.i("out!");
 				return;
 			}
 		}
 		
 		if (block.getX() == top.getX() && block.getZ() == top.getZ()) {
-//			debug.i("main trunk!");
+			debug.i("main trunk!");
 			if (!deep) {
 				// something else caught the main, return, this will be done later!
-//				debug.i("not deep; out!");
+				debug.i("not deep; out!");
 				return;
 			}
 		}
@@ -234,13 +234,13 @@ public class VanillaTree extends BaseTree {
 		if (block.getRelative(0, 1, 0).getType() == Material.LOG) { // might
 																		// be a
 																		// trunk
-//			debug.i("trunk?");
+			debug.i("trunk?");
 			// one above is a tree block
 			if (block.getX() != top.getX() && block.getZ() != top.getZ()) {
-//				debug.i("not main!");
+				debug.i("not main!");
 				
 				if (block.getData() < 3) {
-//					debug.i("no jungle!");
+					debug.i("no jungle!");
 					
 					if (checkFail(block)) {
 						return;
@@ -248,7 +248,7 @@ public class VanillaTree extends BaseTree {
 
 
 				} else {
-//					debug.i("jungle!");
+					debug.i("jungle!");
 
 					boolean diff = true;
 					for (int Cx = -1; Cx < 2; Cx++) {
@@ -277,15 +277,15 @@ public class VanillaTree extends BaseTree {
 						.getBoolean("Automatic Tree Destruction.Tree Types.BigJungle");
 
 		if (!destroyBig && isBig) {
-//			debug.i("!destroy & isBig; out!");
+			debug.i("!destroy & isBig; out!");
 			return;
 		}
 
 		if (list.contains(block)) {
-//			debug.i("already added!");
+			debug.i("already added!");
 			return;
 		} else {
-//			debug.i(">>>>>>>>>> adding! <<<<<<<<<<<");
+			debug.i(">>>>>>>>>> adding! <<<<<<<<<<<");
 			list.add(block);
 		}
 		
@@ -300,12 +300,12 @@ public class VanillaTree extends BaseTree {
 		}
 
 		if (!deep) {
-//			debug.i("not deep, out!");
+			debug.i("not deep, out!");
 			return;
 		}
 
 		if (block.getY() > top.getY()) {
-//			debug.i("over the top! (hah) out!");
+			debug.i("over the top! (hah) out!");
 			return;
 		}
 

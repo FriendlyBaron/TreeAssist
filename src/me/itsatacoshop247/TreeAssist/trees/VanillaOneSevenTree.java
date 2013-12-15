@@ -205,7 +205,7 @@ public class VanillaOneSevenTree extends BaseTree {
 			return;
 		}
 		// make sure that the block is not being removed later
-		bottom.setType(Material.AIR);
+		
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		

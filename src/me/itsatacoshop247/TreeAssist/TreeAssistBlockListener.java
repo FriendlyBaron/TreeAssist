@@ -129,7 +129,7 @@ public class TreeAssistBlockListener implements Listener
 					return;
 				}
 			}
-			if(block.getType() == Material.LOG || block.getType() == Material.LOG_2) 
+			if(block.getType() == Material.LOG || block.getType().name().equals("LOG_2")) 
 			{
 				Material logMat = block.getType();
 				byte saplingData = block.getData();
