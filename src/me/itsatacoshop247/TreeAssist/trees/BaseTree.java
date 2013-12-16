@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -421,6 +422,15 @@ public abstract class BaseTree {
 		}
 
 		if (!leaf && tool != null && player != null) {
+			if (tool.containsEnchantment(Enchantment.DURABILITY)) {
+				int damageChance = (int) (100d / ((double) tool.getEnchantmentLevel(Enchantment.DURABILITY) + 1d));
+				
+				int random = new Random().nextInt(100);
+				
+				if (random < damageChance) {
+					return;
+				}
+			}
 			if (Utils.toolgood.contains(tool.getTypeId())) {
 				tool.setDurability(
 						(short) (tool.getDurability() + 1));
