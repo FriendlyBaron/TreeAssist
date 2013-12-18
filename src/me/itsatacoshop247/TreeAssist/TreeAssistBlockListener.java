@@ -7,6 +7,7 @@ import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;

@@ -45,6 +45,10 @@ public abstract class BaseTree {
 							+ "You cannot break saplings on this server!");
 					event.setCancelled(true);
 				} else if (Utils.plugin.saplingLocationList.contains(block.getLocation())) {
+					if (player.getGameMode() == GameMode.CREATIVE) {
+						Utils.plugin.saplingLocationList.remove(block.getLocation());
+						return;
+					}
 					player.sendMessage(ChatColor.GREEN
 							+ "This sapling is protected!");
 					event.setCancelled(true);
@@ -52,6 +56,11 @@ public abstract class BaseTree {
 			} else if (blockMat == Material.GRASS || blockMat == Material.DIRT || blockMat == Material.CLAY) {
 				if (Utils.plugin.saplingLocationList.contains(block
 						.getRelative(BlockFace.UP, 1).getLocation())) {
+					if (player.getGameMode() == GameMode.CREATIVE) {
+						Utils.plugin.saplingLocationList.remove(block.getRelative(BlockFace.UP, 1).getLocation());
+						return;
+					}
+					
 					player.sendMessage(ChatColor.GREEN
 							+ "This sapling is protected!");
 					event.setCancelled(true);
