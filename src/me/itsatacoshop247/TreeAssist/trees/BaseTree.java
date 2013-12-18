@@ -181,6 +181,7 @@ public abstract class BaseTree {
 		resultTree.top = block;
 		if (Utils.mcMMOTreeFeller(player)) {
 			debug.i("MCMMO Tree Feller!");
+			maybeReplant(plugin, event, resultTree, player, block);
 			if (plugin.isForceAutoDestroy()) {
 				resultTree.findYourBlocks(block);
 				debug.i("But still, remove later, maybe");
