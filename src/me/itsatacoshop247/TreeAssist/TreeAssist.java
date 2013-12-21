@@ -279,6 +279,12 @@ public class TreeAssist extends JavaPlugin
 		
 		//5.8 additions
 		items.put("Placed Blocks.Handler Plugin Name","TreeAssist");
+		items.put("Automatic Tree Destruction.Tree Types.Acacia", "true");
+		items.put("Automatic Tree Destruction.Tree Types.Dark Oak", "true");
+		items.put("Sapling Replant.Tree Types to Replant.Acacia", "true");
+		items.put("Sapling Replant.Tree Types to Replant.Dark Oak", "true");
+		items.put("Automatic Tree Destruction.Tree Types.BigSpruce", "true");
+		items.put("Sapling Replant.Tree Types to Replant.BigSpruce", "true");
 		
 		return items;
 	}

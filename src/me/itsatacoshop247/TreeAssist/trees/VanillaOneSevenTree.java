@@ -383,4 +383,16 @@ public class VanillaOneSevenTree extends BaseTree {
 		return false;
 	}
 
+
+	@Override
+	protected boolean isBottom(Block block) {
+		if (bottoms != null && data == 1) {
+			for (Block b : bottoms) {
+				if (b.equals(block)) {
+					return true;
+				}
+			}
+		}
+		return block.equals(bottom);
+	}
 }

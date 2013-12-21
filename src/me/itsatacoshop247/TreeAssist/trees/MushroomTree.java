@@ -227,4 +227,9 @@ public class MushroomTree extends BaseTree {
 		return false;
 	}
 
+
+	@Override
+	protected boolean isBottom(Block block) {
+		return block.equals(bottom);
+	}
 }

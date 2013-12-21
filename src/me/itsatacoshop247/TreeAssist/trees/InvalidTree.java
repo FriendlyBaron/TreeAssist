@@ -71,4 +71,9 @@ public class InvalidTree extends BaseTree {
 	protected boolean checkFail(Block block) {
 		return false;
 	}
+
+	@Override
+	protected boolean isBottom(Block block) {
+		return false;
+	}
 }

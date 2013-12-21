@@ -253,11 +253,12 @@ public abstract class BaseTree {
 				if (!Utils.validTypes.contains(block.getRelative(
 						BlockFace.valueOf(directions[x])).getTypeId())) {
 					if (!((block.getRelative(BlockFace.valueOf(directions[x]))
-							.getType() == Material.LOG && block.getData() == 3)
+							.getType() == Material.LOG && (block.getData() == 1 || block.getData() == 3))
 							||
 							(block.getRelative(BlockFace.valueOf(directions[x]))
 									.getType().name().equals("LOG_2") && block.getData() == 1))) {
-						debug.i("invalid because of invalid types");
+						debug.i("invalid because of invalid type: " + block.getRelative(
+								BlockFace.valueOf(directions[x])).getType() + ":"+block.getData());
 						return new InvalidTree(); // not a valid tree
 					}
 				}
@@ -343,7 +344,7 @@ public abstract class BaseTree {
 				if (block.equals(resultTree.bottom) && block != resultTree.bottom) {
 					debug.i("I knew it!");
 				}
-				if (block.equals(resultTree.bottom)) {
+				if (resultTree.isBottom(block)) {
 					// block is bottom
 					resultTree.handleSaplingReplace(delay);
 				} else if (!plugin.getConfig().getBoolean(
@@ -359,6 +360,9 @@ public abstract class BaseTree {
 		}
 		return null;
 	}
+
+	abstract protected boolean isBottom(Block block);
+
 
 	abstract protected List<Block> calculate(Block bottom, Block top);
 	abstract protected boolean checkFail(Block block);

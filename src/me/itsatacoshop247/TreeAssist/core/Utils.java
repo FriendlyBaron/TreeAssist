@@ -28,7 +28,9 @@ public final class Utils {
 
 	public static List<Integer> validTypes = new ArrayList<Integer>(Arrays.asList(0,
 			2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111,
-			78, 12, 50, 66, 99, 100, 161)); // if it's not one of these blocks, it's
+			78, 12, 50, 66, 99, 100, 161,
+			175 // double plants
+			)); // if it's not one of these blocks, it's
 								// safe to assume its a house/building
 	
 	
