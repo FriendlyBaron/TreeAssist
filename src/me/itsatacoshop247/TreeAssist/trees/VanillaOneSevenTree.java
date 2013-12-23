@@ -206,6 +206,13 @@ public class VanillaOneSevenTree extends BaseTree {
 		}
 		// make sure that the block is not being removed later
 		
+		if (bottoms != null) {
+			for (Block b : bottoms) {
+				removeBlocks.remove(b);
+				totalBlocks.remove(b);
+			}
+		}
+		
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		

@@ -557,6 +557,7 @@ public abstract class BaseTree {
 			removeBlocks = calculate(bottom, top);
 			removeBlocks.remove(bottom);
 		}
+		removeBlocks.remove(bottom);
 
 		debug.i("size: " + removeBlocks.size());
 		debug.i("from: " + bottom.getY());

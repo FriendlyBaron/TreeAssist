@@ -177,14 +177,15 @@ public class VanillaTree extends BaseTree {
 		}
 		// make sure that the block is not being removed later
 
-		removeBlocks.remove(bottom);
-		totalBlocks.remove(bottom);
 		if (bottoms != null) {
 			for (Block b : bottoms) {
 				removeBlocks.remove(b);
 				totalBlocks.remove(b);
 			}
 		}
+		
+		removeBlocks.remove(bottom);
+		totalBlocks.remove(bottom);
 		
 		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, data);
 		Utils.plugin.getServer()
