@@ -382,6 +382,21 @@ public class TreeAssist extends JavaPlugin
 					sender.sendMessage(ChatColor.GREEN + "TreeAssist has been reloaded.");
 					return true;
 				} else if(args[0].equalsIgnoreCase("Toggle")) {
+					
+					if (sender.hasPermission("treeassist.toggle.other") && args.length > 2) {
+						if(playerList.contains(args[1]))
+						{
+							playerList.remove(args[1]);
+							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for "+args[1]+"!");
+						}
+						else
+						{
+							playerList.add(args[1]);
+							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for "+args[1]+"!");
+						}
+						return true;
+					}
+					
 					if(!sender.hasPermission("treeassist.toggle"))
 					{
 						sender.sendMessage("You don't have treeassist.toggle");

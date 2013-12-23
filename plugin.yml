@@ -43,6 +43,9 @@ permissions:
   treeassist.toggle.global:
     descroption: allows to toggle global TreeAssist usage
     default: op
+  treeassist.toggle.other:
+    descroption: allows to toggle TreeAssist usage for a player
+    default: op
   treeassist.reload:
     descroption: allows to reload the TreeAssist config
     default: op
