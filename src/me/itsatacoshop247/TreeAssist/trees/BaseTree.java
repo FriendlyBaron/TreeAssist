@@ -343,7 +343,7 @@ public abstract class BaseTree {
 					}
 				}
 				int delay = plugin.getConfig()
-						.getInt("Delay until Sapling is replanted (seconds) (minimum 1 second)");
+						.getInt("Sapling Replant.Delay until Sapling is replanted (seconds) (minimum 1 second)");
 				if (delay < 1) {
 					delay = 1;
 				}
