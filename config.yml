@@ -34,6 +34,7 @@ Sapling Replant:
   Replant When Tree Burns Down: true
   Block all breaking of Saplings: false
   Delay until Sapling is replanted (seconds) (minimum 1 second): 1
+  Enforce: false
   Tree Types to Replant:
     Birch: true
     Jungle: true

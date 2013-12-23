@@ -286,6 +286,7 @@ public class TreeAssist extends JavaPlugin
 		items.put("Automatic Tree Destruction.Tree Types.BigSpruce", "true");
 		items.put("Sapling Replant.Tree Types to Replant.BigSpruce", "true");
 		
+		items.put("Sapling Replant.Enforce", "true");
 		return items;
 	}
 

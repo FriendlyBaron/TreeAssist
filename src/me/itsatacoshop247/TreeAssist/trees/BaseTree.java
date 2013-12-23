@@ -158,6 +158,9 @@ public abstract class BaseTree {
 		
 		if (!resultTree.hasPerms(player)) {
 			debug.i("No permission!");
+			if (plugin.getConfig().getBoolean("Sapling Replant.Enforce")) {
+				maybeReplant(plugin, event, resultTree, player, block);
+			}
 			if (plugin.isForceAutoDestroy()) {
 				resultTree.findYourBlocks(block);
 				debug.i("But still, remove later, maybe");
@@ -172,6 +175,9 @@ public abstract class BaseTree {
 		
 		if (Utils.plugin.hasCoolDown(player)) {
 			debug.i("Cooldown!");
+			if (plugin.getConfig().getBoolean("Sapling Replant.Enforce")) {
+				maybeReplant(plugin, event, resultTree, player, block);
+			}
 			player.sendMessage(ChatColor.GREEN
 					+ "TreeAssist is cooling down!");
 			if (plugin.isForceAutoDestroy()) {
