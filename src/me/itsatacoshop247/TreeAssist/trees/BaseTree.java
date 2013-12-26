@@ -22,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class BaseTree {
 	protected enum TreeType {
-		OAK, BIRCH, SPRUCE, JUNGLE, SHROOM, CUSTOM, ONESEVEN;
+		OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ONESEVEN;
 	}
 
 	public static Debugger debug;
