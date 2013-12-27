@@ -395,7 +395,7 @@ public class VanillaOneSevenTree extends BaseTree {
 	protected boolean isBottom(Block block) {
 		if (bottoms != null && data == 1) {
 			for (Block b : bottoms) {
-				if (b.equals(block)) {
+				if (b != null && b.equals(block)) {
 					return true;
 				}
 			}
