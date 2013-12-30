@@ -473,16 +473,43 @@ public class TreeAssist extends JavaPlugin
 	}
 	
 	private Map<String, BukkitTask> coolDowns = new HashMap<String, BukkitTask>();
+	private Map<String, Long> coolDownTime = new HashMap<String, Long>();
+
+	long ticksToMillisecs (final long ticks) {
+		return ticks * 1000 /20L; 
+	}
+	long millisecsToTicks (final long ms) {
+		return ms * 20L /1000L; 
+	}
 
 	public boolean hasCoolDown(Player player) {
 		return coolDowns.containsKey(player.getName());
 	}
+	// returns the number of seconds that player must still wait
+	public float getCoolDownSecondsRemaining (Player player) {
+		String name = player.getName();
+		long cooldown = 0;
+		if ( !coolDownTime.containsKey (name))
+			return 0F;
+		else {
+			cooldown = coolDownTime.get (name) - System.currentTimeMillis();
 	
+			return (cooldown > 0 ? cooldown / 1000.0F : 0F);
+		}
+	}
 	public void setCoolDown(Player player) {
 		final int coolDown = getConfig().getInt("Automatic Tree Destruction.Cooldown (seconds)", 0);
+
+		setCoolDown (player, coolDown);
+	}
+	public void setCoolDown(Player player, int coolDown) {
 		if (coolDown < 1) {
 			return;
 		}
+
+		coolDownTime.put (player.getName(), System.currentTimeMillis() + ticksToMillisecs(coolDown * 20L));
+		player.sendMessage(ChatColor.GREEN + "Wait " + coolDown + " secs for TreeAssist cooldown");
+
 		class RemoveRunner extends BukkitRunnable {
 			private final String name;
 			RemoveRunner(Player player) {
@@ -491,6 +518,7 @@ public class TreeAssist extends JavaPlugin
 			@Override
 			public void run() {
 				coolDowns.remove(name);
+				coolDownTime.remove (name);
 				Player player = Bukkit.getPlayer(name);
 				if (player != null) {
 					player.sendMessage(ChatColor.GREEN + "TreeAssist cooled down!");
