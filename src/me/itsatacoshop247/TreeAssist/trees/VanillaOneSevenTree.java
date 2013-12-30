@@ -192,7 +192,7 @@ public class VanillaOneSevenTree extends BaseTree {
 
 	@Override
 	protected void handleSaplingReplace(int delay) {
-		if (data == 1) {
+		if (data == 1 && bottoms != null) {
 			for (Block bottom : bottoms) {
 				replaceSapling(delay, bottom);
 			}

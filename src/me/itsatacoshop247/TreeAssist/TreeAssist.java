@@ -18,6 +18,7 @@ import me.itsatacoshop247.TreeAssist.blocklists.PrismBlockList;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
+import me.itsatacoshop247.TreeAssist.timers.CooldownCounter;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 import me.itsatacoshop247.TreeAssist.trees.InvalidTree;
@@ -472,33 +473,38 @@ public class TreeAssist extends JavaPlugin
 		}
 	}
 	
-	private Map<String, BukkitTask> coolDowns = new HashMap<String, BukkitTask>();
+	private Map<String, CooldownCounter> coolDowns = new HashMap<String, CooldownCounter>();
 
 	public boolean hasCoolDown(Player player) {
 		return coolDowns.containsKey(player.getName());
 	}
 	
-	public void setCoolDown(Player player) {
-		final int coolDown = getConfig().getInt("Automatic Tree Destruction.Cooldown (seconds)", 0);
-		if (coolDown < 1) {
-			return;
+	public int getCoolDown(Player player) {
+		if (hasCoolDown(player)) {
+			return coolDowns.get(player.getName()).getSeconds();
 		}
-		class RemoveRunner extends BukkitRunnable {
-			private final String name;
-			RemoveRunner(Player player) {
-				name = player.getName();
-			}
-			@Override
-			public void run() {
-				coolDowns.remove(name);
-				Player player = Bukkit.getPlayer(name);
-				if (player != null) {
-					player.sendMessage(ChatColor.GREEN + "TreeAssist cooled down!");
-				}
-			}
+		return 0;
+	}
+	
+	public void removeCountDown(String playerName) {
+		try {
+			coolDowns.get(playerName).cancel();
+		} catch (Exception e) {
 			
 		}
-		coolDowns.put(player.getName(), ((new RemoveRunner(player)).runTaskLater(this, coolDown * 20L)));
+		coolDowns.remove(playerName);
+	}
+	
+	public void setCoolDown(Player player, BaseTree tree) {
+		int coolDown = getConfig().getInt("Automatic Tree Destruction.Cooldown (seconds)", 0);
+		if (coolDown == 0 || tree == null || !tree.isValid()) {
+			return;
+		} else if (coolDown < 0) {
+			coolDown = tree.calculateCooldown(player.getItemInHand());
+		}
+		CooldownCounter cc = new CooldownCounter(player, coolDown);
+		cc.runTaskTimer(this, 20L, 20L);
+		coolDowns.put(player.getName(), cc);
 	}
 }
 	

@@ -152,12 +152,13 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected void handleSaplingReplace(int delay) {
-		if (data == 3 || data == 1) {
+		if (bottoms != null && (data == 3 || data == 1)) {
 			if (data == 3 && !Utils.plugin.getConfig().getBoolean(
 					"Sapling Replant.Tree Types to Replant.BigJungle")) {
 				debugger.i("no big jungle sapling !!!");
 				return;
-			}if (data == 1 && !Utils.plugin.getConfig().getBoolean(
+			}
+			if (data == 1 && !Utils.plugin.getConfig().getBoolean(
 					"Sapling Replant.Tree Types to Replant.BigSpruce")) {
 				debugger.i("no bgi spruce sapling !!!");
 				return;
