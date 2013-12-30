@@ -1,5 +1,6 @@
 package me.itsatacoshop247.TreeAssist.trees;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -174,12 +175,13 @@ public abstract class BaseTree {
 		}
 		
 		if (Utils.plugin.hasCoolDown(player)) {
+			float cooldown = Utils.plugin.getCoolDownSecondsRemaining (player);
 			debug.i("Cooldown!");
 			if (plugin.getConfig().getBoolean("Sapling Replant.Enforce")) {
 				maybeReplant(plugin, event, resultTree, player, block);
 			}
 			player.sendMessage(ChatColor.GREEN
-					+ "TreeAssist is cooling down!");
+					+ "TreeAssist power must wait " + cooldown + "s !");
 			if (plugin.isForceAutoDestroy()) {
 				resultTree.findYourBlocks(block);
 				debug.i("But still, remove later, maybe");
@@ -543,6 +545,46 @@ public abstract class BaseTree {
 
 		(new RemoveRunner()).runTaskTimer(Utils.plugin, delay, offset + 1);
 	}
+	// Returns number of blocks in removeBlocks that are !isLeaf()
+	private int logCount () {
+		int numLogs = 0;
+		
+		for (Block block : removeBlocks) {
+			if (isLeaf (block) == 0 && block.getType() != Material.AIR) {
+				// debug.i ("found log of type: " + block.getType());
+				numLogs ++;
+			}
+		}
+		debug.i ("found logs: " + numLogs);
+		return numLogs;
+	}		
+	
+	// Returns time it would have taken to break the tree with supplied tool
+	private float breakTime (final ItemStack tool) {
+		Material element = (tool != null ? tool.getType() : null);
+		float singleTime;
+		
+		switch (element) {
+			case GOLD_AXE:    singleTime = 0.25F; break;
+			case DIAMOND_AXE: singleTime = 0.4F;  break;
+			case IRON_AXE:    singleTime = 0.5F;  break;
+			case STONE_AXE:   singleTime = 0.75F; break;
+			case WOOD_AXE:    singleTime = 1.5F;  break;
+			
+			default:          singleTime = 3.0F;  break;
+		}
+		
+		float efficiencyFactor = 1.0F;
+		if (tool != null && tool.hasItemMeta()) {
+			int efficiencyLevel = tool.getItemMeta().getEnchantLevel (Enchantment.DIG_SPEED);
+			for (int i = 0; i < efficiencyLevel; i++)
+				efficiencyFactor /= 1.3F;
+			debug.i ("tool efficiency factor: " + efficiencyFactor);
+		}
+		int numLogs = logCount();
+		debug.i("breakTime (" + removeBlocks.size() + " blocks): " + numLogs * singleTime * efficiencyFactor);
+		return numLogs * singleTime * efficiencyFactor;	
+	}
 
 	protected void removeLater(final Player player, final boolean damage, final ItemStack playerTool) {
 		if (!valid) {
@@ -555,6 +597,7 @@ public abstract class BaseTree {
 		// valid tree, first calculate all blocks to remove
 		if (removeBlocks.size() == 0) {
 			removeBlocks = calculate(bottom, top);
+			debug.i("recalculated tree of size: " + removeBlocks.size());
 			removeBlocks.remove(bottom);
 		}
 		removeBlocks.remove(bottom);
@@ -563,9 +606,9 @@ public abstract class BaseTree {
 		debug.i("from: " + bottom.getY());
 		debug.i("tp: " + top.getY());
 
-		debug.i("size: " + removeBlocks.size());
-		debug.i("from: " + bottom.getY());
-		debug.i("tp: " + top.getY());
+//		debug.i("size: " + removeBlocks.size());
+//		debug.i("from: " + bottom.getY());
+//		debug.i("tp: " + top.getY());
 
 		if (totalBlocks.size() == 0) {
 			totalBlocks = (bottom == getBottom(bottom)) ? new ArrayList<Block>()
@@ -580,10 +623,16 @@ public abstract class BaseTree {
 				.getInt("Automatic Tree Destruction.Initial Delay (seconds)") * 20;
 		final int offset = Utils.plugin.getConfig()
 				.getInt("Automatic Tree Destruction.Delay (ticks)");
+		final boolean coolDownIsVariable = Utils.plugin.getConfig()
+				.getBoolean("Automatic Tree Destruction.Cooldown (variable)", false);
 		
 		final ItemStack tool = (damage && player.getGameMode() != GameMode.CREATIVE) ? playerTool : null;
 
-		Utils.plugin.setCoolDown(player);
+		if (coolDownIsVariable) {
+			// floor() the float we get such that if < 1.0, there is no cooldown
+			Utils.plugin.setCoolDown(player, (int) Math.floor (breakTime(playerTool)));
+		} else
+			Utils.plugin.setCoolDown (player);
 		
 		class InstantRunner extends BukkitRunnable {
 
