@@ -573,6 +573,17 @@ public abstract class BaseTree {
 			
 			default:          singleTime = 3.0F;  break;
 		}
+		if (this instanceof MushroomTree) {
+			switch (element) {
+				case GOLD_AXE:    singleTime = 0.05F; break;
+				case DIAMOND_AXE: singleTime = 0.05F;  break;
+				case IRON_AXE:    singleTime = 0.05F;  break;
+				case STONE_AXE:   singleTime = 0.1F; break;
+				case WOOD_AXE:    singleTime = 0.15F;  break;
+			
+				default:          singleTime = 0.3F;  break;
+			}
+		}				
 		
 		float efficiencyFactor = 1.0F;
 		if (tool != null && tool.hasItemMeta()) {
