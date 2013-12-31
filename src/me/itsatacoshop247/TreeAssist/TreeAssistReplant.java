@@ -2,6 +2,7 @@ package me.itsatacoshop247.TreeAssist;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 public class TreeAssistReplant implements Runnable {
 	public final TreeAssist plugin;
@@ -29,7 +30,9 @@ public class TreeAssistReplant implements Runnable {
 	@Override
 	public void run() 
 	{
-		if(plugin.isEnabled())
+		Material below = this.block.getRelative(BlockFace.DOWN).getType();
+		if(plugin.isEnabled() &&
+				(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY))
 		{
 			this.block.setType(mat);
 			this.block.setData(this.data);

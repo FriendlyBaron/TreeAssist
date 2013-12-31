@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 import me.itsatacoshop247.TreeAssist.blocklists.BlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.CoreProtectBlockList;
 import me.itsatacoshop247.TreeAssist.blocklists.EmptyBlockList;
 import me.itsatacoshop247.TreeAssist.blocklists.FlatFileBlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.HawkEyeBlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.LogBlockBlockList;
 import me.itsatacoshop247.TreeAssist.blocklists.PrismBlockList;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
@@ -120,6 +123,14 @@ public class TreeAssist extends JavaPlugin
 				blockList = new FlatFileBlockList();
 			} else if ("Prism".equalsIgnoreCase(pluginName)) {
 				blockList = new PrismBlockList();
+			} else if("LogBlock".equalsIgnoreCase(pluginName)) {
+				blockList = new LogBlockBlockList();
+			} else if("CoreProtect".equalsIgnoreCase(pluginName)) {
+				blockList = new CoreProtectBlockList();
+			} else if("HawkEye".equalsIgnoreCase(pluginName)) {
+				blockList = new HawkEyeBlockList();
+			} else {
+				blockList = new EmptyBlockList();
 			}
 		} else {
 			blockList = new EmptyBlockList();

@@ -331,6 +331,12 @@ public abstract class BaseTree {
 	private static BaseTree maybeReplant(TreeAssist plugin,
 			BlockBreakEvent event, BaseTree resultTree, Player player,
 			Block block) {
+		
+		Material below = block.getRelative(BlockFace.DOWN).getType();
+		if(!(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY)) {
+			return resultTree;
+		}
+		
 		if (plugin.getConfig().getBoolean("Main.Sapling Replant")
 				&& !event.isCancelled() && (resultTree.willReplant())) {
 
@@ -357,10 +363,6 @@ public abstract class BaseTree {
 						.getInt("Sapling Replant.Delay until Sapling is replanted (seconds) (minimum 1 second)");
 				if (delay < 1) {
 					delay = 1;
-				}
-				if (block.equals(resultTree.bottom)
-						&& block != resultTree.bottom) {
-					debug.i("I knew it!");
 				}
 				if (resultTree.isBottom(block)) {
 					// block is bottom
