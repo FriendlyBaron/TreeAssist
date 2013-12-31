@@ -280,12 +280,10 @@ public abstract class BaseTree {
 		if (success) {
 			debug.i("success!");
 			
-
-
 			debug.i("replant perms?");
 		
 			BaseTree tree = maybeReplant(plugin, event, resultTree, player, block);
-			if (tree != null) {
+			if (tree != null && !(tree instanceof InvalidTree)) {
 				return tree;
 			}
 	
@@ -341,6 +339,7 @@ public abstract class BaseTree {
 							}
 							return resultTree;
 						}
+						debug.i("no sapling without tool");
 						return new InvalidTree();
 					}
 				}
@@ -529,8 +528,12 @@ public abstract class BaseTree {
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
-					Utils.plugin.blockList.logBreak(block, null);
-					block.breakNaturally();
+					if (block.getType() == Material.SAPLING) {
+						debug.i("skip breaking sapling");
+					} else { 
+						Utils.plugin.blockList.logBreak(block, null);
+						block.breakNaturally();
+					}
 					removeBlocks.remove(block);
 					return;
 				}
@@ -651,6 +654,9 @@ public abstract class BaseTree {
 			public void run() {
 				if (offset < 0) {
 					for (Block block : removeBlocks) {
+						if (block.getType() == Material.SAPLING) 
+							debug.i ("skipping breaking a sapling");
+						else
 						if (tool == null) {
 							Utils.plugin.blockList.logBreak(block, player);
 							block.breakNaturally();
@@ -661,6 +667,9 @@ public abstract class BaseTree {
 					removeBlocks.clear();
 				} else {
 					for (Block block : removeBlocks) {
+						if (block.getType() == Material.SAPLING) 
+							debug.i ("skipping breaking a sapling");
+						else
 						if (tool == null) {
 							Utils.plugin.blockList.logBreak(block, player);
 							block.breakNaturally();
@@ -686,12 +695,18 @@ public abstract class BaseTree {
 			public void run() {
 				if (offset < 0) {
 					for (Block block : totalBlocks) {
-						breakBlock(block, null, null);
+						if (block.getType() != Material.SAPLING) 
+							breakBlock(block, null, null);
+						else 
+							debug.i ("CleanRunner: skipped a sapling");
 					}
 					removeBlocks.clear();
 				} else {
 					for (Block block : totalBlocks) {
-						breakBlock(block, null, null);
+						if (block.getType() != Material.SAPLING) 
+							breakBlock(block, null, null);
+						else 
+							debug.i ("CleanRunner: skipped a sapling");
 						totalBlocks.remove(block);
 						return;
 					}
