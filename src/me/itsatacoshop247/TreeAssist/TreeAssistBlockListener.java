@@ -172,8 +172,6 @@ public class TreeAssistBlockListener implements Listener
 				trees.remove(tree);
 			}
 		}
-
-		plugin.getLogger().info(""+trees.size());
 		
 		BaseTree tree = BaseTree.calculate(event);
 		
