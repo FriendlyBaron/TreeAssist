@@ -1,9 +1,9 @@
 package me.itsatacoshop247.TreeAssist.trees;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
 import me.itsatacoshop247.TreeAssist.TreeAssist;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
@@ -33,6 +33,8 @@ public abstract class BaseTree {
 
 	protected Block bottom;
 	protected Block top;
+	
+	protected boolean isCalculated = false;
 
 	private static void checkAndDoSaplingProtect(Player player, Block block,
 			BlockBreakEvent event) {
@@ -79,6 +81,7 @@ public abstract class BaseTree {
 	}
 
 	private static BaseTree getTreeByBlockBreakEvent(BlockBreakEvent event) {
+		
 		Block block = event.getBlock();
 		TreeType type = getTreeTypeByBlock(block);
 		if (type == null) {
@@ -132,6 +135,8 @@ public abstract class BaseTree {
 	}
 
 	public static BaseTree calculate(BlockBreakEvent event) {
+		
+		debug.i("calculating " + event.getBlock().getLocation().toString());
 
 		TreeAssist plugin = Utils.plugin;
 
@@ -145,6 +150,11 @@ public abstract class BaseTree {
 		if (resultTree == null) {
 			debug.i("getTreeByBlockBreakEvent == null");
 			return new InvalidTree(); // not a tree block!
+		}
+		
+		if (resultTree.isValid()) {
+			debug.i("already know it!");
+			return resultTree;
 		}
 
 		Block block = event.getBlock();
@@ -209,9 +219,8 @@ public abstract class BaseTree {
 					resultTree.removeLater();
 					debug.i("Not maybe. For sure!");
 				}
-				return resultTree;
 			}
-			return new InvalidTree();
+			return resultTree;
 		}
 
 		if (!plugin.getConfig().getBoolean("Main.Destroy Only Blocks Above")) {
@@ -292,7 +301,7 @@ public abstract class BaseTree {
 
 			BaseTree tree = maybeReplant(plugin, event, resultTree, player,
 					block);
-			if (tree != null) {
+			if (tree != null && !(tree instanceof InvalidTree)) {
 				return tree;
 			}
 
@@ -355,6 +364,7 @@ public abstract class BaseTree {
 							}
 							return resultTree;
 						}
+						debug.i("no sapling without tool");
 						return new InvalidTree();
 					}
 				}
@@ -560,8 +570,12 @@ public abstract class BaseTree {
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
-					Utils.plugin.blockList.logBreak(block, null);
-					block.breakNaturally();
+					if (block.getType() == Material.SAPLING) {
+						debug.i("removeLater: skip breaking sapling");
+					} else {
+						Utils.plugin.blockList.logBreak(block, null);
+						block.breakNaturally();
+					}
 					removeBlocks.remove(block);
 					return;
 				}
@@ -589,17 +603,14 @@ public abstract class BaseTree {
 		// valid tree, first calculate all blocks to remove
 		if (removeBlocks.size() == 0) {
 			removeBlocks = calculate(bottom, top);
+			debug.i("recalculated tree of size: " + removeBlocks.size());
 			removeBlocks.remove(bottom);
 		}
 		removeBlocks.remove(bottom);
 
 		debug.i("size: " + removeBlocks.size());
 		debug.i("from: " + bottom.getY());
-		debug.i("tp: " + top.getY());
-
-		debug.i("size: " + removeBlocks.size());
-		debug.i("from: " + bottom.getY());
-		debug.i("tp: " + top.getY());
+		debug.i("to: " + top.getY());
 
 		if (totalBlocks.size() == 0) {
 			totalBlocks = (bottom == getBottom(bottom)) ? new ArrayList<Block>()
@@ -626,6 +637,10 @@ public abstract class BaseTree {
 			public void run() {
 				if (offset < 0) {
 					for (Block block : removeBlocks) {
+						if (block.getType() == Material.SAPLING) {
+							debug.i ("InstantRunner: skipping breaking a sapling");
+							continue;
+						}
 						if (tool == null) {
 							Utils.plugin.blockList.logBreak(block, player);
 							block.breakNaturally();
@@ -636,6 +651,10 @@ public abstract class BaseTree {
 					removeBlocks.clear();
 				} else {
 					for (Block block : removeBlocks) {
+						if (block.getType() == Material.SAPLING) {
+							debug.i ("InstantRunner: skipping breaking a sapling");
+							continue;
+						}
 						if (tool == null) {
 							Utils.plugin.blockList.logBreak(block, player);
 							block.breakNaturally();
@@ -661,11 +680,19 @@ public abstract class BaseTree {
 			public void run() {
 				if (offset < 0) {
 					for (Block block : totalBlocks) {
+						if (block.getType() == Material.SAPLING) {
+							debug.i ("CleanRunner: skipping breaking a sapling");
+							continue;
+						}
 						breakBlock(block, null, null);
 					}
 					removeBlocks.clear();
 				} else {
 					for (Block block : totalBlocks) {
+						if (block.getType() == Material.SAPLING) {
+							debug.i ("CleanRunner: skipping breaking a sapling");
+							continue;
+						}
 						breakBlock(block, null, null);
 						totalBlocks.remove(block);
 						return;
@@ -685,6 +712,29 @@ public abstract class BaseTree {
 	}
 
 	public boolean contains(Block block) {
+		
+		Iterator<Block> i = removeBlocks.iterator();
+		while (i.hasNext()) {
+			Block b = i.next();
+			if (block.getType() == Material.AIR ||
+					block.getType() == Material.SAPLING) {
+				removeBlocks.remove(b);
+			}
+		}
+		i = totalBlocks.iterator();
+		while (i.hasNext()) {
+			Block b = i.next();
+			if (block.getType() == Material.AIR ||
+					block.getType() == Material.SAPLING) {
+				totalBlocks.remove(b);
+			}
+		}
+		if (removeBlocks.size() < 1 && totalBlocks.size() < 1) {
+			this.valid = false;
+			return false;
+		}
+		
+		
 		return removeBlocks.contains(block) || totalBlocks.contains(block);
 	}
 

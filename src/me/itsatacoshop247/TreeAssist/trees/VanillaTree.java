@@ -363,7 +363,7 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected boolean isBottom(Block block) {
-		if (bottoms != null && data == 3 || data == 1) {
+		if (bottoms != null && (data == 3 || data == 1)) {
 			for (Block b : bottoms) {
 				if (b != null && b.equals(block)) {
 					return true;

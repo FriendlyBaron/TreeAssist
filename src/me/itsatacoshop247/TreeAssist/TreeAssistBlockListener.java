@@ -159,11 +159,21 @@ public class TreeAssistBlockListener implements Listener
 		if (!plugin.Enabled) {
 			return;
 		}
+		
+		Set<BaseTree> myTrees = new HashSet<BaseTree>();
 		for (BaseTree tree : trees) {
+			myTrees.add(tree);
+		}
+		
+		for (BaseTree tree : myTrees) {
 			if (tree.contains(event.getBlock())) {
 				return;
+			} else if (!tree.isValid()) {
+				trees.remove(tree);
 			}
 		}
+
+		plugin.getLogger().info(""+trees.size());
 		
 		BaseTree tree = BaseTree.calculate(event);
 		

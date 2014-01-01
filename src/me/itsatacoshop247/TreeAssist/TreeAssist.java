@@ -512,6 +512,7 @@ public class TreeAssist extends JavaPlugin
 			return;
 		} else if (coolDown < 0) {
 			coolDown = tree.calculateCooldown(player.getItemInHand());
+			player.sendMessage(ChatColor.GREEN + "Wait " + coolDown + " seconds for TreeAssist cooldown");
 		}
 		CooldownCounter cc = new CooldownCounter(player, coolDown);
 		cc.runTaskTimer(this, 20L, 20L);
