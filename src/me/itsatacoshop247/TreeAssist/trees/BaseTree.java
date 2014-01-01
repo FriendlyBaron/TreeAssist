@@ -566,7 +566,10 @@ public abstract class BaseTree {
 				"Automatic Tree Destruction.Delay (ticks)");
 
 		class RemoveRunner extends BukkitRunnable {
-
+			private final BaseTree me;
+			RemoveRunner(BaseTree tree) {
+				me = tree;
+			}
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
@@ -578,7 +581,9 @@ public abstract class BaseTree {
 					}
 					removeBlocks.remove(block);
 					return;
+					
 				}
+				me.valid = false;
 				try {
 					this.cancel();
 				} catch (Exception e) {
@@ -588,7 +593,7 @@ public abstract class BaseTree {
 
 		}
 
-		(new RemoveRunner()).runTaskTimer(Utils.plugin, delay, offset + 1);
+		(new RemoveRunner(this)).runTaskTimer(Utils.plugin, delay, offset + 1);
 	}
 
 	protected void removeLater(final Player player, final boolean damage,
@@ -676,6 +681,10 @@ public abstract class BaseTree {
 		(new InstantRunner()).runTaskTimer(Utils.plugin, offset, offset);
 
 		class CleanRunner extends BukkitRunnable {
+			private final BaseTree me;
+			CleanRunner(BaseTree tree) {
+				me = tree;
+			}
 			@Override
 			public void run() {
 				if (offset < 0) {
@@ -699,6 +708,7 @@ public abstract class BaseTree {
 					}
 				}
 
+				me.valid = false;
 				try {
 					this.cancel();
 				} catch (Exception e) {
@@ -708,7 +718,7 @@ public abstract class BaseTree {
 
 		}
 
-		(new CleanRunner()).runTaskTimer(Utils.plugin, delay, offset);
+		(new CleanRunner(this)).runTaskTimer(Utils.plugin, delay, offset);
 	}
 
 	public boolean contains(Block block) {
