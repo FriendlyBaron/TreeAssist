@@ -1,6 +1,7 @@
 package me.itsatacoshop247.TreeAssist.trees;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -724,20 +725,30 @@ public abstract class BaseTree {
 	public boolean contains(Block block) {
 		
 		Iterator<Block> i = removeBlocks.iterator();
-		while (i.hasNext()) {
-			Block b = i.next();
-			if (block.getType() == Material.AIR ||
-					block.getType() == Material.SAPLING) {
-				removeBlocks.remove(b);
+		try {
+			while (i.hasNext()) {
+			
+				Block b = i.next();
+				if (block.getType() == Material.AIR ||
+						block.getType() == Material.SAPLING) {
+					removeBlocks.remove(b);
+				}
 			}
+		} catch (ConcurrentModificationException cme) {
+			
 		}
 		i = totalBlocks.iterator();
-		while (i.hasNext()) {
-			Block b = i.next();
-			if (block.getType() == Material.AIR ||
-					block.getType() == Material.SAPLING) {
-				totalBlocks.remove(b);
+		try {
+			while (i.hasNext()) {
+			
+				Block b = i.next();
+				if (block.getType() == Material.AIR ||
+						block.getType() == Material.SAPLING) {
+					totalBlocks.remove(b);
+				}
 			}
+		} catch (ConcurrentModificationException cme) {
+			
 		}
 		if (removeBlocks.size() < 1 && totalBlocks.size() < 1) {
 			this.valid = false;
