@@ -42,6 +42,7 @@ public class LogBlockBlockList implements BlockList {
 		params.limit = 1;
 		params.loc = block.getLocation();
 		params.needType = true;
+		params.world = block.getWorld();
 
 		try {
 		    for (BlockChange bc : logBlock.getBlockChanges(params)) {
