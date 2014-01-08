@@ -136,6 +136,7 @@ public class CustomTree extends BaseTree {
 						replaceSapling(Integer.parseInt(value), delay,
 								bottom, (byte)0);
 					}
+					break;
 				}
 			}
 		}
@@ -151,7 +152,7 @@ public class CustomTree extends BaseTree {
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, mat, data);
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.getMaterial(materialID), data);
 		Utils.plugin.getServer()
 				.getScheduler()
 				.scheduleSyncDelayedTask(Utils.plugin, b,

@@ -322,6 +322,7 @@ public abstract class BaseTree {
 		}
 
 		debug.i("no success!");
+		
 		BaseTree tree = maybeReplant(plugin, event, resultTree, player, block);
 		if (tree != null) {
 			return tree;
@@ -341,6 +342,10 @@ public abstract class BaseTree {
 	private static BaseTree maybeReplant(TreeAssist plugin,
 			BlockBreakEvent event, BaseTree resultTree, Player player,
 			Block block) {
+		
+		if (!block.equals(resultTree.bottom)) {
+			block = resultTree.bottom;
+		}
 		
 		Material below = block.getRelative(BlockFace.DOWN).getType();
 		if(!(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY)) {
@@ -724,7 +729,12 @@ public abstract class BaseTree {
 
 	public boolean contains(Block block) {
 		
-		Iterator<Block> i = removeBlocks.iterator();
+		List<Block> myRemoveBlocks = new ArrayList<Block>();
+		for (Block iBlock : removeBlocks) {
+			myRemoveBlocks.add(iBlock);
+		}
+		
+		Iterator<Block> i = myRemoveBlocks.iterator();
 		try {
 			while (i.hasNext()) {
 			
@@ -737,18 +747,19 @@ public abstract class BaseTree {
 		} catch (ConcurrentModificationException cme) {
 			
 		}
-		i = totalBlocks.iterator();
-		try {
-			while (i.hasNext()) {
+		myRemoveBlocks = new ArrayList<Block>();
+		for (Block iBlock : totalBlocks) {
+			myRemoveBlocks.add(iBlock);
+		}
+		
+		i = myRemoveBlocks.iterator();
+		while (i.hasNext()) {
 			
-				Block b = i.next();
-				if (block.getType() == Material.AIR ||
-						block.getType() == Material.SAPLING) {
-					totalBlocks.remove(b);
-				}
+			Block b = i.next();
+			if (block.getType() == Material.AIR ||
+					block.getType() == Material.SAPLING) {
+				totalBlocks.remove(b);
 			}
-		} catch (ConcurrentModificationException cme) {
-			
 		}
 		if (removeBlocks.size() < 1 && totalBlocks.size() < 1) {
 			this.valid = false;
