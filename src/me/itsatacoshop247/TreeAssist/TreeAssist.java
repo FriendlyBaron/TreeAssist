@@ -518,5 +518,9 @@ public class TreeAssist extends JavaPlugin
 		cc.runTaskTimer(this, 20L, 20L);
 		coolDowns.put(player.getName(), cc);
 	}
+	
+	public TreeAssistBlockListener getListener() {
+		return listener;
+	}
 }
 	

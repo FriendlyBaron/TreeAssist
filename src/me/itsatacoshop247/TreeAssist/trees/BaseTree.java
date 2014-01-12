@@ -35,7 +35,7 @@ public abstract class BaseTree {
 	protected Block bottom;
 	protected Block top;
 	
-	protected boolean isCalculated = false;
+	protected boolean fastDecaying = false;
 
 	private static void checkAndDoSaplingProtect(Player player, Block block,
 			BlockBreakEvent event) {
@@ -582,6 +582,10 @@ public abstract class BaseTree {
 					if (block.getType() == Material.SAPLING) {
 						debug.i("removeLater: skip breaking sapling");
 					} else {
+						if (!fastDecaying && isLeaf(block) == 1) {
+							Utils.plugin.getListener().breakRadiusIfLeaf(block);
+							fastDecaying = true;
+						}
 						Utils.plugin.blockList.logBreak(block, null);
 						block.breakNaturally();
 					}
@@ -652,6 +656,10 @@ public abstract class BaseTree {
 							debug.i ("InstantRunner: skipping breaking a sapling");
 							continue;
 						}
+						if (!fastDecaying && isLeaf(block) == 1) {
+							Utils.plugin.getListener().breakRadiusIfLeaf(block);
+							fastDecaying = true;
+						}
 						if (tool == null) {
 							Utils.plugin.blockList.logBreak(block, player);
 							block.breakNaturally();
@@ -695,6 +703,10 @@ public abstract class BaseTree {
 			public void run() {
 				if (offset < 0) {
 					for (Block block : totalBlocks) {
+						if (!fastDecaying && isLeaf(block) == 1) {
+							Utils.plugin.getListener().breakRadiusIfLeaf(block);
+							fastDecaying = true;
+						}
 						if (block.getType() == Material.SAPLING) {
 							debug.i ("CleanRunner: skipping breaking a sapling");
 							continue;
@@ -704,6 +716,10 @@ public abstract class BaseTree {
 					removeBlocks.clear();
 				} else {
 					for (Block block : totalBlocks) {
+						if (!fastDecaying && isLeaf(block) == 1) {
+							Utils.plugin.getListener().breakRadiusIfLeaf(block);
+							fastDecaying = true;
+						}
 						if (block.getType() == Material.SAPLING) {
 							debug.i ("CleanRunner: skipping breaking a sapling");
 							continue;

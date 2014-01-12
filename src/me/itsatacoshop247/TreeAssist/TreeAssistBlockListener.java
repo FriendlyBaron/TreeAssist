@@ -216,7 +216,7 @@ public class TreeAssistBlockListener implements Listener
 	 * 
 	 * @param blockAt the block to check
 	 */
-	private void breakRadiusIfLeaf(Block blockAt) 
+	public void breakRadiusIfLeaf(Block blockAt) 
 	{
 		if(blockAt.getType() == Material.LEAVES || blockAt.getType().name().equals("LEAVES_2") || CustomTree.isCustomTreeBlock(blockAt))
 		{
