@@ -268,6 +268,8 @@ public class VanillaOneSevenTree extends BaseTree {
 				return;
 			}
 		}
+
+		boolean isMain = false;
 		
 		if (block.getX() == bottom.getX() && block.getZ() == bottom.getZ()) {
 //			debug.i("main trunk!");
@@ -276,9 +278,43 @@ public class VanillaOneSevenTree extends BaseTree {
 //				debug.i("not deep; out!");
 				return;
 			}
+			isMain = true;
 		}
-
 		
+		if (!isMain && bottoms != null) {
+			for (Block bBottom : bottoms) {
+				if (block.getX() == bottom.getX() && block.getZ() == bottom.getZ()) {
+//					debug.i("main trunk!");
+					if (!deep) {
+						// something else caught the main, return, this will be done later!
+//						debug.i("not deep; out!");
+						return;
+					}
+					isMain = true;
+					break;
+				}
+			}
+		}
+		
+		if (!isMain && block.getData() == 1) {
+			// we have a fat block outside of the trunk, make sure it is not another tree's trunk!
+			Block iBlock = block.getRelative(BlockFace.DOWN);
+			while (iBlock.getType().name().equals("LOG_2")) {
+				iBlock = iBlock.getRelative(BlockFace.DOWN);
+				// check what is UNDER the maybe-trunk we have here
+			}
+			
+			switch (iBlock.getType()) {
+			case AIR:
+				break; // we're just hanging in there, it'll be fine
+			case GRASS:
+			case DIRT: 
+			case CLAY:
+				return; // another trunk - OUT!!!
+			default:
+				break; // I dunno - should be fine, I guess? 
+			}
+		}
 		
 		if (block.getRelative(0, 1, 0).getType() == logMat) { // might
 																		// be a
