@@ -579,7 +579,8 @@ public abstract class BaseTree {
 			@Override
 			public void run() {
 				for (Block block : removeBlocks) {
-					if (block.getType() == Material.SAPLING) {
+					if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+							|| block.getType() == Material.RED_MUSHROOM) {
 						debug.i("removeLater: skip breaking sapling");
 					} else {
 						if (!fastDecaying && isLeaf(block) == 1) {
@@ -652,7 +653,8 @@ public abstract class BaseTree {
 			public void run() {
 				if (offset < 0) {
 					for (Block block : removeBlocks) {
-						if (block.getType() == Material.SAPLING) {
+						if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+								|| block.getType() == Material.RED_MUSHROOM) {
 							debug.i ("InstantRunner: skipping breaking a sapling");
 							continue;
 						}
@@ -670,7 +672,8 @@ public abstract class BaseTree {
 					removeBlocks.clear();
 				} else {
 					for (Block block : removeBlocks) {
-						if (block.getType() == Material.SAPLING) {
+						if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+								|| block.getType() == Material.RED_MUSHROOM) {
 							debug.i ("InstantRunner: skipping breaking a sapling");
 							continue;
 						}
@@ -707,7 +710,8 @@ public abstract class BaseTree {
 							Utils.plugin.getListener().breakRadiusIfLeaf(block);
 							fastDecaying = true;
 						}
-						if (block.getType() == Material.SAPLING) {
+						if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+								|| block.getType() == Material.RED_MUSHROOM) {
 							debug.i ("CleanRunner: skipping breaking a sapling");
 							continue;
 						}
@@ -720,7 +724,8 @@ public abstract class BaseTree {
 							Utils.plugin.getListener().breakRadiusIfLeaf(block);
 							fastDecaying = true;
 						}
-						if (block.getType() == Material.SAPLING) {
+						if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+								|| block.getType() == Material.RED_MUSHROOM) {
 							debug.i ("CleanRunner: skipping breaking a sapling");
 							continue;
 						}
@@ -756,7 +761,8 @@ public abstract class BaseTree {
 			
 				Block b = i.next();
 				if (block.getType() == Material.AIR ||
-						block.getType() == Material.SAPLING) {
+						block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+						|| block.getType() == Material.RED_MUSHROOM) {
 					removeBlocks.remove(b);
 				}
 			}
@@ -773,7 +779,8 @@ public abstract class BaseTree {
 			
 			Block b = i.next();
 			if (block.getType() == Material.AIR ||
-					block.getType() == Material.SAPLING) {
+					block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
+					|| block.getType() == Material.RED_MUSHROOM) {
 				totalBlocks.remove(b);
 			}
 		}
