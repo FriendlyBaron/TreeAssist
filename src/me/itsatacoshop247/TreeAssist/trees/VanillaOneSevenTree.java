@@ -430,13 +430,13 @@ public class VanillaOneSevenTree extends BaseTree {
 		if (block.getData() == 1) {
 			
 			if (bottoms == null) {
-				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
+				if (block.getLocation().distanceSquared(bottom.getLocation())>9) {
 					return true;
 				}
 			}
 			
 			for (Block bottom : bottoms) {
-				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
+				if (block.getLocation().distanceSquared(bottom.getLocation())>9) {
 					return true;
 				}
 			}
