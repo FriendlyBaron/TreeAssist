@@ -9,6 +9,7 @@ Main:
   Auto Plant Dropped Saplings: false
 Automatic Tree Destruction:
   Forced Removal: false
+  Remove Leaves: true
   Initial Delay (seconds): 10
   Delay (ticks): 0
   Tree Types:

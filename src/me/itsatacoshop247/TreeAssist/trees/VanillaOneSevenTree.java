@@ -134,7 +134,20 @@ public class VanillaOneSevenTree extends BaseTree {
 	@Override
 	protected List<Block> calculate(final Block bottom, final Block top) {
 		List<Block> list = new ArrayList<Block>();
-		checkBlock(list, bottom, top, true, bottom.getData());
+		
+		if (bottoms == null) {
+			checkBlock(list, bottom, top, true, bottom.getData());
+		} else {
+//			debug.i("-------- checking bottoms!! --------");
+			for (Block bBlock : bottoms) {
+				if (bBlock == null) {
+					continue;
+				}
+//				debug.i("-------- checking bottom!! --------");
+				checkBlock(list, bBlock, top, true, bBlock.getData());
+			}
+		}
+		
 		return list;
 	}
 
@@ -254,7 +267,7 @@ public class VanillaOneSevenTree extends BaseTree {
 			if (isLeaf(block) > 0) {
 				if (!list.contains(block)) {
 					list.add(block);
-					debug.i("cB: adding leaf " + block.getY());
+//					debug.i("cB: adding leaf " + block.getY());
 				}
 			}
 //			debug.i("out!");
@@ -283,7 +296,7 @@ public class VanillaOneSevenTree extends BaseTree {
 		
 		if (!isMain && bottoms != null) {
 			for (Block bBottom : bottoms) {
-				if (block.getX() == bottom.getX() && block.getZ() == bottom.getZ()) {
+				if (block.getX() == bBottom.getX() && block.getZ() == bBottom.getZ()) {
 //					debug.i("main trunk!");
 					if (!deep) {
 						// something else caught the main, return, this will be done later!
@@ -321,7 +334,7 @@ public class VanillaOneSevenTree extends BaseTree {
 																		// trunk
 //			debug.i("trunk?");
 			// one above is a tree block
-			if (block.getX() != top.getX() && block.getZ() != top.getZ()) {
+			if (!isMain) {
 //				debug.i("not main!");
 				
 				if (block.getData() < 1) {
@@ -413,6 +426,40 @@ public class VanillaOneSevenTree extends BaseTree {
 		checkBlock(list, block.getRelative(0, 1, 0), top, true, origData);
 	}
 	protected boolean checkFail(Block block) {
+		
+		if (block.getData() == 1) {
+			
+			if (bottoms == null) {
+				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
+					return true;
+				}
+			}
+			
+			for (Block bottom : bottoms) {
+				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
+					return true;
+				}
+			}
+			
+			while (block.getType().name().equals("LOG_2")) {
+				block = block.getRelative(BlockFace.DOWN);
+			}
+			switch (block.getType()) {
+			case AIR:
+				return false; // we're just hanging in there, it'll be fine
+			case GRASS:
+			case DIRT: 
+			case CLAY:
+				return true; // another trunk - OUT!!!
+			default:
+				return false; // I dunno - should be fine, I guess? 
+			}
+		}
+		
+		if (block.getLocation().distanceSquared(bottom.getLocation())>16) {
+			return true;
+		}
+		
 		int failCount = 0;
 		for (int cont = -4; cont < 5; cont++) {
 			if (block.getRelative(0, cont, 0).getType() == logMat) {
@@ -420,7 +467,7 @@ public class VanillaOneSevenTree extends BaseTree {
 			}
 		}
 		if (failCount > 3) {
-//			debug.i("fail count "+failCount+"! out!");
+			debug.i("fail count "+failCount+"! out!");
 			return true;
 		}
 		return false;

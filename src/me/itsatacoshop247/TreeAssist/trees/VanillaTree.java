@@ -348,6 +348,21 @@ public class VanillaTree extends BaseTree {
 		checkBlock(list, block.getRelative(0, 1, 0), top, true, origData);
 	}
 	protected boolean checkFail(Block block) {
+		if (bottom.getData() == 3) {
+			if (bottoms == null) {
+				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
+					return true;
+				}
+			}
+			
+			for (Block bottom : bottoms) {
+				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
+					return true;
+				}
+			}
+		}
+		
+		
 		int failCount = 0;
 		for (int cont = -4; cont < 5; cont++) {
 			if (block.getRelative(0, cont, 0).getType() == Material.LOG) {

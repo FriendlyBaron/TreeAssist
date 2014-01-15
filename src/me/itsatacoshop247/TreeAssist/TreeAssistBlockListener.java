@@ -92,7 +92,7 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if(plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getType() == Material.LOG || event.getBlock().getType().name().equals("LOG_2") || CustomTree.isCustomLog(event.getBlock())))
+		if(!plugin.config.getBoolean("Main.Ignore User Placed Blocks") && (event.getBlock().getType() == Material.LOG || event.getBlock().getType().name().equals("LOG_2") || CustomTree.isCustomLog(event.getBlock())))
 		{
 			if(plugin.config.getBoolean("Worlds.Enable Per World"))
 			{

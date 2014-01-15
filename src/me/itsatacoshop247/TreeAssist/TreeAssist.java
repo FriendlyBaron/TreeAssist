@@ -116,7 +116,7 @@ public class TreeAssist extends JavaPlugin
 		initiateList("Modding.Custom Logs", Utils.validTypes);
 		initiateList("Modding.Custom Tree Blocks", Utils.validTypes);
 		
-		if (getConfig().getBoolean("Main.Ignore User Placed Blocks")) {
+		if (!getConfig().getBoolean("Main.Ignore User Placed Blocks")) {
 			String pluginName = getConfig().getString(
 					"Placed Blocks.Handler Plugin Name", "TreeAssist");
 			if ("TreeAssist".equalsIgnoreCase(pluginName)) {
@@ -299,6 +299,7 @@ public class TreeAssist extends JavaPlugin
 		items.put("Sapling Replant.Tree Types to Replant.BigSpruce", "true");
 		
 		items.put("Sapling Replant.Enforce", "true");
+		items.put("Automatic Tree Destruction.Remove Leaves", "true");
 		return items;
 	}
 
