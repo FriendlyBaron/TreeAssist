@@ -296,6 +296,9 @@ public class VanillaOneSevenTree extends BaseTree {
 		
 		if (!isMain && bottoms != null) {
 			for (Block bBottom : bottoms) {
+				if (bBottom == null) {
+					continue;
+				}
 				if (block.getX() == bBottom.getX() && block.getZ() == bBottom.getZ()) {
 //					debug.i("main trunk!");
 					if (!deep) {
