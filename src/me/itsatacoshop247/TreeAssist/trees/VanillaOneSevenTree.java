@@ -8,6 +8,7 @@ import me.itsatacoshop247.TreeAssist.TreeAssistReplant;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -154,6 +155,24 @@ public class VanillaOneSevenTree extends BaseTree {
 	@Override
 	protected int isLeaf(Block block) {
 		if (block.getType() == Material.LEAVES_2) {
+			Location bottomLoc = block.getLocation().clone();
+			if (bottoms == null) {
+				bottomLoc.setY(bottom.getY());
+				if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
+					return 0;
+				}
+			} else {
+				for (Block bottom : bottoms) {
+					if (bottom == null) {
+						continue;
+					}
+					bottomLoc.setY(bottom.getY());
+					if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
+						return 0;
+					}
+				}
+			}
+			
 			return 1;
 		}
 		return 0;
