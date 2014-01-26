@@ -343,8 +343,12 @@ public abstract class BaseTree {
 			BlockBreakEvent event, BaseTree resultTree, Player player,
 			Block block) {
 		
-		if (!block.equals(resultTree.bottom)) {
+		if (!resultTree.isBottom(block)) {
 			block = resultTree.bottom;
+			if (block == null) {
+				plugin.getLogger().warning("Block null!");
+				return new InvalidTree();
+			}
 		}
 		
 		Material below = block.getRelative(BlockFace.DOWN).getType();
