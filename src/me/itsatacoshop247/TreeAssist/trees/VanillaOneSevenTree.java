@@ -157,6 +157,9 @@ public class VanillaOneSevenTree extends BaseTree {
 		if (block.getType() == Material.LEAVES_2) {
 			Location bottomLoc = block.getLocation().clone();
 			if (bottoms == null) {
+				if (bottom == null) {
+					return 0;
+				}
 				bottomLoc.setY(bottom.getY());
 				if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
 					return 0;
