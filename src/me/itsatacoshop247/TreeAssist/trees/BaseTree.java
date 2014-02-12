@@ -346,7 +346,7 @@ public abstract class BaseTree {
 		if (!resultTree.isBottom(block)) {
 			block = resultTree.bottom;
 			if (block == null) {
-				plugin.getLogger().warning("Block null!");
+				//plugin.getLogger().warning("Block null!");
 				return new InvalidTree();
 			}
 		}
