@@ -300,6 +300,7 @@ public class TreeAssist extends JavaPlugin
 		
 		items.put("Sapling Replant.Enforce", "true");
 		items.put("Automatic Tree Destruction.Remove Leaves", "true");
+		items.put("Main.Toggle Default", "true");
 		return items;
 	}
 

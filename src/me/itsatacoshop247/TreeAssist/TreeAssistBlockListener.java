@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class TreeAssistBlockListener implements Listener  
 {
@@ -177,6 +178,13 @@ public class TreeAssistBlockListener implements Listener
 		
 		if (tree.isValid()) {
 			trees.add(tree);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (!plugin.getConfig().getBoolean("Main.Toggle Default")) {
+			plugin.playerList.add(event.getPlayer().getName());
 		}
 	}
 
