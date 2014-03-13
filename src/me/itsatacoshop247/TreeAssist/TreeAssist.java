@@ -53,7 +53,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class TreeAssist extends JavaPlugin 
 {
-	public List<String> playerList = new ArrayList<String>();
+	private final Map<String, List<String>> disabledMap = new HashMap<String, List<String>>();
 	public List<Location> saplingLocationList = new ArrayList<Location>();
 	
 	public boolean Enabled = true;
@@ -397,15 +397,24 @@ public class TreeAssist extends JavaPlugin
 					return true;
 				} else if(args[0].equalsIgnoreCase("Toggle")) {
 					
-					if (sender.hasPermission("treeassist.toggle.other") && args.length > 2) {
-						if(playerList.contains(args[1]))
-						{
-							playerList.remove(args[1]);
-							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for "+args[1]+"!");
+					if (sender.hasPermission("treeassist.toggle.other") && args.length > 1) {
+						
+						if (args.length > 2) {
+							if (Bukkit.getWorld(args[2]) == null) {
+								sender.sendMessage(ChatColor.RED + "World not found: " + args[2]);
+								return true;
+							}
+							
+							if(toggleWorld(args[2], args[1])) {
+								sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for "+args[1]+" in world "+args[2]+"!");
+							} else {
+								sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for "+args[1]+" in world "+args[2]+"!");
+							}
 						}
-						else
-						{
-							playerList.add(args[1]);
+						
+						if(toggleGlobal(args[1])) {
+							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for "+args[1]+"!");
+						} else {
 							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for "+args[1]+"!");
 						}
 						return true;
@@ -416,14 +425,23 @@ public class TreeAssist extends JavaPlugin
 						sender.sendMessage("You don't have treeassist.toggle");
 						return true;
 					}
-					if(playerList.contains(sender.getName()))
-					{
-						playerList.remove(sender.getName());
-						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for you!");
+					
+					if (args.length > 1) {
+						if (Bukkit.getWorld(args[1]) == null) {
+							sender.sendMessage(ChatColor.RED + "World not found: " + args[1]);
+							return true;
+						}
+						
+						if(toggleWorld(args[1], sender.getName())) {
+							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for you in world "+args[1]+"!");
+						} else {
+							sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for you in world "+args[1]+"!");
+						}
 					}
-					else
-					{
-						playerList.add(sender.getName());
+					
+					if(toggleGlobal(sender.getName())) {
+						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for you!");
+					} else {
 						sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for you!");
 					}
 					return true;
@@ -459,10 +477,39 @@ public class TreeAssist extends JavaPlugin
 		return false;
 	}
 
+	boolean toggleGlobal(String player) {
+		return toggleWorld("global", player);
+	}
+
+	private boolean toggleWorld(String world, String player) {
+		if (disabledMap.containsKey(world)) {
+			if (disabledMap.get(world).contains(player)) {
+				disabledMap.get(world).remove(player);
+				return false;
+			} else {
+				disabledMap.get(world).add(player);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean isActive(World world) {
 		return (!config.getBoolean("Worlds.Enable Per World")) ||
 		config.getList("Worlds.Enabled Worlds").contains(
 			world.getName());
+	}
+
+	public boolean isDisabled(String world, String player) {
+		if (disabledMap.containsKey("global")) {
+			if (disabledMap.get("global").contains(player)) {
+				return true;
+			}
+		}
+		if (disabledMap.containsKey(world)) {
+			return disabledMap.get(world).contains(player);
+		}
+		return false;
 	}
 
 	public boolean isForceAutoDestroy() {

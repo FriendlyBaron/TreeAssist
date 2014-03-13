@@ -184,7 +184,7 @@ public class TreeAssistBlockListener implements Listener
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (!plugin.getConfig().getBoolean("Main.Toggle Default")) {
-			plugin.playerList.add(event.getPlayer().getName());
+			plugin.toggleGlobal(event.getPlayer().getName());
 		}
 	}
 

@@ -289,7 +289,7 @@ public abstract class BaseTree {
 				}
 			}
 
-			if (!plugin.playerList.contains(player.getName())) {
+			if (!plugin.isDisabled(player.getWorld().getName(), player.getName())) {
 				success = resultTree.willBeDestroyed();
 				damage = plugin.getConfig().getBoolean(
 						"Main.Apply Full Tool Damage");
