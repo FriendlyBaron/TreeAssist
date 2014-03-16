@@ -461,6 +461,9 @@ public class VanillaOneSevenTree extends BaseTree {
 			}
 			
 			for (Block bottom : bottoms) {
+				if (bottom == null) {
+					continue;
+				}
 				if (block.getLocation().distanceSquared(bottom.getLocation())>9) {
 					return true;
 				}

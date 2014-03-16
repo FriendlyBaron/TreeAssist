@@ -1,3 +1,4 @@
+v5.8.57 - fix NPE in modded trees fail check
 v5.8.56 - add /treeassist noreplant - don't replant saplings for configured time
 v5.8.55 - readd libraries
 v5.8.54 - fix negative durability hacks
