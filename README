@@ -1,3 +1,47 @@
-http://dev.bukkit.org/server-mods/tree-assist/
-
-All the info you need is in the pages there.
+v5.8.53 - add /treeassist protecttool - protect individual saplings!
+v5.8.52 - add a world parameter to the toggle command
+v5.8.51 - add 'Main.Toggle Default' to default to disabled TA by default
+v5.8.50 - disable block null spam, not necessary!
+v5.8.49 - address github issue #21 - NPE in the 1.7 leaf range fix 
+v5.8.48 - fix an NPE in the sapling replace detection
+v5.8.47 - apply the radius hackfix to 1.7 tree leaves
+v5.8.46 - fix impossible NPE
+v5.8.45 - tweak greed fix
+v5.8.44 - fix big tree greed; add config setting to NOT remove leaves
+v5.8.43 - attempt to not extinct dark oak forests
+v5.8.42 - fix breaking of shrooms
+v5.8.41 - fix fast leaf decay
+v5.8.39 - fix the CME issues!
+v5.8.38 - hackfix github issue #38 until I have time to implement a proper solution
+v5.8.36 - remove debug output for dev.bukkit.org release
+v5.8.34 - actually support more logging plugins than Prism :P
+v5.8.33 - add
+v5.8.32 - check if the bottom blocks are set before comparing them - addresses github issue #14
+v5.8.31 - fix the BaseTree ENUM order -.-
+v5.8.30 - try to fix popping saplings
+v5.8.29 - actually read the sapling delay config setting
+v5.8.28 - add command /treeassist toggle [player]
+v5.8.27 - add sapling replant enforcing for when people have no perms or …
+v5.8.26 - add big spruce tree determination, fix bottom block …
+v5.8.25 - allow creative players to break saplings
+v5.8.24 - allow to replant saplings despite using Tree Feller
+v5.8.22 - re-support automated removal for sapling replant setups
+v5.8.21 - finish #20 by hackfixing leaves
+v5.8.20 - support Bukkit 1.6 servers!
+v5.8.19 - only replace shrooms where appropriate :)
+v5.8.18 - only allow (vanilla) saplings on dirt, grass, clay
+v5.8.17 - properly set the bottom to null if the tree has been cut …
+v5.8.16 - remove strange default values introduced in commit …
+v5.8.15 - use less deprecated methods, add missing 1.7 permission …
+v5.8.14 - Bukkit 1.7 support - finishes off 99.9% of all vanilla trees!
+v5.8.13 - Now it might be almost done. At least 95% of all trees work :)
+v5.8.12 - Fix little mistakes (1.7 compatibility not done!)
+v5.8.11 - attempt to support 1.7
+v5.8.10 - code cleanup, untweak leaf detection a little bit
+v5.8.9 - also replace saplings that don't have data value
+v5.8.8 - add even more debug
+v5.8.7 - properly calculate the resulting sapling ID
+v5.8.6 - add a bit more custom block debug
+v5.8.5 - replace saplings for modded trees
+v5.8.4 - fix an evil comparation messup remnant :)
+v5.8.2 - build with proper artifact values

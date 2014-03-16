@@ -7,7 +7,7 @@ dev-url: http://dev.bukkit.org/server-mods/tree-assist/
 commands:
   TreeAssist:
     description: Turn TreeAssist Featues on or off
-    usage: /<command> toggle/global/debug
+    usage: /<command> toggle/global/debug/protecttool
 permissions:
   treeassist.destroy.*:
     description: allows to use tree-assist for all trees
@@ -51,4 +51,7 @@ permissions:
     default: op
   treeassist.replant:
     descroption: allows to replant trees
+    default: op
+  treeassist.tool:
+    descroption: allows to gain the tool
     default: op

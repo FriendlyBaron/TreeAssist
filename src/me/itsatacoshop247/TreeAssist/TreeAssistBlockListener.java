@@ -7,6 +7,7 @@ import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,7 +22,10 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class TreeAssistBlockListener implements Listener  
 {
@@ -88,6 +92,27 @@ public class TreeAssistBlockListener implements Listener
 			}
 		}
 		*/	
+	}
+	
+	@EventHandler(ignoreCancelled = true)
+	public void onInteract(PlayerInteractEvent event) {
+		if (event.hasItem() && event.hasBlock()) {
+			if (this.isProtectTool(event.getPlayer().getItemInHand())) {
+				Block clicked = event.getClickedBlock();
+				
+				if (clicked.getType() == Material.SAPLING) {
+					if (plugin.saplingLocationList.contains(clicked.getLocation())) {
+						plugin.saplingLocationList.remove(clicked.getLocation());
+						event.getPlayer().sendMessage("" +
+								ChatColor.GREEN + "Sapling is no longer protected!");
+					} else {
+						plugin.saplingLocationList.add(clicked.getLocation());
+						event.getPlayer().sendMessage("" +
+								ChatColor.GREEN + "Sapling is now protected!");
+					}
+				}
+			}
+		}
 	}
 
 	@EventHandler(priority= EventPriority.HIGHEST, ignoreCancelled = true)
@@ -262,5 +287,19 @@ public class TreeAssistBlockListener implements Listener
 		{
 			return 1;
 		}
+	}
+	
+	private final String displayName  = "" + ChatColor.GREEN + ChatColor.ITALIC + "TreeAssist Protect";
+
+	public boolean isProtectTool(ItemStack item) {
+		return item.getItemMeta().getDisplayName().equals(displayName);
+	}
+
+	public ItemStack getProtectionTool() {
+		ItemStack item = new ItemStack(Material.GOLD_HOE);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(displayName);
+		item.setItemMeta(meta);
+		return item;
 	}
 }

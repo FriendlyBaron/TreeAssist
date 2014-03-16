@@ -40,6 +40,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -471,6 +472,32 @@ public class TreeAssist extends JavaPlugin
 						Debugger.load(this, sender);
 					}
 					return true;
+				} else if (args[0].equalsIgnoreCase("ProtectTool")) {
+					if (!sender.hasPermission("treeassist.tool")) {
+						sender.sendMessage(ChatColor.RED + "You don't have permission!");
+						return true;
+						
+					}
+					if (sender instanceof Player) {
+						Player player = (Player) sender;
+						boolean found = false;
+						for (ItemStack item : player.getInventory().getContents()) {
+							if (item != null) {
+								if (item.hasItemMeta()) {
+									if (listener.isProtectTool(item)) {
+										player.getInventory().removeItem(item);
+										sender.sendMessage(ChatColor.GREEN + "Protection Tool removed!");
+										found = true;
+										break;
+									}
+								}
+							}
+						}
+						if (!found) {
+							player.getInventory().addItem(listener.getProtectionTool());
+							sender.sendMessage(ChatColor.GREEN + "You have been given the Protection Tool!");
+						}
+					}
 				}
 			}
 		}
