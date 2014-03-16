@@ -302,6 +302,7 @@ public class TreeAssist extends JavaPlugin
 		items.put("Sapling Replant.Enforce", "true");
 		items.put("Automatic Tree Destruction.Remove Leaves", "true");
 		items.put("Main.Toggle Default", "true");
+		items.put("Sapling Replant.Command Time Delay (Seconds)", "30");
 		return items;
 	}
 
@@ -497,7 +498,15 @@ public class TreeAssist extends JavaPlugin
 							player.getInventory().addItem(listener.getProtectionTool());
 							sender.sendMessage(ChatColor.GREEN + "You have been given the Protection Tool!");
 						}
+						return true;
 					}
+					sender.sendMessage("Only for players!");
+					return true;
+				} else if (args[0].equalsIgnoreCase("noreplace")) {
+					int seconds = getConfig().getInt("Sapling Replant.Command Time Delay (Seconds)", 30);
+					listener.noReplace(sender.getName(), seconds);
+					sender.sendMessage(ChatColor.GREEN + "You now stop replanting trees for " + seconds + " seconds");
+					return true;
 				}
 			}
 		}

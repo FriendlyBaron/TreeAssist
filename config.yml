@@ -31,6 +31,7 @@ Auto Plant Dropped Saplings:
 Leaf Decay:
   Fast Leaf Decay: true
 Sapling Replant:
+  Command Time Delay (Seconds): 30
   Bottom Block has to be Broken First: true
   Time to Protect Sapling (Seconds): 0
   Replant When Tree Burns Down: true

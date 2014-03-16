@@ -1,6 +1,8 @@
 package me.itsatacoshop247.TreeAssist;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import me.itsatacoshop247.TreeAssist.core.Utils;
@@ -30,6 +32,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class TreeAssistBlockListener implements Listener  
 {
 	public TreeAssist plugin;
+	private final Map<String, Long> noreplace = new HashMap<String, Long>();
 	
 	public TreeAssistBlockListener(TreeAssist instance)
 	{
@@ -301,5 +304,21 @@ public class TreeAssistBlockListener implements Listener
 		meta.setDisplayName(displayName);
 		item.setItemMeta(meta);
 		return item;
+	}
+
+	public void noReplace(String name, int seconds) {
+		noreplace.put(name, (Long) (System.currentTimeMillis()/1000) + seconds);
+	}
+	
+	public boolean isNoReplace(String name) {
+		if (noreplace.containsKey(name)) {
+			if (noreplace.get(name) < System.currentTimeMillis()/1000) {
+				noreplace.remove(name);
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 }

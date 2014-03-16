@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import me.itsatacoshop247.TreeAssist.TreeAssist;
+import me.itsatacoshop247.TreeAssist.TreeAssistBlockListener;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 
@@ -358,7 +359,8 @@ public abstract class BaseTree {
 		}
 		
 		if (plugin.getConfig().getBoolean("Main.Sapling Replant")
-				&& !event.isCancelled() && (resultTree.willReplant())) {
+				&& !event.isCancelled() && (resultTree.willReplant()) &&
+				!plugin.getListener().isNoReplace(player.getName())) {
 
 			if (!plugin.getConfig().getBoolean("Main.Use Permissions")
 					|| player.hasPermission("treeassist.replant")) {
