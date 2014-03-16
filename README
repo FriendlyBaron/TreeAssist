@@ -1,3 +1,4 @@
+v5.8.54 - fix negative durability hacks
 v5.8.53 - add /treeassist protecttool - protect individual saplings!
 v5.8.52 - add a world parameter to the toggle command
 v5.8.51 - add 'Main.Toggle Default' to default to disabled TA by default
