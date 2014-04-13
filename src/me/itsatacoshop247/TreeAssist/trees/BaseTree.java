@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import me.itsatacoshop247.TreeAssist.TreeAssist;
-import me.itsatacoshop247.TreeAssist.TreeAssistBlockListener;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 

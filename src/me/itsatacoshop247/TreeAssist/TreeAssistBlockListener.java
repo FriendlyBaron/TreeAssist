@@ -10,7 +10,6 @@ import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -295,7 +294,7 @@ public class TreeAssistBlockListener implements Listener
 	private final String displayName  = "" + ChatColor.GREEN + ChatColor.ITALIC + "TreeAssist Protect";
 
 	public boolean isProtectTool(ItemStack item) {
-		return item.getItemMeta().getDisplayName().equals(displayName);
+		return item != null && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(displayName);
 	}
 
 	public ItemStack getProtectionTool() {
