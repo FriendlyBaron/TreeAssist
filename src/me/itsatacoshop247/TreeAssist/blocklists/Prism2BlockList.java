@@ -89,6 +89,7 @@ public class Prism2BlockList implements BlockList {
 		BlockAction action = new BlockAction();
 		action.setBlock(block);
 		action.setActionType("block-break");
+		action.setPlayerName(player == null ? "TreeAssist" : player.getName());
 		RecordingQueue.addToQueue(action);
 	}
 
