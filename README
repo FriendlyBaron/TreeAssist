@@ -1,4 +1,4 @@
-v5.8.59 - support Prism 2.0 --> "Prism2"
+v5.8.60 - support Prism 2.0 --> "Prism2"
 v5.8.58 - fix another NPE
 v5.8.57 - fix NPE in modded trees fail check
 v5.8.56 - add /treeassist noreplant - don't replant saplings for configured time
