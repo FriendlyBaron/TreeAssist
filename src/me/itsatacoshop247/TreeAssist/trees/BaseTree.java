@@ -308,7 +308,7 @@ public abstract class BaseTree {
 
 			if (player.getItemInHand().getDurability() > player.getItemInHand()
 					.getType().getMaxDurability() ||
-				player.getItemInHand().getDurability() < 1
+				player.getItemInHand().getDurability() < 0
 					&& Utils.isVanillaTool(player.getItemInHand())) {
 				player.setItemInHand(new ItemStack(Material.AIR));
 			}
