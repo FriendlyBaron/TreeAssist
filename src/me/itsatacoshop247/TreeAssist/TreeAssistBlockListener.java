@@ -294,7 +294,7 @@ public class TreeAssistBlockListener implements Listener
 	private final String displayName  = "" + ChatColor.GREEN + ChatColor.ITALIC + "TreeAssist Protect";
 
 	public boolean isProtectTool(ItemStack item) {
-		return item != null && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(displayName);
+		return item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(displayName);
 	}
 
 	public ItemStack getProtectionTool() {

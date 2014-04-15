@@ -1,3 +1,4 @@
+v5.8.64 - finally fix the NPE from #58
 v5.8.63 - fix the fact that new tools break. Thanks, TNTUP!
 v5.8.62 - fix the fix
 v5.8.61 - fully move to Prism 2.0
