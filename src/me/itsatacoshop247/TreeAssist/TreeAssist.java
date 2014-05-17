@@ -300,6 +300,8 @@ public class TreeAssist extends JavaPlugin
 		items.put("Automatic Tree Destruction.Remove Leaves", "true");
 		items.put("Main.Toggle Default", "true");
 		items.put("Sapling Replant.Command Time Delay (Seconds)", "30");
+
+		items.put("Automatic Tree Destruction.When Sneaking", "true");
 		return items;
 	}
 
