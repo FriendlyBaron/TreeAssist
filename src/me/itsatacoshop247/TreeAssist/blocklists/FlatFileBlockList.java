@@ -20,6 +20,15 @@ import org.bukkit.entity.Player;
 public class FlatFileBlockList implements BlockList {
 	FileConfiguration data = new YamlConfiguration();
 	File dataFile;
+    private List<String> list = new ArrayList<String>();
+
+    @Override
+    public void addBlock(Block block) {
+        String check = toString(block);
+
+        list.add(check);
+        data.set("Blocks", list);
+    }
 
 	@Override
 	public void initiate() {
@@ -27,6 +36,31 @@ public class FlatFileBlockList implements BlockList {
 		data.options().copyDefaults(true);
 		try {
 			this.data.load(this.dataFile);
+            list = data.getStringList("Blocks");
+
+            final String first = list.get(0);
+            final String[] split = first.split(";");
+            if (split.length < 5) {
+                List<String> newList = new ArrayList<String>();
+                StringBuffer buff = new StringBuffer();
+                for (String def : list) {
+                    String[] defSplit = def.split(";");
+                    buff.setLength(0);
+                    buff.append(defSplit[0]);
+                    buff.append(';');
+                    buff.append(defSplit[1]);
+                    buff.append(';');
+                    buff.append(defSplit[2]);
+                    buff.append(';');
+                    buff.append(System.currentTimeMillis());
+                    buff.append(';');
+                    buff.append(defSplit[3]);
+
+                    newList.add(buff.toString());
+                }
+                list = newList;
+                save();
+            }
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -39,42 +73,62 @@ public class FlatFileBlockList implements BlockList {
 		{
 			this.dataFile.getParentFile().mkdirs();
 			copy(Utils.plugin.getResource("data.yml"), this.dataFile);
+            list = new ArrayList<String>();
 		}
 	}
 
 	@Override
 	public boolean isPlayerPlaced(Block block) {
 		String check = toString(block);
-		List<String> list = new ArrayList<String>();
-		list = (List<String>) data.getStringList("Blocks");
 
-		if (list != null && list.contains(check)) {
-			return true;
-		}
-		return false;
+        return (list != null && list.contains(check));
 	}
+
+    @Override
+    public void logBreak(Block block, Player player) {
+        removeBlock(block);
+    }
+
+    @Override
+    public void removeBlock(Block block) {
+        String check = toString(block);
+        list.remove(check);
+        data.set("Blocks", list);
+    }
+
+    public int purge(final String worldname) {
+        final List<String> removals = new ArrayList<String>();
+        for (String def : list) {
+            if (def.endsWith(worldname)) {
+                removals.add(def);
+            }
+        }
+        list.removeAll(removals);
+        save();
+        return removals.size();
+    }
+
+    public int purge(final int days) {
+        final List<String> removals = new ArrayList<String>();
+        for (String def : list) {
+            int i = Integer.valueOf(def.split(";")[3]);
+            if (i < (System.currentTimeMillis() - days*24*60*60*1000)) {
+                removals.add(def);
+            }
+        }
+        list.removeAll(removals);
+        save();
+        return removals.size();
+    }
+
+    @Override
+    public void save() {
+        this.saveData();
+    }
 	
 	private String toString(Block block) {
 		return block.getX() + ";" + block.getY() + ";"
 				+ block.getZ() + ";" + block.getWorld().getName();
-	}
-
-	@Override
-	public void addBlock(Block block) {
-		String check = toString(block);
-		List<String> list = new ArrayList<String>();
-		list = data.getStringList("Blocks");
-		list.add(check);
-		data.set("Blocks", list);
-	}
-
-	@Override
-	public void removeBlock(Block block) {
-		String check = toString(block);
-		List<String> list = new ArrayList<String>();
-		list = data.getStringList("Blocks");
-		list.remove(check);
-		data.set("Blocks", list);
 	}
 	
 	private void copy(InputStream in, File file) 
@@ -108,14 +162,5 @@ public class FlatFileBlockList implements BlockList {
 		{
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void save() {
-		this.saveData();
-	}
-
-	@Override
-	public void logBreak(Block block, Player player) {
 	}
 }

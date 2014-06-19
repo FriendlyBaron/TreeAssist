@@ -1,3 +1,4 @@
+v5.8.67 - add /ta purge [days|worldname] to remove unneeded blocklist entries
 v5.8.66 - support global toggle - addresses github issue #236
 v5.8.65 - allow to disable the plugin when sneaking
 v5.8.64 - finally fix the NPE from #58

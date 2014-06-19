@@ -247,6 +247,22 @@ public class TreeAssist extends JavaPlugin {
                     listener.noReplace(sender.getName(), seconds);
                     sender.sendMessage(ChatColor.GREEN + "You now stop replanting trees for " + seconds + " seconds");
                     return true;
+                } else if (args[0].equalsIgnoreCase("purge")) {
+                    if (blockList instanceof FlatFileBlockList) {
+                        FlatFileBlockList bl = (FlatFileBlockList) blockList;
+                        try {
+                            int days = Integer.parseInt(args[1]);
+                            int done = bl.purge(days);
+
+                            sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for last " + days + " days!");
+                        } catch (NumberFormatException e) {
+                            int done = bl.purge(args[1]);
+
+                            sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for the world " + args[1] + "!");
+                        }
+                    } else {
+                        sender.sendMessage(ChatColor.RED.toString() + "This command only is available for the TreeAssist BlockList!");
+                    }
                 }
             }
         }
