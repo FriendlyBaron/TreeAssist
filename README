@@ -1,3 +1,4 @@
+v5.8.70 - add /treeassist purge global - removes entries of blocks in invalid worlds or not of type LOG and LOG_2
 v5.8.69 - finish the addition!
 v5.8.68 - how about we actually add the timestamp?
 v5.8.67 - add /ta purge [days|worldname] to remove unneeded blocklist entries

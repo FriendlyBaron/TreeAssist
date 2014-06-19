@@ -11,7 +11,12 @@ import java.util.List;
 
 import me.itsatacoshop247.TreeAssist.core.Utils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -95,6 +100,35 @@ public class FlatFileBlockList implements BlockList {
         String check = toString(block);
         list.remove(check);
         data.set("Blocks", list);
+    }
+
+    public int purge(final CommandSender sender) {
+        final List<String> removals = new ArrayList<String>();
+
+        for (String def : list) {
+            String[] split = def.split(";");
+            // x y z TIME world
+            World world = Bukkit.getWorld(split[4]);
+            if (world == null) {
+                removals.add(def);
+                continue;
+            }
+            try {
+                int x = Integer.parseInt(split[0]);
+                int y = Integer.parseInt(split[1]);
+                int z = Integer.parseInt(split[2]);
+                Block block = world.getBlockAt(x,y,z);
+                if (block.getType() != Material.LOG && !block.getType().name().equals(Material.LOG_2)) {
+                    removals.add(def);
+                }
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED.toString() + "You have a messed up data.yml - fix or remove it!");
+                return 0;
+            }
+        }
+        list.removeAll(removals);
+        save();
+        return removals.size();
     }
 
     public int purge(final String worldname) {

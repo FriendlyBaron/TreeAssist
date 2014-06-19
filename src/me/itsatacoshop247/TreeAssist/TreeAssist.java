@@ -256,9 +256,13 @@ public class TreeAssist extends JavaPlugin {
 
                             sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for last " + days + " days!");
                         } catch (NumberFormatException e) {
-                            int done = bl.purge(args[1]);
-
-                            sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for the world " + args[1] + "!");
+                            if (args[1].equalsIgnoreCase("global")) {
+                                int done = bl.purge(sender);
+                                sender.sendMessage(ChatColor.GREEN.toString() + done + " global invalid entries have been purged!");
+                            } else {
+                                int done = bl.purge(args[1]);
+                                sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for the world " + args[1] + "!");
+                            }
                         }
                     } else {
                         sender.sendMessage(ChatColor.RED.toString() + "This command only is available for the TreeAssist BlockList!");
