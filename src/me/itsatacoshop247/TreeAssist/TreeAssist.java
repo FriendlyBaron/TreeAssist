@@ -263,6 +263,7 @@ public class TreeAssist extends JavaPlugin {
                     } else {
                         sender.sendMessage(ChatColor.RED.toString() + "This command only is available for the TreeAssist BlockList!");
                     }
+                    return true;
                 }
             }
         }

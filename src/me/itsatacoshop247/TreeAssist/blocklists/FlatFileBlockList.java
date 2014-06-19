@@ -34,6 +34,7 @@ public class FlatFileBlockList implements BlockList {
 	public void initiate() {
 		this.dataFile = new File(Utils.plugin.getDataFolder(), "data.yml");
 		data.options().copyDefaults(true);
+        System.out.print("Initiating!");
 		try {
 			this.data.load(this.dataFile);
             list = data.getStringList("Blocks");
@@ -156,6 +157,7 @@ public class FlatFileBlockList implements BlockList {
 	{
 		try 
 		{
+            data.set("Blocks", list);
 			data.save(dataFile);
 		} 
 		catch (IOException e) 
