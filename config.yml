@@ -9,6 +9,7 @@ Main:
   Auto Plant Dropped Saplings: false
   Toggle Default: true
 Automatic Tree Destruction:
+  Required Lore: ''
   When Sneaking: true
   Forced Removal: false
   Remove Leaves: true

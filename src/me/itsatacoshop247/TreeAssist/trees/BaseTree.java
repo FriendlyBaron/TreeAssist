@@ -188,7 +188,30 @@ public abstract class BaseTree {
 			}
 			return new InvalidTree();
 		}
-		
+
+        final String lore = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Automatic Tree Destruction.Required Lore", ""));
+
+        if (!"".equals(lore)) {
+            debug.i("Lore needed!");
+            ItemStack item = player.getItemInHand();
+            if (item != null || !item.hasItemMeta() || !item.getItemMeta().hasLore() || !item.getItemMeta().getLore().contains(lore)) {
+                debug.i("Lore not found: " + lore);
+
+                if (plugin.getConfig().getBoolean("Sapling Replant.Enforce")) {
+                    maybeReplant(plugin, event, resultTree, player, block);
+                }
+                if (plugin.isForceAutoDestroy()) {
+                    resultTree.findYourBlocks(block);
+                    debug.i("But still, remove later, maybe");
+                    if (resultTree.isValid()) {
+                        resultTree.removeLater();
+                        debug.i("Not maybe. For sure!");
+                    }
+                    return resultTree;
+                }
+                return new InvalidTree();
+            }
+        }
 
 		
 		if (!plugin.getConfig().getBoolean("Automatic Tree Destruction.When Sneaking")) {
