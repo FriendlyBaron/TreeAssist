@@ -128,7 +128,7 @@ public class FlatFileBlockList implements BlockList {
 	
 	private String toString(Block block) {
 		return block.getX() + ";" + block.getY() + ";"
-				+ block.getZ() + ";" + block.getWorld().getName();
+				+ block.getZ() + ";" + System.currentTimeMillis() + ";" + block.getWorld().getName();
 	}
 	
 	private void copy(InputStream in, File file) 
