@@ -15,7 +15,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class MushroomTree extends BaseTree {
+public class MushroomTree extends BaseTree implements ISpecialTree {
 	public static Debugger debugger;
 	private final Material mat;
 
@@ -161,7 +161,7 @@ public class MushroomTree extends BaseTree {
 	}
 
 	@Override
-	protected void checkBlock(List<Block> list, Block block, Block top,
+	public void checkBlock(List<Block> list, Block block, Block top,
 			boolean deep, byte origData) {
 
 		// debug.i("cB " + Debugger.parse(block.getLocation()));

@@ -27,6 +27,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Tree;
 
 public class TreeAssistBlockListener implements Listener  
 {
@@ -63,37 +65,6 @@ public class TreeAssistBlockListener implements Listener
 			breakRadiusIfLeaf(world.getBlockAt(x+1, y+1, z-1));
 			breakRadiusIfLeaf(world.getBlockAt(x+1, y+1, z+1));
 		}
-		
-		
-		/*
-		if(plugin.config.getBoolean("Leaf Decay.Enable Custom Drops"))
-		{
-			List<?> listOfDrops = plugin.config.getList("Leaf Decay.Drops");
-			String[] dropList = (String[]) listOfDrops.toArray(new String[0]);
-
-			for(int y = 0; y < dropList.length; y++)
-			{
-				String[] line = dropList[y].split(";");
-				if((int)(Math.random()*300) < Integer.parseInt(line[1]))
-				{
-					ItemStack item =  new ItemStack(Integer.parseInt(line[0]), 1);
-					if(item.getTypeId() == 18 || item.getTypeId() == 17)
-					{
-						//MaterialData data = new MaterialData(block.getData());
-						//data.setData(block.getData());
-						plugin.getServer().broadcastMessage("" + item.getDurability());
-						plugin.getServer().broadcastMessage("" + block.getData());
-						item.setDurability(block.getData());
-						
-						//item.setData(data);
-						plugin.getServer().broadcastMessage("" + item.getDurability());
-					}
-					block.getWorld().dropItem(block.getLocation(), item);
-					//y = 100;
-				}
-			}
-		}
-		*/	
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -158,20 +129,18 @@ public class TreeAssistBlockListener implements Listener
 					return;
 				}
 			}
-			if(block.getType() == Material.LOG || block.getType().name().equals("LOG_2")) 
+            MaterialData data = block.getState().getData();
+			if(data instanceof Tree)
 			{
 				Material logMat = block.getType();
-				byte saplingData = block.getData();
-				if (logMat.name().equals("LOG_2")) {
-					saplingData += 4;
-				}
+                Tree tree = (Tree) data;
 				Block onebelow = block.getRelative(BlockFace.DOWN, 1);
 				Block oneabove = block.getRelative(BlockFace.UP, 1);
 				if(onebelow.getType() == Material.DIRT || onebelow.getType() == Material.GRASS)
 				{
 					if(oneabove.getType() == Material.AIR || oneabove.getType() == logMat)
 					{
-						Runnable b = new TreeAssistReplant(plugin, block, logMat, saplingData);
+						Runnable b = new TreeAssistReplant(plugin, block, tree.getSpecies());
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, b, 20);
 					}
 				}	

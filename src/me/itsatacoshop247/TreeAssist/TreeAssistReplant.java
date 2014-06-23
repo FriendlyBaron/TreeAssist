@@ -1,31 +1,36 @@
 package me.itsatacoshop247.TreeAssist;
 
 import org.bukkit.Material;
+import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Tree;
 
 public class TreeAssistReplant implements Runnable {
 	public final TreeAssist plugin;
 	public Block block;
-	public byte data;
+	private byte data;
+    private TreeSpecies species;
 	public Material mat;
-	
-	public TreeAssistReplant(TreeAssist instance, Block importBlock, Material logMat, byte importData)
-	{
-		this.plugin = instance;
-		this.block = importBlock;
-		this.data = importData;
-		this.mat = logMat;
-		
-		if (mat == Material.LOG) {
-			mat = Material.SAPLING;
-		} else if (mat.name().equals("LOG_2")) {
-			mat = Material.SAPLING;
-			if (data < 4) {
-				data += 4;
-			}
-		}
-	}
+
+    public TreeAssistReplant(TreeAssist instance, Block importBlock, TreeSpecies species)
+    {
+        this.plugin = instance;
+        this.block = importBlock;
+        this.species = species;
+        this.data = -1;
+        this.mat = Material.SAPLING;
+    }
+
+    public TreeAssistReplant(TreeAssist instance, Block importBlock, Material logMat, byte importData)
+    {
+        this.plugin = instance;
+        this.block = importBlock;
+        this.data = importData;
+        this.mat = logMat;
+    }
 
 	@Override
 	public void run() 
@@ -35,7 +40,16 @@ public class TreeAssistReplant implements Runnable {
 				(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY))
 		{
 			this.block.setType(mat);
-			this.block.setData(this.data);
+            if (data < 0) {
+                BlockState state = block.getState();
+                MaterialData data = state.getData();
+                Tree sap = (Tree) data;
+                sap.setSpecies(species);
+                state.setData(sap);
+                state.update();
+            } else {
+                this.block.setData(this.data);
+            }
 		}
 	}
 }

@@ -58,12 +58,6 @@ public class InvalidTree extends BaseTree {
 	}
 
 	@Override
-	protected void checkBlock(List<Block> list, Block block, Block top,
-			boolean deep, byte origData) {
-		
-	}
-
-	@Override
 	protected void handleSaplingReplace(int delay) {
 	}
 

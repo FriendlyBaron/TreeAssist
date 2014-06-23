@@ -13,7 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-public class CustomTree extends BaseTree {
+public class CustomTree extends BaseTree implements ISpecialTree {
 	public static List<?> customTreeBlocks = null;
 	public static List<?> customLogs = null;
 	public static List<?> customSaplings = null;
@@ -175,7 +175,7 @@ public class CustomTree extends BaseTree {
 	}
 
 	@Override
-	protected void checkBlock(List<Block> list, Block block,
+	public void checkBlock(List<Block> list, Block block,
 			Block top, boolean deep, byte origData) {
 
 		if (block.getType() != mat) {

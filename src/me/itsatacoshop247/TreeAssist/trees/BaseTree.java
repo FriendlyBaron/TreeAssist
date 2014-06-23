@@ -19,6 +19,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Tree;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class BaseTree {
@@ -97,9 +98,11 @@ public abstract class BaseTree {
 		case BIRCH:
 		case SPRUCE:
 		case JUNGLE:
-			return new VanillaTree((byte) type.ordinal());
+            Tree tree = (Tree) block.getState().getData();
+			return new VanillaTree(tree.getSpecies());
 		case ONESEVEN:
-			return new VanillaOneSevenTree(block.getData());
+            Tree tree2 = (Tree) block.getState().getData();
+			return new VanillaOneSevenTree(tree2.getSpecies());
 		case SHROOM:
 			return new MushroomTree(block.getType());
 		case CUSTOM:
@@ -454,9 +457,6 @@ public abstract class BaseTree {
 
 	abstract protected boolean checkFail(Block block);
 
-	abstract protected void checkBlock(List<Block> list, Block block,
-			Block top, boolean deep, byte origData);
-
 	abstract protected Block getBottom(Block block);
 
 	abstract protected Block getTop(Block block);
@@ -505,13 +505,13 @@ public abstract class BaseTree {
 		}
 
 		if (chance > 99 || (new Random()).nextInt(100) < chance) {
-			byte data = block.getData();
 			Utils.plugin.blockList.logBreak(block, player);
 			block.breakNaturally(tool);
 
 			if (leaf) {
 				ConfigurationSection cs = Utils.plugin.getConfig()
 						.getConfigurationSection("Custom Drops");
+                Tree tree = (Tree) block.getState().getData();
 				for (String key : cs.getKeys(false)) {
 					int customChance = (int) (cs.getDouble(key, 0.0d) * 100000d);
 
@@ -519,7 +519,7 @@ public abstract class BaseTree {
 						if (key.equalsIgnoreCase("LEAVES")) {
 							block.getWorld().dropItemNaturally(
 									block.getLocation(),
-									new ItemStack(Material.LEAVES, 1, data));
+									new ItemStack(Material.LEAVES, 1, tree.getSpecies().getData()));
 						} else {
 							try {
 								Material mat = Material.valueOf(key
@@ -761,7 +761,7 @@ public abstract class BaseTree {
 			}
 
 		}
-		(new InstantRunner()).runTaskTimer(Utils.plugin, offset, offset);
+		(new InstantRunner()).runTaskTimer(Utils.plugin, delay, offset);
 
 		class CleanRunner extends BukkitRunnable {
 			private final BaseTree me;

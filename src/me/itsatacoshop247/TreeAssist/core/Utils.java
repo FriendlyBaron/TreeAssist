@@ -6,11 +6,14 @@ import java.util.List;
 
 import me.itsatacoshop247.TreeAssist.TreeAssist;
 
+import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Tree;
 import org.bukkit.plugin.Plugin;
 
 import com.gmail.nossr50.api.AbilityAPI;
@@ -108,37 +111,57 @@ public final class Utils {
 		if (player == null) {
 			return;
 		}
+
+        MaterialData state = block.getState().getData();
+
+        if (!(state instanceof Tree)) {
+            return;
+        }
+
+        Tree tree = (Tree) state;
 		
 		if (player.isOnline()) {
 		
-			if (block.getData() == 0) {
+			if (tree.getSpecies() == TreeSpecies.GENERIC) {
 				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Oak"));
-			} else if (block.getData() == 1) {
+			} else if (tree.getSpecies() == TreeSpecies.REDWOOD) {
 				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Spruce"));
-			} else if (block.getData() == 2) {
+            } else if (tree.getSpecies() == TreeSpecies.BIRCH) {
 				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Birch"));
-			} else if (block.getData() == 3) {
-				ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
-						.getInt("Experience.Woodcutting.Jungle"));
-			}
+            } else if (tree.getSpecies() == TreeSpecies.JUNGLE) {
+                ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+                        .getInt("Experience.Woodcutting.Jungle"));
+            } else if (tree.getSpecies() == TreeSpecies.ACACIA) {
+                ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+                        .getInt("Experience.Woodcutting.Acacia"));
+            } else if (tree.getSpecies() == TreeSpecies.DARK_OAK) {
+                ExperienceAPI.addXP(player, "Woodcutting", mcmmo.getConfig()
+                        .getInt("Experience.Woodcutting.Dark_Oak"));
+            }
 		} else {
 			
-			if (block.getData() == 0) {
+			if (tree.getSpecies() == TreeSpecies.GENERIC) {
 				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Oak"));
-			} else if (block.getData() == 1) {
+			} else if (tree.getSpecies() == TreeSpecies.REDWOOD) {
 				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Spruce"));
-			} else if (block.getData() == 2) {
+            } else if (tree.getSpecies() == TreeSpecies.BIRCH) {
 				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Birch"));
-			} else if (block.getData() == 3) {
+            } else if (tree.getSpecies() == TreeSpecies.JUNGLE) {
 				ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
 						.getInt("Experience.Woodcutting.Jungle"));
-			}
+			} else if (tree.getSpecies() == TreeSpecies.ACACIA) {
+                ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
+                        .getInt("Experience.Woodcutting.Acacia"));
+            } else if (tree.getSpecies() == TreeSpecies.DARK_OAK) {
+                ExperienceAPI.addRawXPOffline(player.getName(), "Woodcutting", mcmmo.getConfig()
+                        .getInt("Experience.Woodcutting.Dark_Oak"));
+            }
 		}
 	}
 
@@ -172,30 +195,6 @@ public final class Utils {
 	 * @return if a sapling should be replanted
 	 */
 	public static boolean replantType(byte data) {
-		if (data == 0) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Oak");
-		}
-		if (data == 1) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Spruce");
-		}
-		if (data == 2) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Birch");
-		}
-		if (data == 3) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Jungle");
-		}
-		if (data == 4) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Acacia");
-		}
-		if (data == 5) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Dark Oak");
-		}
 		if (data == 99) {
 			return Utils.plugin.getConfig()
 						.getBoolean("Sapling Replant.Tree Types to Replant.Brown Shroom");
@@ -206,6 +205,41 @@ public final class Utils {
 		}
 		return false;
 	}
+
+    /**
+     * Should the given species be replanted?
+     *
+     * @param species
+     *            the tree species
+     * @return if a sapling should be replanted
+     */
+    public static boolean replantType(TreeSpecies species) {
+        if (species == TreeSpecies.GENERIC) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Oak");
+        }
+        if (species == TreeSpecies.REDWOOD) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Spruce");
+        }
+        if (species == TreeSpecies.BIRCH) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Birch");
+        }
+        if (species == TreeSpecies.JUNGLE) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Jungle");
+        }
+        if (species == TreeSpecies.ACACIA) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Acacia");
+        }
+        if (species == TreeSpecies.DARK_OAK) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Dark Oak");
+        }
+        return false;
+    }
 
 
 	public static void initiateList(String string, List<Integer> validTypes) {

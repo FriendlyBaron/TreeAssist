@@ -39,10 +39,13 @@ public class FlatFileBlockList implements BlockList {
 	public void initiate() {
 		this.dataFile = new File(Utils.plugin.getDataFolder(), "data.yml");
 		data.options().copyDefaults(true);
-        System.out.print("Initiating!");
 		try {
 			this.data.load(this.dataFile);
             list = data.getStringList("Blocks");
+
+            if (list == null || list.size() < 1) {
+                return;
+            }
 
             final String first = list.get(0);
             final String[] split = first.split(";");

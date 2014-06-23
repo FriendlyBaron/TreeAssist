@@ -9,17 +9,19 @@ import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 
 import org.bukkit.Material;
+import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Tree;
 
-public class VanillaTree extends BaseTree {
+public class VanillaTree extends BaseTree implements INormalTree {
 	public static Debugger debugger;
-	private final byte data;
+	private final TreeSpecies species;
 	Block[] bottoms = null;
 
-	public VanillaTree(byte type) {
-		this.data = type;
+	public VanillaTree(TreeSpecies species) {
+		this.species = species;
 	}
 
 	@Override
@@ -32,16 +34,16 @@ public class VanillaTree extends BaseTree {
 		if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
 			return true;
 		}
-		if (data == 0) {
+		if (species == TreeSpecies.GENERIC) {
 			return player.hasPermission("treeassist.destroy.oak");
 		}
-		if (data == 1) {
+		if (species == TreeSpecies.REDWOOD) {
 			return player.hasPermission("treeassist.destroy.spruce");
 		}
-		if (data == 2) {
+		if (species == TreeSpecies.BIRCH) {
 			return player.hasPermission("treeassist.destroy.birch");
 		}
-		if (data == 3) {
+		if (species == TreeSpecies.JUNGLE) {
 			return player.hasPermission("treeassist.destroy.jungle");
 		}
 		return false;
@@ -88,7 +90,7 @@ public class VanillaTree extends BaseTree {
 	@Override
 	protected List<Block> calculate(final Block bottom, final Block top) {
 		List<Block> list = new ArrayList<Block>();
-		checkBlock(list, bottom, top, true, bottom.getData());
+		checkBlock(list, bottom, top, true);
 		return list;
 	}
 
@@ -102,7 +104,7 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected void getTrunks() {
-		if (data != 3 && data != 1) {
+		if (species == TreeSpecies.GENERIC || species == TreeSpecies.BIRCH) {
 			return;
 		}
 		bottoms = new Block[4];
@@ -127,17 +129,17 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected boolean willBeDestroyed() {
-		switch (data) {
-		case 0:
+		switch (species) {
+		case GENERIC:
 			return Utils.plugin.getConfig()
 					.getBoolean("Automatic Tree Destruction.Tree Types.Oak");
-		case 1:
+		case REDWOOD:
 			return Utils.plugin.getConfig()
 					.getBoolean("Automatic Tree Destruction.Tree Types.Spruce");
-		case 2:
+		case BIRCH:
 			return Utils.plugin.getConfig()
 					.getBoolean("Automatic Tree Destruction.Tree Types.Birch");
-		case 3:
+		case JUNGLE:
 			return Utils.plugin.getConfig()
 					.getBoolean("Automatic Tree Destruction.Tree Types.Jungle");
 		default:
@@ -147,18 +149,18 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected boolean willReplant() {
-		return Utils.replantType(data);
+		return Utils.replantType(species);
 	}
 
 	@Override
 	protected void handleSaplingReplace(int delay) {
-		if (bottoms != null && (data == 3 || data == 1)) {
-			if (data == 3 && !Utils.plugin.getConfig().getBoolean(
+		if (bottoms != null && (species == TreeSpecies.REDWOOD || species == TreeSpecies.JUNGLE)) {
+			if (species == TreeSpecies.JUNGLE && !Utils.plugin.getConfig().getBoolean(
 					"Sapling Replant.Tree Types to Replant.BigJungle")) {
 				debugger.i("no big jungle sapling !!!");
 				return;
 			}
-			if (data == 1 && !Utils.plugin.getConfig().getBoolean(
+			if (species == TreeSpecies.REDWOOD && !Utils.plugin.getConfig().getBoolean(
 					"Sapling Replant.Tree Types to Replant.BigSpruce")) {
 				debugger.i("no bgi spruce sapling !!!");
 				return;
@@ -188,7 +190,7 @@ public class VanillaTree extends BaseTree {
 		removeBlocks.remove(bottom);
 		totalBlocks.remove(bottom);
 		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, data);
+		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, species);
 		Utils.plugin.getServer()
 				.getScheduler()
 				.scheduleSyncDelayedTask(Utils.plugin, b,
@@ -211,8 +213,8 @@ public class VanillaTree extends BaseTree {
 	}
 
 	@Override
-	protected void checkBlock(List<Block> list, Block block,
-			Block top, boolean deep, byte origData) {
+	public void checkBlock(List<Block> list, Block block,
+			Block top, boolean deep) {
 
 //		debug.i("cB " + Debugger.parse(block.getLocation()));
 		if (block.getType() != Material.LOG) {
@@ -227,7 +229,8 @@ public class VanillaTree extends BaseTree {
 			return;
 		}
 
-		if (block.getData() != data) {
+        Tree tree = (Tree) block.getState().getData();
+		if (tree.getSpecies() != species) {
 //			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
 			if (top.getData() != 0 || block.getData() <= 3) {
 //				debug.i("out!");
@@ -287,10 +290,10 @@ public class VanillaTree extends BaseTree {
 
 		boolean isBig = bottoms != null;
 
-		boolean destroyBig = (block.getData() == 3
+		boolean destroyBig = (tree.getSpecies() == TreeSpecies.JUNGLE
 				&& Utils.plugin.getConfig()
 				.getBoolean("Automatic Tree Destruction.Tree Types.BigJungle")) ||
-						(block.getData() == 1 &&
+						(tree.getSpecies() == TreeSpecies.REDWOOD &&
 						Utils.plugin.getConfig()
 						.getBoolean("Automatic Tree Destruction.Tree Types.BigSpruce"));
 
@@ -308,12 +311,12 @@ public class VanillaTree extends BaseTree {
 		}
 		
 		for (BlockFace face : Utils.NEIGHBORFACES) {
-			checkBlock(list, block.getRelative(face), top, false, origData);
+			checkBlock(list, block.getRelative(face), top, false);
 
-			checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false, origData);
-			checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false, origData);
+			checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
+			checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
 			if (isBig) {
-				checkBlock(list, block.getRelative(face, 2), top, false, origData);
+				checkBlock(list, block.getRelative(face, 2), top, false);
 			}
 		}
 
@@ -328,27 +331,28 @@ public class VanillaTree extends BaseTree {
 		}
 
 		if (destroyBig) {
-			checkBlock(list, block.getRelative(-2, 0, -2), top, false, origData);
-			checkBlock(list, block.getRelative(-1, 0, -2), top, false, origData);
-			checkBlock(list, block.getRelative(0, 0, -2), top, false, origData);
-			checkBlock(list, block.getRelative(1, 0, -2), top, false, origData);
-			checkBlock(list, block.getRelative(2, 0, -2), top, false, origData);
-			checkBlock(list, block.getRelative(2, 0, -1), top, false, origData);
-			checkBlock(list, block.getRelative(2, 0, 0), top, false, origData);
-			checkBlock(list, block.getRelative(2, 0, 1), top, false, origData);
-			checkBlock(list, block.getRelative(2, 0, 2), top, false, origData);
-			checkBlock(list, block.getRelative(1, 0, 2), top, false, origData);
-			checkBlock(list, block.getRelative(0, 0, 2), top, false, origData);
-			checkBlock(list, block.getRelative(-1, 0, 2), top, false, origData);
-			checkBlock(list, block.getRelative(-2, 0, 2), top, false, origData);
-			checkBlock(list, block.getRelative(-2, 0, 1), top, false, origData);
-			checkBlock(list, block.getRelative(-2, 0, 0), top, false, origData);
-			checkBlock(list, block.getRelative(-2, 0, -1), top, false, origData);
+			checkBlock(list, block.getRelative(-2, 0, -2), top, false);
+			checkBlock(list, block.getRelative(-1, 0, -2), top, false);
+			checkBlock(list, block.getRelative(0, 0, -2), top, false);
+			checkBlock(list, block.getRelative(1, 0, -2), top, false);
+			checkBlock(list, block.getRelative(2, 0, -2), top, false);
+			checkBlock(list, block.getRelative(2, 0, -1), top, false);
+			checkBlock(list, block.getRelative(2, 0, 0), top, false);
+			checkBlock(list, block.getRelative(2, 0, 1), top, false);
+			checkBlock(list, block.getRelative(2, 0, 2), top, false);
+			checkBlock(list, block.getRelative(1, 0, 2), top, false);
+			checkBlock(list, block.getRelative(0, 0, 2), top, false);
+			checkBlock(list, block.getRelative(-1, 0, 2), top, false);
+			checkBlock(list, block.getRelative(-2, 0, 2), top, false);
+			checkBlock(list, block.getRelative(-2, 0, 1), top, false);
+			checkBlock(list, block.getRelative(-2, 0, 0), top, false);
+			checkBlock(list, block.getRelative(-2, 0, -1), top, false);
 		}
-		checkBlock(list, block.getRelative(0, 1, 0), top, true, origData);
+		checkBlock(list, block.getRelative(0, 1, 0), top, true);
 	}
 	protected boolean checkFail(Block block) {
-		if (bottom.getData() == 3) {
+        Tree tree = (Tree) block.getState().getData();
+		if (tree.getSpecies() == TreeSpecies.JUNGLE) {
 			if (bottoms == null) {
 				if (block.getLocation().distanceSquared(bottom.getLocation())>4) {
 					return true;
@@ -378,7 +382,7 @@ public class VanillaTree extends BaseTree {
 
 	@Override
 	protected boolean isBottom(Block block) {
-		if (bottoms != null && (data == 3 || data == 1)) {
+		if (bottoms != null && (species == TreeSpecies.JUNGLE || species == TreeSpecies.REDWOOD)) {
 			for (Block b : bottoms) {
 				if (b != null && b.equals(block)) {
 					return true;
