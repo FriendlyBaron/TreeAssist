@@ -8,6 +8,7 @@ Main:
   Destroy Only Blocks Above: false
   Auto Plant Dropped Saplings: false
   Toggle Default: true
+  Initial Delay: false
 Automatic Tree Destruction:
   Required Lore: ''
   When Sneaking: true

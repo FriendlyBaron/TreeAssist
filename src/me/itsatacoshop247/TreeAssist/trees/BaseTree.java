@@ -618,8 +618,8 @@ public abstract class BaseTree {
 	protected void removeLater() {
 		removeBlocks = calculate(bottom, top);
 
-		final int delay = Utils.plugin.getConfig().getInt(
-				"Automatic Tree Destruction.Initial Delay (seconds)") * 20;
+		final int delay = Utils.plugin.getConfig().getBoolean("Main.Initial Delay") ? Utils.plugin.getConfig().getInt(
+				"Automatic Tree Destruction.Initial Delay (seconds)") * 20 : 0;
 		final int offset = Utils.plugin.getConfig().getInt(
 				"Automatic Tree Destruction.Delay (ticks)");
 
@@ -693,8 +693,8 @@ public abstract class BaseTree {
 			removeRemovals(removeBlocks, totalBlocks);
 		}
 
-		final int delay = Utils.plugin.getConfig().getInt(
-				"Automatic Tree Destruction.Initial Delay (seconds)") * 20;
+        final int delay = Utils.plugin.getConfig().getBoolean("Main.Initial Delay") ? Utils.plugin.getConfig().getInt(
+                "Automatic Tree Destruction.Initial Delay (seconds)") * 20 : 0;
 		final int offset = Utils.plugin.getConfig().getInt(
 				"Automatic Tree Destruction.Delay (ticks)");
 
