@@ -195,14 +195,22 @@ public final class Utils {
 	 * @return if a sapling should be replanted
 	 */
 	public static boolean replantType(byte data) {
-		if (data == 99) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Brown Shroom");
-		}
-		if (data == 100) {
-			return Utils.plugin.getConfig()
-						.getBoolean("Sapling Replant.Tree Types to Replant.Red Shroom");
-		}
+        if (data == 0) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Acacia");
+        }
+        if (data == 1) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Dark Oak");
+        }
+        if (data == 99) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Brown Shroom");
+        }
+        if (data == 100) {
+            return Utils.plugin.getConfig()
+                    .getBoolean("Sapling Replant.Tree Types to Replant.Red Shroom");
+        }
 		return false;
 	}
 
