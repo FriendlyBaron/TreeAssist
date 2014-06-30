@@ -1,3 +1,4 @@
+v5.8.75 - fix another CCE because of bukkit not fully supporting minecraft 1.7 trees
 v5.8.74 - partially revert the internal rewrite. 1.7 trees are not fully supported by bukkit. Fixed for now!
 v5.8.73 - revert default behaviour. You need to set Main.Initial Delay to true before the delay is used!
 v5.8.72 - fix "Initial Delay" for Auto Destruct. This defaulted to 10 seconds but never worked. Now it does. Beware!
