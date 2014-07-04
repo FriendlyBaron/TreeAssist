@@ -545,6 +545,17 @@ public abstract class BaseTree {
                     return;
                 }
             }
+
+            int ench = 100;
+
+            if (tool.getEnchantments().containsKey(Enchantment.DURABILITY)) {
+                ench = 100 / (tool.getEnchantmentLevel(Enchantment.DURABILITY) + 1);
+            }
+
+            if ((new Random()).nextInt(100) > ench) {
+                return; // no damage
+            }
+
             if (Utils.toolgood.contains(tool.getTypeId())) {
                 tool.setDurability((short) (tool.getDurability() + 1));
             } else if (Utils.toolbad.contains(tool.getTypeId())) {
