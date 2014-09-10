@@ -1,34 +1,11 @@
 package me.itsatacoshop247.TreeAssist;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import me.itsatacoshop247.TreeAssist.blocklists.BlockList;
-import me.itsatacoshop247.TreeAssist.blocklists.CoreProtectBlockList;
-import me.itsatacoshop247.TreeAssist.blocklists.EmptyBlockList;
-import me.itsatacoshop247.TreeAssist.blocklists.FlatFileBlockList;
-import me.itsatacoshop247.TreeAssist.blocklists.HawkEyeBlockList;
-import me.itsatacoshop247.TreeAssist.blocklists.LogBlockBlockList;
-import me.itsatacoshop247.TreeAssist.blocklists.Prism2BlockList;
+import me.itsatacoshop247.TreeAssist.blocklists.*;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
 import me.itsatacoshop247.TreeAssist.timers.CooldownCounter;
-import me.itsatacoshop247.TreeAssist.trees.BaseTree;
-import me.itsatacoshop247.TreeAssist.trees.CustomTree;
-import me.itsatacoshop247.TreeAssist.trees.InvalidTree;
-import me.itsatacoshop247.TreeAssist.trees.MushroomTree;
-import me.itsatacoshop247.TreeAssist.trees.VanillaOneSevenTree;
-import me.itsatacoshop247.TreeAssist.trees.VanillaTree;
-
+import me.itsatacoshop247.TreeAssist.trees.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -41,6 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.*;
+import java.util.*;
 
 
 //Running changelog
@@ -377,6 +357,9 @@ public class TreeAssist extends JavaPlugin {
         coolDowns.put(player.getName(), cc);
     }
 
+    /**
+     * @return true if the result is "player may use plugin"
+     */
     boolean toggleGlobal(String player) {
         return toggleWorld("global", player);
     }
@@ -525,11 +508,14 @@ public class TreeAssist extends JavaPlugin {
         CustomTree.customSaplings = config.getList("Modding.Custom Saplings");
     }
 
+    /**
+     * @return true if the result is "player may use plugin"
+     */
     private boolean toggleWorld(String world, String player) {
         if (disabledMap.containsKey(world)) {
             if (disabledMap.get(world).contains(player)) {
                 disabledMap.get(world).remove(player);
-                return false;
+                return true;
             } else {
                 disabledMap.get(world).add(player);
             }
@@ -537,7 +523,7 @@ public class TreeAssist extends JavaPlugin {
             disabledMap.put(world, new ArrayList<String>());
             disabledMap.get(world).add(player);
         }
-        return true;
+        return false;
     }
 
     private void updateConfig() {
