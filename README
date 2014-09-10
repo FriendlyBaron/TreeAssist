@@ -1,3 +1,4 @@
+v5.8.77 - address DBO ticket #232 (needed lore is not checked correctly)
 v5.8.76 - support DURABILITY enchantment :)
 v5.8.75 - fix another CCE because of bukkit not fully supporting minecraft 1.7 trees
 v5.8.74 - partially revert the internal rewrite. 1.7 trees are not fully supported by bukkit. Fixed for now!

@@ -193,8 +193,9 @@ public abstract class BaseTree {
         if (!"".equals(lore)) {
             debug.i("Lore needed!");
             ItemStack item = player.getItemInHand();
-            if (item != null || !item.hasItemMeta() || !item.getItemMeta().hasLore() || !item.getItemMeta().getLore().contains(lore)) {
+            if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore() || !item.getItemMeta().getLore().contains(lore)) {
                 debug.i("Lore not found: " + lore);
+
 
                 if (plugin.getConfig().getBoolean("Sapling Replant.Enforce")) {
                     maybeReplant(plugin, event, resultTree, player, block);
