@@ -499,6 +499,8 @@ public class TreeAssist extends JavaPlugin {
         items.put("Automatic Tree Destruction.When Sneaking", "true");
         items.put("Automatic Tree Destruction.Required Lore", "");
         items.put("Main.Initial Delay", "false");
+
+        items.put("Sapling Replant.Time to Block Sapling Growth (Seconds)", "0");
         return items;
     }
 

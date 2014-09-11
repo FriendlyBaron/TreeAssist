@@ -1,3 +1,4 @@
+v5.8.79 - add Sapling Growth Prevention - USE WITH CAUTION!
 v5.8.78 - fix toggle command logic display - it said "enabled" when it actually disabled -.-
 v5.8.77 - address DBO ticket #232 (needed lore is not checked correctly)
 v5.8.76 - support DURABILITY enchantment :)

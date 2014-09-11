@@ -9,14 +9,13 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
 
 public class TreeAssistReplant implements Runnable {
-	public final TreeAssist plugin;
-	public Block block;
-	private byte data;
+    public final TreeAssist plugin;
+    public Block block;
+    private byte data;
     private TreeSpecies species;
-	public Material mat;
+    public Material mat;
 
-    public TreeAssistReplant(TreeAssist instance, Block importBlock, TreeSpecies species)
-    {
+    public TreeAssistReplant(TreeAssist instance, Block importBlock, TreeSpecies species) {
         this.plugin = instance;
         this.block = importBlock;
         this.species = species;
@@ -24,22 +23,19 @@ public class TreeAssistReplant implements Runnable {
         this.mat = Material.SAPLING;
     }
 
-    public TreeAssistReplant(TreeAssist instance, Block importBlock, Material logMat, byte importData)
-    {
+    public TreeAssistReplant(TreeAssist instance, Block importBlock, Material logMat, byte importData) {
         this.plugin = instance;
         this.block = importBlock;
         this.data = importData;
         this.mat = logMat;
     }
 
-	@Override
-	public void run() 
-	{
-		Material below = this.block.getRelative(BlockFace.DOWN).getType();
-		if(plugin.isEnabled() &&
-				(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY))
-		{
-			this.block.setType(mat);
+    @Override
+    public void run() {
+        Material below = this.block.getRelative(BlockFace.DOWN).getType();
+        if (plugin.isEnabled() &&
+                (below == Material.DIRT || below == Material.GRASS || below == Material.CLAY)) {
+            this.block.setType(mat);
             if (data < 0) {
                 BlockState state = block.getState();
                 MaterialData data = state.getData();
@@ -50,6 +46,9 @@ public class TreeAssistReplant implements Runnable {
             } else {
                 this.block.setData(this.data);
             }
-		}
-	}
+            if (plugin.getConfig().getInt("Time to Block Sapling Growth (Seconds)") > 0) {
+                plugin.getListener().getAntiGrow().add(this.block, plugin.getConfig().getInt("Time to Block Sapling Growth (Seconds)"));
+            }
+        }
+    }
 }
