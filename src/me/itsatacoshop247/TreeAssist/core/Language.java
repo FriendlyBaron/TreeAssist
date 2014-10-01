@@ -49,15 +49,15 @@ public final class Language {
         SUCCESSFUL_TOGGLE_GLOBAL_OFF("successful.toggle.global_off", "&aTreeAssist functions are turned off globally!"),
         SUCCESSFUL_TOGGLE_GLOBAL_ON("successful.toggle.global_on", "&aTreeAssist functions are now turned on globally!"),
 
-        SUCCESSFUL_TOGGLE_OTHER_OFF("successful.toggle.other_global_off", "&aTreeAssist functions are turned off for %1% in world %2%!"),
-        SUCCESSFUL_TOGGLE_OTHER_ON("successful.toggle.other_global_on", "&aTreeAssist functions are now turned on for %1% in world %2%!"),
-        SUCCESSFUL_TOGGLE_OTHER_WORLD_OFF("successful.toggle.other_world_off", "&aTreeAssist functions are turned off for %1%!"),
-        SUCCESSFUL_TOGGLE_OTHER_WORLD_ON("successful.toggle.other_world_on", "&aTreeAssist functions are now turned on for %1%!"),
+        SUCCESSFUL_TOGGLE_OTHER_OFF("successful.toggle.other_global_off", "&aTreeAssist functions are turned off for %1%!"),
+        SUCCESSFUL_TOGGLE_OTHER_ON("successful.toggle.other_global_on", "&aTreeAssist functions are now turned on for %1%!"),
+        SUCCESSFUL_TOGGLE_OTHER_WORLD_OFF("successful.toggle.other_world_off", "&aTreeAssist functions are turned off for %1% in world %2%!"),
+        SUCCESSFUL_TOGGLE_OTHER_WORLD_ON("successful.toggle.other_world_on", "&aTreeAssist functions are now turned on for %1% in world %2%!"),
 
-        SUCCESSFUL_TOGGLE_YOU_OFF("successful.toggle.you_global_off", "&aTreeAssist functions are turned off for you in world %1%!"),
-        SUCCESSFUL_TOGGLE_YOU_ON("successful.toggle.you_global_on", "&aTreeAssist functions are now turned on for you in world %1%!"),
-        SUCCESSFUL_TOGGLE_YOU_WORLD_OFF("successful.toggle.you_world_off", "&aTreeAssist functions are turned off for you!"),
-        SUCCESSFUL_TOGGLE_YOU_WORLD_ON("successful.toggle.you_world_on", "&aTreeAssist functions are now turned on for you!"),
+        SUCCESSFUL_TOGGLE_YOU_OFF("successful.toggle.you_global_off", "&aTreeAssist functions are turned off for you!"),
+        SUCCESSFUL_TOGGLE_YOU_ON("successful.toggle.you_global_on", "&aTreeAssist functions are now turned on for you!"),
+        SUCCESSFUL_TOGGLE_YOU_WORLD_OFF("successful.toggle.you_world_off", "&aTreeAssist functions are turned off for you in world %1%!"),
+        SUCCESSFUL_TOGGLE_YOU_WORLD_ON("successful.toggle.you_world_on", "&aTreeAssist functions are now turned on for you in world %1%!"),
 
         SUCCESSFUL_TOOL_OFF("successful.tool_off", "&aProtection Tool removed!"),
         SUCCESSFUL_TOOL_ON("successful.tool_on", "&aYou have been given the Protection Tool!");
