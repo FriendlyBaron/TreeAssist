@@ -61,7 +61,7 @@ public class TreeAssistAntiGrow {
             new AntiGrowRunner().runTaskTimer(plugin, 20L, 20L);
         } else {
             // add
-            while (lock == true) {
+            while (lock) {
                 try {
                     Thread.sleep(100L);
                 } catch (InterruptedException e) {

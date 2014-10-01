@@ -1,16 +1,15 @@
 package me.itsatacoshop247.TreeAssist.blocklists;
 
-import java.util.List;
-
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
-
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.util.List;
 
 public class CoreProtectBlockList implements BlockList {
 	private final CoreProtectAPI protect;
@@ -33,8 +32,8 @@ public class CoreProtectBlockList implements BlockList {
 		       
 		// Check that the API is enabled
 		CoreProtectAPI protect = ((CoreProtect)plugin).getAPI();
-		if (protect.isEnabled()==false){
-		  return null;
+        if (!protect.isEnabled()) {
+            return null;
 		}
 		return protect;
 	}
