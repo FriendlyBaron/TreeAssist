@@ -9,6 +9,7 @@ Main:
   Auto Plant Dropped Saplings: false
   Toggle Default: true
   Initial Delay: false
+  Language: en
 Automatic Tree Destruction:
   Required Lore: ''
   When Sneaking: true

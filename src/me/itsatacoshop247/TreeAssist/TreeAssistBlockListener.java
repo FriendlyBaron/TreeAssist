@@ -1,5 +1,7 @@
 package me.itsatacoshop247.TreeAssist;
 
+import me.itsatacoshop247.TreeAssist.core.Language;
+import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
@@ -70,12 +72,12 @@ public class TreeAssistBlockListener implements Listener {
                 if (clicked.getType() == Material.SAPLING) {
                     if (plugin.saplingLocationList.contains(clicked.getLocation())) {
                         plugin.saplingLocationList.remove(clicked.getLocation());
-                        event.getPlayer().sendMessage("" +
-                                ChatColor.GREEN + "Sapling is no longer protected!");
+                        event.getPlayer().sendMessage(
+                                Language.parse(MSG.SUCCESSFUL_PROTECT_OFF));
                     } else {
                         plugin.saplingLocationList.add(clicked.getLocation());
-                        event.getPlayer().sendMessage("" +
-                                ChatColor.GREEN + "Sapling is now protected!");
+                        event.getPlayer().sendMessage(
+                                Language.parse(MSG.SUCCESSFUL_PROTECT_ON));
                     }
                 }
             }

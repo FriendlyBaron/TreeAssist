@@ -1,80 +1,73 @@
 package me.itsatacoshop247.TreeAssist.core;
 
+import me.itsatacoshop247.TreeAssist.TreeAssist;
+import me.itsatacoshop247.TreeAssist.core.Language.MSG;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.FileHandler;
+import java.util.*;
+import java.util.logging.*;
 import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-
-import me.itsatacoshop247.TreeAssist.TreeAssist;
 
 public class Debugger {
-	public static boolean override = false;
-	
-	private static Logger logger = null;
-	private static List<Logger> loggers = new ArrayList<Logger>();
-	
-	private final TreeAssist plugin;
-	private final int debugID;
+    public static boolean override = false;
 
-	private static Set<Integer> check = new HashSet<Integer>();
+    private static Logger logger = null;
+    private static List<Logger> loggers = new ArrayList<Logger>();
 
-	public Debugger(TreeAssist plugin, int id) {
-		debugID = id;
-		this.plugin = plugin;
-	}
-	private boolean debugs() {
-		return override || check.contains(debugID);
-	}
-	
-	private Logger getLogger() {
+    private final TreeAssist plugin;
+    private final int debugID;
 
-		if (logger == null) {
-	        logger = Logger.getAnonymousLogger();
-	        logger.setLevel(Level.ALL);
-	        logger.setUseParentHandlers(false);
-	        
-	        for (Handler handler : logger.getHandlers()) {
-	            logger.removeHandler(handler);
-	        }
-	
-	        try {
-	            final SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+    private static Set<Integer> check = new HashSet<Integer>();
 
-	            final File debugFolder = new File(plugin.getDataFolder(), "debug");
-	            debugFolder.mkdirs();
-	            final File logFile = new File(debugFolder, dateformat.format(new Date()) + ".log");
-	            
-	            final FileHandler handler = new FileHandler(logFile.getAbsolutePath());
-	            
-	            handler.setFormatter(LogFileFormatter.newInstance());
-	            
-	            logger.addHandler(handler);
+    public Debugger(TreeAssist plugin, int id) {
+        debugID = id;
+        this.plugin = plugin;
+    }
 
-	    		loggers.add(logger);
-	        } catch (IOException ex) {
-	        	plugin.getLogger().log(Level.SEVERE, null, ex);
-	        } catch (SecurityException ex) {
-	        	plugin.getLogger().log(Level.SEVERE, null, ex);
-	        }
+    private boolean debugs() {
+        return override || check.contains(debugID);
+    }
+
+    private Logger getLogger() {
+
+        if (logger == null) {
+            logger = Logger.getAnonymousLogger();
+            logger.setLevel(Level.ALL);
+            logger.setUseParentHandlers(false);
+
+            for (Handler handler : logger.getHandlers()) {
+                logger.removeHandler(handler);
+            }
+
+            try {
+                final SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+
+                final File debugFolder = new File(plugin.getDataFolder(), "debug");
+                debugFolder.mkdirs();
+                final File logFile = new File(debugFolder, dateformat.format(new Date()) + ".log");
+
+                final FileHandler handler = new FileHandler(logFile.getAbsolutePath());
+
+                handler.setFormatter(LogFileFormatter.newInstance());
+
+                logger.addHandler(handler);
+
+                loggers.add(logger);
+            } catch (IOException ex) {
+                plugin.getLogger().log(Level.SEVERE, null, ex);
+            } catch (SecurityException ex) {
+                plugin.getLogger().log(Level.SEVERE, null, ex);
+            }
         }
-		return logger;
-	}
-	
+        return logger;
+    }
+
     static class LogFileFormatter extends Formatter {
 
         private final SimpleDateFormat date;
@@ -108,56 +101,57 @@ public class Debugger {
             return builder.toString();
         }
     }
-    
-	public void i(final String string) {
-		if (!debugs()) {
-			return;
-		}
-		getLogger().info(System.currentTimeMillis()%1000 + " " + string);
-	}
-	
-	public static void load(final TreeAssist instance, final CommandSender sender) {
-		check.clear();
-		override = false;
-		final String debugs = instance.getConfig().getString("Debug");
-		if (debugs.equals("none")) {
-			instance.getLogger().info("debugging: off");
-		} else {
-			if (debugs.equals("all") || debugs.equals("full") || debugs.equals("on")) {
-				override = true;
-				sender.sendMessage("debugging EVERYTHING");
-			} else {
-				final String[] sIds = debugs.split(",");
-				sender.sendMessage("debugging: " + debugs);
-				for (String s : sIds) {
-					try {
-						check.add(Integer.valueOf(s));
-					} catch (Exception e) {
-						// ignore
-					}
-				}
-			}
-		}
-	}
-	
-	public static void destroy() {
-		
-		for (Logger log : loggers) {
-			Handler[] handlers = log.getHandlers().clone();
-			for (Handler hand : handlers) {
-				log.removeHandler(hand);
-			}
-		}
-		loggers.clear();
-	}
-	public static String parse(Location location) {
-		StringBuffer sb = new StringBuffer(location.getWorld().getName());
-		sb.append(':');
-		sb.append(location.getBlockX());
-		sb.append('/');
-		sb.append(location.getBlockY());
-		sb.append('/');
-		sb.append(location.getBlockZ());
-		return sb.toString();
-	}
+
+    public void i(final String string) {
+        if (!debugs()) {
+            return;
+        }
+        getLogger().info(System.currentTimeMillis() % 1000 + " " + string);
+    }
+
+    public static void load(final TreeAssist instance, final CommandSender sender) {
+        check.clear();
+        override = false;
+        final String debugs = instance.getConfig().getString("Debug");
+        if (debugs.equals("none")) {
+            instance.getLogger().info("debugging: off");
+        } else {
+            if (debugs.equals("all") || debugs.equals("full") || debugs.equals("on")) {
+                override = true;
+                sender.sendMessage(Language.parse(MSG.SUCCESSFUL_DEBUG_ALL));
+            } else {
+                final String[] sIds = debugs.split(",");
+                sender.sendMessage(Language.parse(MSG.SUCCESSFUL_DEBUG_X, debugs));
+                for (String s : sIds) {
+                    try {
+                        check.add(Integer.valueOf(s));
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+            }
+        }
+    }
+
+    public static void destroy() {
+
+        for (Logger log : loggers) {
+            Handler[] handlers = log.getHandlers().clone();
+            for (Handler hand : handlers) {
+                log.removeHandler(hand);
+            }
+        }
+        loggers.clear();
+    }
+
+    public static String parse(Location location) {
+        StringBuffer sb = new StringBuffer(location.getWorld().getName());
+        sb.append(':');
+        sb.append(location.getBlockX());
+        sb.append('/');
+        sb.append(location.getBlockY());
+        sb.append('/');
+        sb.append(location.getBlockZ());
+        return sb.toString();
+    }
 }

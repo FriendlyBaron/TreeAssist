@@ -1,8 +1,9 @@
 package me.itsatacoshop247.TreeAssist.blocklists;
 
+import me.itsatacoshop247.TreeAssist.core.Language;
+import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -144,7 +145,7 @@ public class FlatFileBlockList implements BlockList {
                     removals.add(def);
                 }
             } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED.toString() + "You have a messed up data.yml - fix or remove it!");
+                sender.sendMessage(Language.parse(MSG.ERROR_DATA_YML));
                 return 0;
             }
         }

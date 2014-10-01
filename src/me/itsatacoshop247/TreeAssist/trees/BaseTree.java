@@ -2,6 +2,8 @@ package me.itsatacoshop247.TreeAssist.trees;
 
 import me.itsatacoshop247.TreeAssist.TreeAssist;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Language;
+import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -42,8 +44,8 @@ public abstract class BaseTree {
             if (blockMat == Material.SAPLING) {
                 if (Utils.plugin.getConfig().getBoolean(
                         "Sapling Replant.Block all breaking of Saplings")) {
-                    player.sendMessage(ChatColor.GREEN
-                            + "You cannot break saplings on this server!");
+                    player.sendMessage(
+                            Language.parse(MSG.INFO_NEVER_BREAK_SAPLINGS));
                     event.setCancelled(true);
                 } else if (Utils.plugin.saplingLocationList.contains(block
                         .getLocation())) {
@@ -52,8 +54,7 @@ public abstract class BaseTree {
                                 .getLocation());
                         return;
                     }
-                    player.sendMessage(ChatColor.GREEN
-                            + "This sapling is protected!");
+                    player.sendMessage(Language.parse(MSG.INFO_SAPLING_PROTECTED));
                     event.setCancelled(true);
                 }
             } else if (blockMat == Material.GRASS || blockMat == Material.DIRT
@@ -66,8 +67,7 @@ public abstract class BaseTree {
                         return;
                     }
 
-                    player.sendMessage(ChatColor.GREEN
-                            + "This sapling is protected!");
+                    player.sendMessage(Language.parse(MSG.INFO_SAPLING_PROTECTED));
                     event.setCancelled(true);
                 }
             } else if (blockMat != Material.SAPLING
@@ -238,8 +238,8 @@ public abstract class BaseTree {
             if (plugin.getConfig().getBoolean("Sapling Replant.Enforce")) {
                 maybeReplant(plugin, event, resultTree, player, block);
             }
-            player.sendMessage(ChatColor.GREEN + "TreeAssist is cooling down!");
-            player.sendMessage(ChatColor.GREEN + "" + Utils.plugin.getCoolDown(player) + " seconds remaining!");
+            player.sendMessage(Language.parse(MSG.INFO_COOLDOWN_STILL));
+            player.sendMessage(Language.parse(MSG.INFO_COOLDOWN_VALUE, String.valueOf(Utils.plugin.getCoolDown(player))));
             if (plugin.isForceAutoDestroy()) {
                 resultTree.findYourBlocks(block);
                 debug.i("But still, remove later, maybe");

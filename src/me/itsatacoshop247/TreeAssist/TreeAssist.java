@@ -2,12 +2,13 @@ package me.itsatacoshop247.TreeAssist;
 
 import me.itsatacoshop247.TreeAssist.blocklists.*;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
+import me.itsatacoshop247.TreeAssist.core.Language;
+import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
 import me.itsatacoshop247.TreeAssist.timers.CooldownCounter;
 import me.itsatacoshop247.TreeAssist.trees.*;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -113,14 +114,14 @@ public class TreeAssist extends JavaPlugin {
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("Reload")) {
                     if (!sender.hasPermission("treeassist.reload")) {
-                        sender.sendMessage("You don't have treeassist.reload");
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_RELOAD));
                         return true;
                     }
                     blockList.save();
                     reloadConfig();
                     this.loadYamls();
                     reloadLists();
-                    sender.sendMessage(ChatColor.GREEN + "TreeAssist has been reloaded.");
+                    sender.sendMessage(Language.parse(MSG.SUCCESSFUL_RELOAD));
                     return true;
                 } else if (args[0].equalsIgnoreCase("Toggle")) {
 
@@ -128,60 +129,60 @@ public class TreeAssist extends JavaPlugin {
 
                         if (args.length > 2) {
                             if (Bukkit.getWorld(args[2]) == null) {
-                                sender.sendMessage(ChatColor.RED + "World not found: " + args[2]);
+                                sender.sendMessage(Language.parse(MSG.ERROR_NOTFOUND_WORLD, args[1]));
                                 return true;
                             }
 
                             if (toggleWorld(args[2], args[1])) {
-                                sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for " + args[1] + " in world " + args[2] + "!");
+                                sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_OTHER_WORLD_ON, args[1], args[2]));
                             } else {
-                                sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for " + args[1] + " in world " + args[2] + "!");
+                                sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_OTHER_WORLD_OFF, args[1], args[2]));
                             }
                         }
 
                         if (toggleGlobal(args[1])) {
-                            sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for " + args[1] + "!");
+                            sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_OTHER_ON, args[1]));
                         } else {
-                            sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for " + args[1] + "!");
+                            sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_OTHER_OFF, args[1]));
                         }
                         return true;
                     }
 
                     if (!sender.hasPermission("treeassist.toggle")) {
-                        sender.sendMessage("You don't have treeassist.toggle");
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_TOGGLE));
                         return true;
                     }
 
                     if (args.length > 1) {
                         if (Bukkit.getWorld(args[1]) == null) {
-                            sender.sendMessage(ChatColor.RED + "World not found: " + args[1]);
+                            sender.sendMessage(Language.parse(MSG.ERROR_NOTFOUND_WORLD, args[1]));
                             return true;
                         }
 
                         if (toggleWorld(args[1], sender.getName())) {
-                            sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for you in world " + args[1] + "!");
+                            sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_YOU_WORLD_ON, args[1]));
                         } else {
-                            sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for you in world " + args[1] + "!");
+                            sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_YOU_WORLD_OFF, args[1]));
                         }
                     }
 
                     if (toggleGlobal(sender.getName())) {
-                        sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are now on for you!");
+                        sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_YOU_ON));
                     } else {
-                        sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off for you!");
+                        sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_YOU_OFF));
                     }
                     return true;
                 } else if (args[0].equalsIgnoreCase("Global")) {
                     if (!sender.hasPermission("treeassist.toggle.global")) {
-                        sender.sendMessage("You don't have treeassist.toggle.global");
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_TOGGLE_GLOBAL));
                         return true;
                     }
                     if (!this.Enabled) {
                         this.Enabled = true;
-                        sender.sendMessage(ChatColor.GREEN + "TreeAssist functions are globally back on!");
+                        sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_GLOBAL_ON));
                     } else {
                         this.Enabled = false;
-                        sender.sendMessage(ChatColor.GREEN + "TreeAssist functions turned off globally!");
+                        sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOGGLE_GLOBAL_OFF));
                     }
                     return true;
                 } else if (args[0].equalsIgnoreCase("Debug")) {
@@ -195,7 +196,7 @@ public class TreeAssist extends JavaPlugin {
                     return true;
                 } else if (args[0].equalsIgnoreCase("ProtectTool")) {
                     if (!sender.hasPermission("treeassist.tool")) {
-                        sender.sendMessage(ChatColor.RED + "You don't have permission!");
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_TOGGLE_TOOL));
                         return true;
 
                     }
@@ -207,7 +208,7 @@ public class TreeAssist extends JavaPlugin {
                                 if (item.hasItemMeta()) {
                                     if (listener.isProtectTool(item)) {
                                         player.getInventory().removeItem(item);
-                                        sender.sendMessage(ChatColor.GREEN + "Protection Tool removed!");
+                                        sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOOL_OFF));
                                         found = true;
                                         break;
                                     }
@@ -216,16 +217,16 @@ public class TreeAssist extends JavaPlugin {
                         }
                         if (!found) {
                             player.getInventory().addItem(listener.getProtectionTool());
-                            sender.sendMessage(ChatColor.GREEN + "You have been given the Protection Tool!");
+                            sender.sendMessage(Language.parse(MSG.SUCCESSFUL_TOOL_ON));
                         }
                         return true;
                     }
-                    sender.sendMessage("Only for players!");
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
                     return true;
                 } else if (args[0].equalsIgnoreCase("noreplace")) {
                     int seconds = getConfig().getInt("Sapling Replant.Command Time Delay (Seconds)", 30);
                     listener.noReplace(sender.getName(), seconds);
-                    sender.sendMessage(ChatColor.GREEN + "You now stop replanting trees for " + seconds + " seconds");
+                    sender.sendMessage(Language.parse(MSG.SUCCESSFUL_NOREPLACE, String.valueOf(seconds)));
                     return true;
                 } else if (args[0].equalsIgnoreCase("purge")) {
                     if (blockList instanceof FlatFileBlockList) {
@@ -234,18 +235,18 @@ public class TreeAssist extends JavaPlugin {
                             int days = Integer.parseInt(args[1]);
                             int done = bl.purge(days);
 
-                            sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for last " + days + " days!");
+                            sender.sendMessage(Language.parse(MSG.SUCCESSFUL_PURGE_DAYS, String.valueOf(done), args[1]));
                         } catch (NumberFormatException e) {
                             if (args[1].equalsIgnoreCase("global")) {
                                 int done = bl.purge(sender);
-                                sender.sendMessage(ChatColor.GREEN.toString() + done + " global invalid entries have been purged!");
+                                sender.sendMessage(Language.parse(MSG.SUCCESSFUL_PURGE_GLOBAL, String.valueOf(done)));
                             } else {
                                 int done = bl.purge(args[1]);
-                                sender.sendMessage(ChatColor.GREEN.toString() + done + " entries have been purged for the world " + args[1] + "!");
+                                sender.sendMessage(Language.parse(MSG.SUCCESSFUL_PURGE_WORLD, String.valueOf(done), args[1]));
                             }
                         }
                     } else {
-                        sender.sendMessage(ChatColor.RED.toString() + "This command only is available for the TreeAssist BlockList!");
+                        sender.sendMessage(Language.parse(MSG.ERROR_ONLY_TREEASSIST_BLOCKLIST));
                     }
                     return true;
                 }
@@ -325,6 +326,9 @@ public class TreeAssist extends JavaPlugin {
             blockList = new EmptyBlockList();
         }
         blockList.initiate();
+
+
+        Language.init(this, config.getString("Main.Language", "en"));
     }
 
     public void removeCountDown(String playerName) {
@@ -350,7 +354,8 @@ public class TreeAssist extends JavaPlugin {
             return;
         } else if (coolDown < 0) {
             coolDown = tree.calculateCooldown(player.getItemInHand());
-            player.sendMessage(ChatColor.GREEN + "Wait " + coolDown + " seconds for TreeAssist cooldown");
+            player.sendMessage(Language.parse(
+                    MSG.INFO_COOLDOWN_WAIT, String.valueOf(coolDown)));
         }
         CooldownCounter cc = new CooldownCounter(player, coolDown);
         cc.runTaskTimer(this, 20L, 20L);
@@ -501,6 +506,7 @@ public class TreeAssist extends JavaPlugin {
         items.put("Main.Initial Delay", "false");
 
         items.put("Sapling Replant.Time to Block Sapling Growth (Seconds)", "0");
+        items.put("Main.Language", "en");
         return items;
     }
 
