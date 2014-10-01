@@ -1,16 +1,6 @@
 package me.itsatacoshop247.TreeAssist.blocklists;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import me.itsatacoshop247.TreeAssist.core.Utils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,9 +12,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class FlatFileBlockList implements BlockList {
-	FileConfiguration data = new YamlConfiguration();
-	File dataFile;
+    FileConfiguration data = new YamlConfiguration();
+    File dataFile;
     private List<String> list = new ArrayList<String>();
 
     @Override
@@ -35,12 +29,12 @@ public class FlatFileBlockList implements BlockList {
         data.set("Blocks", list);
     }
 
-	@Override
-	public void initiate() {
-		this.dataFile = new File(Utils.plugin.getDataFolder(), "data.yml");
-		data.options().copyDefaults(true);
-		try {
-			this.data.load(this.dataFile);
+    @Override
+    public void initiate() {
+        this.dataFile = new File(Utils.plugin.getDataFolder(), "data.yml");
+        data.options().copyDefaults(true);
+        try {
+            this.data.load(this.dataFile);
             list = data.getStringList("Blocks");
 
             if (list == null || list.size() < 1) {
@@ -70,28 +64,40 @@ public class FlatFileBlockList implements BlockList {
                 list = newList;
                 save();
             }
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
-			e.printStackTrace();
-		}
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
 
-		if (!this.dataFile.exists()) 
-		{
-			this.dataFile.getParentFile().mkdirs();
-			copy(Utils.plugin.getResource("data.yml"), this.dataFile);
+        if (!this.dataFile.exists()) {
+            this.dataFile.getParentFile().mkdirs();
+            copy(Utils.plugin.getResource("data.yml"), this.dataFile);
             list = new ArrayList<String>();
-		}
-	}
+        }
+    }
 
-	@Override
-	public boolean isPlayerPlaced(Block block) {
-		String check = toString(block);
+    @Override
+    public boolean isPlayerPlaced(final Block block) {
+        if (list == null || block == null) {
+            return false;
+        }
+        final String[] check = toString(block).split(";");
 
-        return (list != null && list.contains(check));
-	}
+        for (String s : list) {
+            String[] b = s.split(";");
+            if (check[0].equals(b[0]) &&
+                    check[1].equals(b[1]) &&
+                    check[2].equals(b[2]) &&
+                    check[4].equals(b[4])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public void logBreak(Block block, Player player) {
@@ -99,9 +105,22 @@ public class FlatFileBlockList implements BlockList {
     }
 
     @Override
-    public void removeBlock(Block block) {
-        String check = toString(block);
-        list.remove(check);
+    public void removeBlock(final Block block) {
+        final String[] check = toString(block).split(";");
+        final List<String> removals = new ArrayList<String>();
+
+        for (String s : list) {
+            String[] b = s.split(";");
+            if (check[0].equals(b[0]) &&
+                    check[1].equals(b[1]) &&
+                    check[2].equals(b[2]) &&
+                    check[4].equals(b[4])) {
+                removals.add(s);
+            }
+        }
+        for (String s : removals) {
+            list.remove(s);
+        }
         data.set("Blocks", list);
     }
 
@@ -120,7 +139,7 @@ public class FlatFileBlockList implements BlockList {
                 int x = Integer.parseInt(split[0]);
                 int y = Integer.parseInt(split[1]);
                 int z = Integer.parseInt(split[2]);
-                Block block = world.getBlockAt(x,y,z);
+                Block block = world.getBlockAt(x, y, z);
                 if (block.getType() != Material.LOG && !block.getType().name().equals(Material.LOG_2)) {
                     removals.add(def);
                 }
@@ -150,7 +169,7 @@ public class FlatFileBlockList implements BlockList {
         final List<String> removals = new ArrayList<String>();
         for (String def : list) {
             int i = Integer.valueOf(def.split(";")[3]);
-            if (i < (System.currentTimeMillis() - days*24*60*60*1000)) {
+            if (i < (System.currentTimeMillis() - days * 24 * 60 * 60 * 1000)) {
                 removals.add(def);
             }
         }
@@ -163,43 +182,34 @@ public class FlatFileBlockList implements BlockList {
     public void save() {
         this.saveData();
     }
-	
-	private String toString(Block block) {
-		return block.getX() + ";" + block.getY() + ";"
-				+ block.getZ() + ";" + System.currentTimeMillis() + ";" + block.getWorld().getName();
-	}
-	
-	private void copy(InputStream in, File file) 
-	{
-		try 
-		{
-			OutputStream out = new FileOutputStream(file);
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = in.read(buf)) > 0) 
-			{
-				out.write(buf, 0, len);
-			}
-			out.close();
-			in.close();
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-	}
 
-	
-	private synchronized void saveData() 
-	{
-		try 
-		{
+    private String toString(Block block) {
+        return block.getX() + ";" + block.getY() + ";"
+                + block.getZ() + ";" + System.currentTimeMillis() + ";" + block.getWorld().getName();
+    }
+
+    private void copy(InputStream in, File file) {
+        try {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private synchronized void saveData() {
+        try {
             data.set("Blocks", list);
-			data.save(dataFile);
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	}
+            data.save(dataFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

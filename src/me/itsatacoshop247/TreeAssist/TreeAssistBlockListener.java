@@ -33,7 +33,7 @@ public class TreeAssistBlockListener implements Listener {
 
     public TreeAssistBlockListener(TreeAssist instance) {
         plugin = instance;
-        antiGrow = new TreeAssistAntiGrow();
+        antiGrow = new TreeAssistAntiGrow(plugin);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

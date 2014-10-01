@@ -387,6 +387,9 @@ public abstract class BaseTree {
     private static BaseTree maybeReplant(TreeAssist plugin,
                                          BlockBreakEvent event, BaseTree resultTree, Player player,
                                          Block block) {
+        if (resultTree.top == null) {
+            return new InvalidTree();
+        }
 
         if (!resultTree.isBottom(block)) {
             block = resultTree.bottom;
@@ -447,6 +450,8 @@ public abstract class BaseTree {
         }
         return null;
     }
+
+    abstract protected void debug();
 
     abstract protected boolean isBottom(Block block);
 

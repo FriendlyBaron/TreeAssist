@@ -1,283 +1,284 @@
 package me.itsatacoshop247.TreeAssist.trees;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.itsatacoshop247.TreeAssist.TreeAssistProtect;
 import me.itsatacoshop247.TreeAssist.TreeAssistReplant;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
-//import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
+//import org.bukkit.TreeSpecies;
 //import org.bukkit.material.Tree;
 
 public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
-	public static Debugger debugger;
-	// private final TreeSpecies species;
-	Block[] bottoms = null;
-	Material logMat = Material.LOG_2;
+    public static Debugger debugger;
+    // private final TreeSpecies species;
+    Block[] bottoms = null;
+    Material logMat = Material.LOG_2;
     byte data;
-/*
-	public VanillaOneSevenTree(TreeSpecies species) {
-		this.species = species;
-	}
-*/
+
+    /*
+        public VanillaOneSevenTree(TreeSpecies species) {
+            this.species = species;
+        }
+    */
     public VanillaOneSevenTree(byte data) {
         this.data = data;
     }
-	@Override
-	public boolean isValid() {
-		return valid;
-	}
 
-	@Override
-	protected boolean hasPerms(Player player) {
-		if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
-			return true;
-		}
-		if (/*species == TreeSpecies.ACACIA*/data == 0) {
-			return player.hasPermission("treeassist.destroy.acacia");
-		}
-		if (/*species == TreeSpecies.DARK_OAK*/data ==1) {
-			return player.hasPermission("treeassist.destroy.darkoak");
-		}
-		return false;
-	}
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
 
-	@Override
-	protected Block getBottom(Block block) {
-		int counter = 1;
-		do {
-			if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG_2) {
-				counter++;
-			} else {
-				bottom = block.getRelative(0, 1 - counter, 0);
-				
-				
-				if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
-						bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
-						bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY) {
-					return null; // the tree is already broken.
-				}
-				return bottom;
-			}
-		} while (block.getY() - counter > 0);
+    @Override
+    protected boolean hasPerms(Player player) {
+        if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
+            return true;
+        }
+        if (/*species == TreeSpecies.ACACIA*/data == 0) {
+            return player.hasPermission("treeassist.destroy.acacia");
+        }
+        if (/*species == TreeSpecies.DARK_OAK*/data == 1) {
+            return player.hasPermission("treeassist.destroy.darkoak");
+        }
+        return false;
+    }
 
-		bottom = null;
-		return bottom;
-	}
+    @Override
+    protected Block getBottom(Block block) {
+        int counter = 1;
+        do {
+            if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG_2) {
+                counter++;
+            } else {
+                bottom = block.getRelative(0, 1 - counter, 0);
 
-	@Override
-	protected Block getTop(Block block) {
-		int maxY = block.getWorld().getMaxHeight() + 10;
-		int counter = 1;
+
+                if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY) {
+                    return null; // the tree is already broken.
+                }
+                return bottom;
+            }
+        } while (block.getY() - counter > 0);
+
+        bottom = null;
+        return bottom;
+    }
+
+    @Override
+    protected Block getTop(Block block) {
+        int maxY = block.getWorld().getMaxHeight() + 10;
+        int counter = 1;
 
 //		debug.i("trying to calculate the TOP block of a 1.7 tree!");
-		
-		while (block.getY() + counter < maxY) {
-			if (block.getRelative(0, counter, 0).getType() != Material.LOG_2) {
-				top = block.getRelative(0, counter, 0);
-				break;
-			} else {
-				counter++;
-			}
-		}
-		
-//		debug.i("> straight trunk for " + counter + " blocks; y="+top.getY());
-		
-		if (/*species == TreeSpecies.ACACIA*/data == 0) {
-			// acacia might get really messy now; check!
-			while (hasDiagonals(top)) {
-				top = getDiagonal(top);
-			}
-		}
-//		debug.i("final top should be at y="+top.getY());
-		
-		return (top != null && leafCheck(top)) ? top : null;
-	}
 
-	private Block getDiagonal(Block block) {
-		// always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
+        while (block.getY() + counter < maxY) {
+            if (block.getRelative(0, counter, 0).getType() != Material.LOG_2) {
+                top = block.getRelative(0, counter, 0);
+                break;
+            } else {
+                counter++;
+            }
+        }
+
+//		debug.i("> straight trunk for " + counter + " blocks; y="+top.getY());
+
+        if (/*species == TreeSpecies.ACACIA*/data == 0) {
+            // acacia might get really messy now; check!
+            while (hasDiagonals(top)) {
+                top = getDiagonal(top);
+            }
+        }
+//		debug.i("final top should be at y="+top.getY());
+
+        return (top != null && leafCheck(top)) ? top : null;
+    }
+
+    private Block getDiagonal(Block block) {
+        // always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
 
 //		debug.i("getting diagonal at y="+block.getY());
-		
-		if (Material.LOG_2 == block.getType()) {
-//			debug.i("> UP");
-			return block.getRelative(BlockFace.UP);
-		}
-		for (BlockFace bf : Utils.NEIGHBORFACES) {
-			if (Material.LOG_2 == block.getRelative(bf).getType()) {
-//				debug.i("> "+bf.name());
-				return block.getRelative(bf).getRelative(BlockFace.UP);
-			}
-		}
-//		debug.i("> NULL");
-		return null; // should have had a diagonal, but didn't find it. derp!
-	}
 
-	private boolean hasDiagonals(Block block) {
-		// always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
+        if (Material.LOG_2 == block.getType()) {
+//			debug.i("> UP");
+            return block.getRelative(BlockFace.UP);
+        }
+        for (BlockFace bf : Utils.NEIGHBORFACES) {
+            if (Material.LOG_2 == block.getRelative(bf).getType()) {
+//				debug.i("> "+bf.name());
+                return block.getRelative(bf).getRelative(BlockFace.UP);
+            }
+        }
+//		debug.i("> NULL");
+        return null; // should have had a diagonal, but didn't find it. derp!
+    }
+
+    private boolean hasDiagonals(Block block) {
+        // always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
 
 //		debug.i("checking for diagonal at y="+block.getY());
-		
-		if (Material.LOG_2 == block.getType()) {
+
+        if (Material.LOG_2 == block.getType()) {
 //			debug.i("> UP");
-			return true;
-		}
-		for (BlockFace bf : Utils.NEIGHBORFACES) {
-			if (Material.LOG_2 == block.getRelative(bf).getType()) {
+            return true;
+        }
+        for (BlockFace bf : Utils.NEIGHBORFACES) {
+            if (Material.LOG_2 == block.getRelative(bf).getType()) {
 //				debug.i("> "+bf.name());
-				return true;
-			}
-		}
-		return false;
-	}
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	protected List<Block> calculate(final Block bottom, final Block top) {
-		List<Block> list = new ArrayList<Block>();
-		
-		if (bottoms == null) {
-			checkBlock(list, bottom, top, true);
-		} else {
+    @Override
+    protected List<Block> calculate(final Block bottom, final Block top) {
+        List<Block> list = new ArrayList<Block>();
+
+        if (bottoms == null) {
+            checkBlock(list, bottom, top, true);
+        } else {
 //			debug.i("-------- checking bottoms!! --------");
-			for (Block bBlock : bottoms) {
-				if (bBlock == null) {
-					continue;
-				}
+            for (Block bBlock : bottoms) {
+                if (bBlock == null) {
+                    continue;
+                }
 //				debug.i("-------- checking bottom!! --------");
-				checkBlock(list, bBlock, top, true);
-			}
-		}
-		
-		return list;
-	}
+                checkBlock(list, bBlock, top, true);
+            }
+        }
 
-	@Override
-	protected int isLeaf(Block block) {
-		if (block.getType() == Material.LEAVES_2) {
-			Location bottomLoc = block.getLocation().clone();
-			if (bottoms == null) {
-				if (bottom == null) {
-					return 0;
-				}
-				bottomLoc.setY(bottom.getY());
-				if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
-					return 0;
-				}
-			} else {
-				for (Block bottom : bottoms) {
-					if (bottom == null) {
-						continue;
-					}
-					bottomLoc.setY(bottom.getY());
-					if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
-						return 0;
-					}
-				}
-			}
-			
-			return 1;
-		}
-		return 0;
-	}
+        return list;
+    }
 
-	@Override
-	protected void getTrunks() {
-		if (/*species == TreeSpecies.ACACIA*/data == 0) {
-			return;
-		}
-		bottoms = new Block[4];
-		bottoms[0] = bottom;
-		int j = 1;
-		
-		if (bottom == null) {
-			System.out.print("Warning! bottom is null!");
-			return;
-		}
-		
-		for (BlockFace face : Utils.NEIGHBORFACES) {
-			if (bottom.getRelative(face).getType() == Material.LOG_2 && j<4) {
-				bottoms[j] = bottom.getRelative(face);
-				j++;
-			}
-			if (j == 4) {
-				break;
-			}
-		}
-	}
+    @Override
+    protected int isLeaf(Block block) {
+        if (block.getType() == Material.LEAVES_2) {
+            Location bottomLoc = block.getLocation().clone();
+            if (bottoms == null) {
+                if (bottom == null) {
+                    return 0;
+                }
+                bottomLoc.setY(bottom.getY());
+                if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
+                    return 0;
+                }
+            } else {
+                for (Block bottom : bottoms) {
+                    if (bottom == null) {
+                        continue;
+                    }
+                    bottomLoc.setY(bottom.getY());
+                    if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
+                        return 0;
+                    }
+                }
+            }
 
-	@Override
-	protected boolean willBeDestroyed() {
-		switch (/*species*/data) {
-        case /*ACACIA:*/0:
-			return Utils.plugin.getConfig()
-					.getBoolean("Automatic Tree Destruction.Tree Types.Acacia");
-        case /*DARK_OAK:*/1:
-			return Utils.plugin.getConfig()
-					.getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak");
-		default:
-			return true; // ugly branch messes
-		}
-	}
+            return 1;
+        }
+        return 0;
+    }
 
-	@Override
-	protected boolean willReplant() {
-		return Utils.replantType(/*species*/data);
-	}
+    @Override
+    protected void getTrunks() {
+        if (/*species == TreeSpecies.ACACIA*/data == 0) {
+            return;
+        }
+        bottoms = new Block[4];
+        bottoms[0] = bottom;
+        int j = 1;
 
-	@Override
-	protected void handleSaplingReplace(int delay) {
-		if (/*species == TreeSpecies.DARK_OAK*/data == 1 && bottoms != null) {
-			for (Block bottom : bottoms) {
-				replaceSapling(delay, bottom);
-			}
-		}
-		replaceSapling(delay, bottom);
-	}
+        if (bottom == null) {
+            return;
+        }
 
-	private void replaceSapling(int delay, Block bottom) {
-		if (bottom == null) {
-			return;
-		}
-		// make sure that the block is not being removed later
-		
-		if (bottoms != null) {
-			for (Block b : bottoms) {
-				removeBlocks.remove(b);
-				totalBlocks.remove(b);
-			}
-		}
-		
-		removeBlocks.remove(bottom);
-		totalBlocks.remove(bottom);
-		
-		Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, /*species*/(byte) (data+4));
-		Utils.plugin.getServer()
-				.getScheduler()
-				.scheduleSyncDelayedTask(Utils.plugin, b,
-						20 * delay);
+        for (BlockFace face : Utils.NEIGHBORFACES) {
+            if (bottom.getRelative(face).getType() == Material.LOG_2 && j < 4) {
+                bottoms[j] = bottom.getRelative(face);
+                j++;
+            }
+            if (j == 4) {
+                break;
+            }
+        }
+    }
 
-		if (Utils.plugin.getConfig()
-				.getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-			Utils.plugin.saplingLocationList.add(bottom.getLocation());
-			Runnable X = new TreeAssistProtect(Utils.plugin,
-					bottom.getLocation());
+    @Override
+    protected boolean willBeDestroyed() {
+        switch (/*species*/data) {
+            case /*ACACIA:*/ 0:
+                return Utils.plugin.getConfig()
+                        .getBoolean("Automatic Tree Destruction.Tree Types.Acacia");
+            case /*DARK_OAK:*/ 1:
+                return Utils.plugin.getConfig()
+                        .getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak");
+            default:
+                return true; // ugly branch messes
+        }
+    }
 
-			Utils.plugin.getServer()
-					.getScheduler()
-					.scheduleSyncDelayedTask(
-							Utils.plugin,
-							X,
-							20 * Utils.plugin.getConfig()
-									.getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-		}
-	}
+    @Override
+    protected boolean willReplant() {
+        return Utils.replantType(/*species*/data);
+    }
+
+    @Override
+    protected void handleSaplingReplace(int delay) {
+        if (/*species == TreeSpecies.DARK_OAK*/data == 1 && bottoms != null) {
+            for (Block bottom : bottoms) {
+                replaceSapling(delay, bottom);
+            }
+        }
+        replaceSapling(delay, bottom);
+    }
+
+    private void replaceSapling(int delay, Block bottom) {
+        if (bottom == null) {
+            return;
+        }
+        // make sure that the block is not being removed later
+
+        if (bottoms != null) {
+            for (Block b : bottoms) {
+                removeBlocks.remove(b);
+                totalBlocks.remove(b);
+            }
+        }
+
+        removeBlocks.remove(bottom);
+        totalBlocks.remove(bottom);
+
+        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, /*species*/(byte) (data + 4));
+        Utils.plugin.getServer()
+                .getScheduler()
+                .scheduleSyncDelayedTask(Utils.plugin, b,
+                        20 * delay);
+
+        if (Utils.plugin.getConfig()
+                .getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
+            Utils.plugin.saplingLocationList.add(bottom.getLocation());
+            Runnable X = new TreeAssistProtect(Utils.plugin,
+                    bottom.getLocation());
+
+            Utils.plugin.getServer()
+                    .getScheduler()
+                    .scheduleSyncDelayedTask(
+                            Utils.plugin,
+                            X,
+                            20 * Utils.plugin.getConfig()
+                                    .getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
+        }
+    }
 
     @Override
     public void checkBlock(List<Block> list, Block block,
@@ -286,246 +287,274 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
     }
 
     public void checkBlock(List<Block> list, Block block,
-            Block top, boolean deep) {
+                           Block top, boolean deep) {
 
 //		debug.i("cB " + Debugger.parse(block.getLocation()));
-		if (block.getType() != this.logMat) {
-			
-			if (hasDiagonals(block)) {
-				checkBlock(list, getDiagonal(block), top, deep);
-				return;
-			}
-			
+        if (block.getType() != this.logMat) {
+
+            if (hasDiagonals(block)) {
+                checkBlock(list, getDiagonal(block), top, deep);
+                return;
+            }
+
 //			debug.i("no log!");
-			if (isLeaf(block) > 0) {
-				if (!list.contains(block)) {
-					list.add(block);
+            if (isLeaf(block) > 0) {
+                if (!list.contains(block)) {
+                    list.add(block);
 //					debug.i("cB: adding leaf " + block.getY());
-				}
-			}
+                }
+            }
 //			debug.i("out!");
-			return;
-		}
+            return;
+        }
 
         //Tree tree = (Tree) block.getState().getData();
 
-		if (/*tree.getSpecies() != species*/block.getState().getData().getData() != data && block.getState().getData().getData() != data+12) {
+        if (/*tree.getSpecies() != species*/block.getState().getData().getData() != data && block.getState().getData().getData() != data + 12) {
 //			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
-			if (top.getData() != 0 || block.getData() <= 1) {
+            if (top.getData() != 0 || block.getData() <= 1) {
 //				debug.i("out!");
-				return;
-			}
-		}
+                return;
+            }
+        }
 
-		boolean isMain = false;
-		
-		if (block.getX() == bottom.getX() && block.getZ() == bottom.getZ()) {
+        boolean isMain = false;
+
+        if (block.getX() == bottom.getX() && block.getZ() == bottom.getZ()) {
 //			debug.i("main trunk!");
-			if (!deep) {
-				// something else caught the main, return, this will be done later!
+            if (!deep) {
+                // something else caught the main, return, this will be done later!
 //				debug.i("not deep; out!");
-				return;
-			}
-			isMain = true;
-		}
-		
-		if (!isMain && bottoms != null) {
-			for (Block bBottom : bottoms) {
-				if (bBottom == null) {
-					continue;
-				}
-				if (block.getX() == bBottom.getX() && block.getZ() == bBottom.getZ()) {
+                return;
+            }
+            isMain = true;
+        }
+
+        if (!isMain && bottoms != null) {
+            for (Block bBottom : bottoms) {
+                if (bBottom == null) {
+                    continue;
+                }
+                if (block.getX() == bBottom.getX() && block.getZ() == bBottom.getZ()) {
 //					debug.i("main trunk!");
-					if (!deep) {
-						// something else caught the main, return, this will be done later!
+                    if (!deep) {
+                        // something else caught the main, return, this will be done later!
 //						debug.i("not deep; out!");
-						return;
-					}
-					isMain = true;
-					break;
-				}
-			}
-		}
-		
-		if (!isMain && /*tree.getSpecies() == TreeSpecies.DARK_OAK*/block.getState().getData().getData() == 1) {
-			// we have a fat block outside of the trunk, make sure it is not another tree's trunk!
-			Block iBlock = block.getRelative(BlockFace.DOWN);
-			while (iBlock.getType().name().equals("LOG_2")) {
-				iBlock = iBlock.getRelative(BlockFace.DOWN);
-				// check what is UNDER the maybe-trunk we have here
-			}
-			
-			switch (iBlock.getType()) {
-			case AIR:
-				break; // we're just hanging in there, it'll be fine
-			case GRASS:
-			case DIRT: 
-			case CLAY:
-				return; // another trunk - OUT!!!
-			default:
-				break; // I dunno - should be fine, I guess? 
-			}
-		}
-		
-		if (block.getRelative(0, 1, 0).getType() == logMat) { // might
-																		// be a
-																		// trunk
+                        return;
+                    }
+                    isMain = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isMain && /*tree.getSpecies() == TreeSpecies.DARK_OAK*/block.getState().getData().getData() == 1) {
+            // we have a fat block outside of the trunk, make sure it is not another tree's trunk!
+            Block iBlock = block.getRelative(BlockFace.DOWN);
+            while (iBlock.getType().name().equals("LOG_2")) {
+                iBlock = iBlock.getRelative(BlockFace.DOWN);
+                // check what is UNDER the maybe-trunk we have here
+            }
+
+            switch (iBlock.getType()) {
+                case AIR:
+                    break; // we're just hanging in there, it'll be fine
+                case GRASS:
+                case DIRT:
+                case CLAY:
+                    return; // another trunk - OUT!!!
+                default:
+                    break; // I dunno - should be fine, I guess?
+            }
+        }
+
+        if (block.getRelative(0, 1, 0).getType() == logMat) { // might
+            // be a
+            // trunk
 //			debug.i("trunk?");
-			// one above is a tree block
-			if (!isMain) {
+            // one above is a tree block
+            if (!isMain) {
 //				debug.i("not main!");
-				
-				if (/*tree.getSpecies() != TreeSpecies.DARK_OAK*/block.getState().getData().getData() != 1) {
+
+                if (/*tree.getSpecies() != TreeSpecies.DARK_OAK*/block.getState().getData().getData() != 1) {
 //					debug.i("no big!");
-					
-					if (checkFail(block)) {
-						return;
-					}
+
+                    if (checkFail(block)) {
+                        return;
+                    }
 
 
-				} else {
+                } else {
 //					debug.i("big!");
 
-					boolean diff = true;
-					for (int Cx = -1; Cx < 2; Cx++) {
-						for (int Cz = -1; Cz < 2; Cz++) {
-							if (block.getX() - Cx == top.getX()
-									&& block.getZ() - Cz == top.getZ()) {
-								diff = false;
-								Cx = 2;
-								Cz = 2;
-							}
-						}
-					}
-					if (diff) {
-						if (checkFail(block)) {
-							return;
-						}
-					}
-				}
-			}
-		}
+                    boolean diff = true;
+                    for (int Cx = -1; Cx < 2; Cx++) {
+                        for (int Cz = -1; Cz < 2; Cz++) {
+                            if (block.getX() - Cx == top.getX()
+                                    && block.getZ() - Cz == top.getZ()) {
+                                diff = false;
+                                Cx = 2;
+                                Cz = 2;
+                            }
+                        }
+                    }
+                    if (diff) {
+                        if (checkFail(block)) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
 
-		boolean isBig = bottoms != null;
+        boolean isBig = bottoms != null;
 
-		boolean destroyBig = //tree.getSpecies() == TreeSpecies.DARK_OAK;
+        boolean destroyBig = //tree.getSpecies() == TreeSpecies.DARK_OAK;
                 block.getState().getData().getData() == 1;
 
-		if (!destroyBig && isBig) {
+        if (!destroyBig && isBig) {
 //			debug.i("!destroy & isBig; out!");
-			return;
-		}
-		
-		if (list.contains(block)) {
+            return;
+        }
+
+        if (list.contains(block)) {
 //			debug.i("already added!");
-			return;
-		} else {
+            return;
+        } else {
 //			debug.i(">>>>>>>>>> adding! <<<<<<<<<<<");
-			list.add(block);
-		}
-		
-		for (BlockFace face : Utils.NEIGHBORFACES) {
-			checkBlock(list, block.getRelative(face), top, false);
+            list.add(block);
+        }
 
-			checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
-			checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
-			if (isBig) {
-				checkBlock(list, block.getRelative(face, 2), top, false);
-			}
-		}
+        for (BlockFace face : Utils.NEIGHBORFACES) {
+            checkBlock(list, block.getRelative(face), top, false);
 
-		if (!deep) {
+            checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
+            checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
+            if (isBig) {
+                checkBlock(list, block.getRelative(face, 2), top, false);
+            }
+        }
+
+        if (!deep) {
 //			debug.i("not deep, out!");
-			return;
-		}
+            return;
+        }
 
-		if (block.getY() > top.getY()) {
+        if (block.getY() > top.getY()) {
 //			debug.i("over the top! (hah) out!");
-			return;
-		}
+            return;
+        }
 
-		if (destroyBig) {
-			checkBlock(list, block.getRelative(-2, 0, -2), top, false);
-			checkBlock(list, block.getRelative(-1, 0, -2), top, false);
-			checkBlock(list, block.getRelative(0, 0, -2), top, false);
-			checkBlock(list, block.getRelative(1, 0, -2), top, false);
-			checkBlock(list, block.getRelative(2, 0, -2), top, false);
-			checkBlock(list, block.getRelative(2, 0, -1), top, false);
-			checkBlock(list, block.getRelative(2, 0, 0), top, false);
-			checkBlock(list, block.getRelative(2, 0, 1), top, false);
-			checkBlock(list, block.getRelative(2, 0, 2), top, false);
-			checkBlock(list, block.getRelative(1, 0, 2), top, false);
-			checkBlock(list, block.getRelative(0, 0, 2), top, false);
-			checkBlock(list, block.getRelative(-1, 0, 2), top, false);
-			checkBlock(list, block.getRelative(-2, 0, 2), top, false);
-			checkBlock(list, block.getRelative(-2, 0, 1), top, false);
-			checkBlock(list, block.getRelative(-2, 0, 0), top, false);
-			checkBlock(list, block.getRelative(-2, 0, -1), top, false);
-		}
-		checkBlock(list, block.getRelative(0, 1, 0), top, true);
-	}
-	protected boolean checkFail(Block block) {
-		//Tree tree = (Tree) block.getState().getData();
+        if (destroyBig) {
+            checkBlock(list, block.getRelative(-2, 0, -2), top, false);
+            checkBlock(list, block.getRelative(-1, 0, -2), top, false);
+            checkBlock(list, block.getRelative(0, 0, -2), top, false);
+            checkBlock(list, block.getRelative(1, 0, -2), top, false);
+            checkBlock(list, block.getRelative(2, 0, -2), top, false);
+            checkBlock(list, block.getRelative(2, 0, -1), top, false);
+            checkBlock(list, block.getRelative(2, 0, 0), top, false);
+            checkBlock(list, block.getRelative(2, 0, 1), top, false);
+            checkBlock(list, block.getRelative(2, 0, 2), top, false);
+            checkBlock(list, block.getRelative(1, 0, 2), top, false);
+            checkBlock(list, block.getRelative(0, 0, 2), top, false);
+            checkBlock(list, block.getRelative(-1, 0, 2), top, false);
+            checkBlock(list, block.getRelative(-2, 0, 2), top, false);
+            checkBlock(list, block.getRelative(-2, 0, 1), top, false);
+            checkBlock(list, block.getRelative(-2, 0, 0), top, false);
+            checkBlock(list, block.getRelative(-2, 0, -1), top, false);
+        }
+        checkBlock(list, block.getRelative(0, 1, 0), top, true);
+    }
 
-		if (/*tree.getSpecies() == TreeSpecies.DARK_OAK*/block.getState().getData().getData() == 1) {
-			
-			if (bottoms == null) {
-				if (block.getLocation().distanceSquared(bottom.getLocation())>9) {
-					return true;
-				}
-			}
-			
-			for (Block bottom : bottoms) {
-				if (bottom == null) {
-					continue;
-				}
-				if (block.getLocation().distanceSquared(bottom.getLocation())>9) {
-					return true;
-				}
-			}
-			
-			while (block.getType().name().equals("LOG_2")) {
-				block = block.getRelative(BlockFace.DOWN);
-			}
-			switch (block.getType()) {
-			case AIR:
-				return false; // we're just hanging in there, it'll be fine
-			case GRASS:
-			case DIRT: 
-			case CLAY:
-				return true; // another trunk - OUT!!!
-			default:
-				return false; // I dunno - should be fine, I guess? 
-			}
-		}
-		
-		if (block.getLocation().distanceSquared(bottom.getLocation())>16) {
-			return true;
-		}
-		
-		int failCount = 0;
-		for (int cont = -4; cont < 5; cont++) {
-			if (block.getRelative(0, cont, 0).getType() == logMat) {
-				failCount++;
-			}
-		}
-		if (failCount > 3) {
-			debug.i("fail count "+failCount+"! out!");
-			return true;
-		}
-		return false;
-	}
+    protected boolean checkFail(Block block) {
+        //Tree tree = (Tree) block.getState().getData();
+
+        if (/*tree.getSpecies() == TreeSpecies.DARK_OAK*/block.getState().getData().getData() == 1) {
+
+            if (bottoms == null) {
+                if (block.getLocation().distanceSquared(bottom.getLocation()) > 9) {
+                    return true;
+                }
+            }
+
+            for (Block bottom : bottoms) {
+                if (bottom == null) {
+                    continue;
+                }
+                if (block.getLocation().distanceSquared(bottom.getLocation()) > 9) {
+                    return true;
+                }
+            }
+
+            while (block.getType().name().equals("LOG_2")) {
+                block = block.getRelative(BlockFace.DOWN);
+            }
+            switch (block.getType()) {
+                case AIR:
+                    return false; // we're just hanging in there, it'll be fine
+                case GRASS:
+                case DIRT:
+                case CLAY:
+                    return true; // another trunk - OUT!!!
+                default:
+                    return false; // I dunno - should be fine, I guess?
+            }
+        }
+
+        if (block.getLocation().distanceSquared(bottom.getLocation()) > 16) {
+            return true;
+        }
+
+        int failCount = 0;
+        for (int cont = -4; cont < 5; cont++) {
+            if (block.getRelative(0, cont, 0).getType() == logMat) {
+                failCount++;
+            }
+        }
+        if (failCount > 3) {
+            debug.i("fail count " + failCount + "! out!");
+            return true;
+        }
+        return false;
+    }
 
 
-	@Override
-	protected boolean isBottom(Block block) {
-		if (bottoms != null && /*species == TreeSpecies.DARK_OAK*/ data == 1) {
-			for (Block b : bottoms) {
-				if (b != null && b.equals(block)) {
-					return true;
-				}
-			}
-		}
-		return block.equals(bottom);
-	}
+    @Override
+    protected boolean isBottom(Block block) {
+        if (bottoms != null && /*species == TreeSpecies.DARK_OAK*/ data == 1) {
+            for (Block b : bottoms) {
+                if (b != null && b.equals(block)) {
+                    return true;
+                }
+            }
+        }
+        return block.equals(bottom);
+    }
+
+    @Override
+    protected void debug() {
+        System.out.print("Tree: VanillaOneSevenTree");
+        System.out.print("logMat: " + (logMat == null ? "null" : logMat.name()));
+        System.out.print("data: " + data);
+        System.out.print("bottoms: ");
+        if (bottoms == null) {
+            System.out.print("null");
+        } else {
+            for (Block b : bottoms) {
+                if (b == null) {
+                    System.out.print("null");
+                } else {
+                    System.out.print(b.toString());
+                }
+            }
+        }
+
+
+        System.out.print("bottom: " + (bottom == null ? "null" : bottom.toString()));
+        System.out.print("top: " + (top == null ? "null" : top.toString()));
+        System.out.print("valid: " + valid);
+
+        System.out.print("removeBlocks: " + removeBlocks.size());
+        System.out.print("totalBlocks: " + totalBlocks.size());
+    }
 }
