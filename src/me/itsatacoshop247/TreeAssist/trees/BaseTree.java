@@ -489,6 +489,8 @@ public abstract class BaseTree {
 
         boolean leaf = isLeaf(block) > 0;
 
+        debug.i("breaking. leaf: " + leaf);
+
         if (!leaf && Utils.plugin.mcMMO && player != null) {
             Utils.mcMMOaddExp(player, block);
         }
@@ -510,6 +512,8 @@ public abstract class BaseTree {
             if (leaf && (block.getType().name().equals("LEAVES") || block.getType().name().equals("LEAVES_2"))) {
                 ConfigurationSection cs = Utils.plugin.getConfig()
                         .getConfigurationSection("Custom Drops");
+
+                debug.i("custom drop count: " + cs.getKeys(false).size());
                 Tree tree = (Tree) block.getState().getData();
                 for (String key : cs.getKeys(false)) {
                     int customChance = (int) (cs.getDouble(key, 0.0d) * 100000d);
@@ -535,6 +539,9 @@ public abstract class BaseTree {
                         }
                     }
                 }
+            } else if (leaf) {
+
+                debug.i("strange material: " + block.getType().name());
             }
         } else {
             block.setType(Material.AIR);
