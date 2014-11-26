@@ -507,7 +507,7 @@ public abstract class BaseTree {
             Utils.plugin.blockList.logBreak(block, player);
             block.breakNaturally(tool);
 
-            if (leaf && block.getState().getData() instanceof Tree) {
+            if (leaf && (block.getType().name().equals("LEAVES") || block.getType().name().equals("LEAVES_2"))) {
                 ConfigurationSection cs = Utils.plugin.getConfig()
                         .getConfigurationSection("Custom Drops");
                 Tree tree = (Tree) block.getState().getData();
