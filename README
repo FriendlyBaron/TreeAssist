@@ -1,4 +1,10 @@
+v5.8.89 - issue fixed, updated README!
+v5.8.88 - still debugging
+v5.8.87 - fix a CCE
+v5.8.86 - debug again .... for acacia!
 v5.8.85 - fix a messup about custom drops
+v5.8.84 - debug to the rescue!
+v5.8.83 - if this fixes the issue, bukkit is broken. seriously.
 v5.8.82 - fix language twist
 v5.8.81 - add language support! Main.Language !
 v5.8.80 - fix the internal blocklist not properly reading blocks
