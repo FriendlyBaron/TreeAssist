@@ -530,7 +530,9 @@ public abstract class BaseTree {
                     int customChance = (int) (cs.getDouble(key, 0.0d) * 100000d);
 
                     if ((new Random()).nextInt(100000) < customChance) {
-                        if (key.equalsIgnoreCase("LEAVES")) {
+                        debug.i("dropping: " + key);
+                        if (key.equalsIgnoreCase("LEAVES") && tree != null) {
+                            debug.i(">1 : " + data);
                             block.getWorld().dropItemNaturally(
                                     block.getLocation(),
                                     new ItemStack(Material.LEAVES, 1, tree.getSpecies().getData()));
@@ -538,6 +540,7 @@ public abstract class BaseTree {
                             try {
                                 Material mat = Material.valueOf(key
                                         .toUpperCase());
+                                debug.i(">2 : " + mat.name());
                                 block.getWorld()
                                         .dropItemNaturally(block.getLocation(),
                                                 new ItemStack(mat));
