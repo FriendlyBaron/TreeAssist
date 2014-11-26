@@ -492,9 +492,18 @@ public abstract class BaseTree {
         byte data = block.getState().getData().getData();
 
         debug.i("breaking. leaf: " + leaf);
-        Tree tree = (Tree) block.getState().getData();
+        Tree tree;
+
+        if (block.getState().getData() instanceof Tree) {
+            tree = (Tree) block.getState().getData();
+        } else {
+            tree = null;
+        }
         if (!leaf && Utils.plugin.mcMMO && player != null) {
             Utils.mcMMOaddExp(player, block);
+        } else if (!leaf) {
+            debug.i("mat: " + maat.name());
+            debug.i("data: " + data);
         }
 
         int chance = 100;
