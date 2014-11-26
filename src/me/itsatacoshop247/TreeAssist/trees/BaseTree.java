@@ -488,6 +488,8 @@ public abstract class BaseTree {
                             final Player player) {
 
         boolean leaf = isLeaf(block) > 0;
+        Material maat = block.getType();
+        byte data = block.getState().getData().getData();
 
         debug.i("breaking. leaf: " + leaf);
         Tree tree = (Tree) block.getState().getData();
@@ -539,6 +541,9 @@ public abstract class BaseTree {
                         }
                     }
                 }
+            } else {
+                debug.i("mat: " + maat.name());
+                debug.i("data: " + data);
             }
         } else {
             block.setType(Material.AIR);
