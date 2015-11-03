@@ -3,6 +3,7 @@ package me.itsatacoshop247.TreeAssist;
 import me.itsatacoshop247.TreeAssist.core.Language;
 import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
+import me.itsatacoshop247.TreeAssist.events.TALeafDecay;
 import me.itsatacoshop247.TreeAssist.trees.BaseTree;
 import me.itsatacoshop247.TreeAssist.trees.CustomTree;
 import org.bukkit.ChatColor;
@@ -199,8 +200,13 @@ public class TreeAssistBlockListener implements Listener {
             }
         }
 
-        Utils.plugin.blockList.logBreak(blockAt, null);
-        blockAt.breakNaturally();
+        TALeafDecay event = new TALeafDecay(blockAt);
+        Utils.plugin.getServer().getPluginManager().callEvent(event);
+        if (!event.isCancelled())
+        {
+        	Utils.plugin.blockList.logBreak(blockAt, null);
+        	blockAt.breakNaturally();
+        }
     }
 
     /**
@@ -211,7 +217,10 @@ public class TreeAssistBlockListener implements Listener {
      */
     public void breakRadiusIfLeaf(Block blockAt) {
         if (blockAt.getType() == Material.LEAVES || blockAt.getType().name().equals("LEAVES_2") || CustomTree.isCustomTreeBlock(blockAt)) {
-            Utils.plugin.blockList.logBreak(blockAt, null);
+        	TALeafDecay event = new TALeafDecay(blockAt);
+            Utils.plugin.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) return;
+        	Utils.plugin.blockList.logBreak(blockAt, null);
             blockAt.breakNaturally();
             World world = blockAt.getWorld();
             int x = blockAt.getX();
