@@ -7,6 +7,7 @@ import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.events.TATreeBrokenEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -488,6 +489,8 @@ public abstract class BaseTree {
      */
     private void breakBlock(final Block block, final ItemStack tool,
                             final Player player) {
+    	
+    	if ((tool != null) && (tool.getDurability() > tool.getType().getMaxDurability())) return;
 
     	TATreeBrokenEvent event = new TATreeBrokenEvent(block, player, tool);
     	Utils.plugin.getServer().getPluginManager().callEvent(event);
@@ -775,6 +778,10 @@ public abstract class BaseTree {
                         	}
                         } else {
                             breakBlock(block, tool, player);
+                            if (tool.getDurability() == tool.getType().getMaxDurability()) {
+                            	player.getInventory().remove(tool);
+                            	this.cancel();
+                            }
                         }
                     }
                     removeBlocks.clear();
@@ -800,6 +807,10 @@ public abstract class BaseTree {
                         	}
                         } else {
                             breakBlock(block, tool, player);
+                            if (tool.getDurability()== tool.getType().getMaxDurability()) {
+                            	player.getInventory().remove(tool);
+                            	this.cancel();
+                            }
                         }
                         removeBlocks.remove(block);
                         return;
