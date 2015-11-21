@@ -5,6 +5,8 @@ import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Language;
 import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -486,6 +488,8 @@ public abstract class BaseTree {
      */
     private void breakBlock(final Block block, final ItemStack tool,
                             final Player player) {
+    	
+    	if ((tool != null) && (tool.getDurability() > tool.getType().getMaxDurability())) return;
 
         boolean leaf = isLeaf(block) > 0;
         Material maat = block.getType();
@@ -759,6 +763,10 @@ public abstract class BaseTree {
                             block.breakNaturally();
                         } else {
                             breakBlock(block, tool, player);
+                            if (tool.getDurability() == tool.getType().getMaxDurability()) {
+                            	player.getInventory().remove(tool);
+                            	this.cancel();
+                            }
                         }
                     }
                     removeBlocks.clear();
@@ -779,6 +787,10 @@ public abstract class BaseTree {
                             block.breakNaturally();
                         } else {
                             breakBlock(block, tool, player);
+                            if (tool.getDurability()== tool.getType().getMaxDurability()) {
+                            	player.getInventory().remove(tool);
+                            	this.cancel();
+                            }
                         }
                         removeBlocks.remove(block);
                         return;
