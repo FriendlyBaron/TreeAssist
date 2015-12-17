@@ -577,8 +577,8 @@ public abstract class BaseTree {
 
                 int random = new Random().nextInt(100);
 
-                if (random < damageChance) {
-                    return;
+                if (random >= damageChance) {
+                    return; // nodamage -> out!
                 }
             }
 
