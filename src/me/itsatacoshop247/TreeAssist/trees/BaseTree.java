@@ -353,11 +353,17 @@ public abstract class BaseTree {
                 return tree;
             }
 
-            if (player.getItemInHand().getDurability() > player.getItemInHand()
-                    .getType().getMaxDurability() ||
-                    player.getItemInHand().getDurability() < 0
-                            && Utils.isVanillaTool(player.getItemInHand())) {
-                player.setItemInHand(new ItemStack(Material.AIR));
+            if (!Utils.plugin.getConfig().getBoolean("Modding.Disable Durability Fix")) {
+
+                int durability = player.getItemInHand().getDurability();
+                int maxDurability = player.getItemInHand().getType().getMaxDurability();
+
+                if ((durability > maxDurability || player.getItemInHand().getDurability() < 0)
+                                && Utils.isVanillaTool(player.getItemInHand())) {
+                    debug.i("removing item: " + player.getItemInHand().getType().name() +
+                            " (durability " + durability + ">" + maxDurability);
+                    player.setItemInHand(new ItemStack(Material.AIR));
+                }
             }
             resultTree.findYourBlocks(block);
             if (resultTree.isValid()) {

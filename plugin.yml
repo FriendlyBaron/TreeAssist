@@ -1,6 +1,6 @@
 name: TreeAssist
 main: me.itsatacoshop247.TreeAssist.TreeAssist
-version: 5.8.90
+version: 5.8.91
 author: itsatacoshop247
 description: TreeAssist
 dev-url: http://dev.bukkit.org/server-mods/tree-assist/
@@ -37,6 +37,21 @@ permissions:
     description: allows to use tree-assist for brown shrooms
   treeassist.destroy.redshroom:
     description: allows to use tree-assist for red shrooms
+  treeassist.addtool:
+    descroption: allows to add a required tool
+    default: op
+  treeassist.purge:
+    descroption: allows to purge the database or data.yml
+    default: op
+  treeassist.reload:
+    descroption: allows to reload the TreeAssist config
+    default: op
+  treeassist.removetool:
+    descroption: allows to remove a required tool
+    default: op
+  treeassist.replant:
+    descroption: allows to replant trees
+    default: op
   treeassist.toggle:
     descroption: allows to toggle TreeAssist usage
     default: op
@@ -46,12 +61,6 @@ permissions:
   treeassist.toggle.other:
     descroption: allows to toggle TreeAssist usage for a player
     default: op
-  treeassist.reload:
-    descroption: allows to reload the TreeAssist config
-    default: op
-  treeassist.replant:
-    descroption: allows to replant trees
-    default: op
   treeassist.tool:
-    descroption: allows to gain the tool
+    descroption: allows to gain the protection tool
     default: op

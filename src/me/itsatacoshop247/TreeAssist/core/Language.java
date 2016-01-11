@@ -13,11 +13,19 @@ public final class Language {
     private static TreeAssist instance;
 
     public enum MSG {
+
+        ERROR_ADDTOOL_ALREADY("error.addtool.already", "&cYou have already added this as required tool!"),
+        ERROR_ADDTOOL_OTHER("error.addtool.other", "&cSomething went wrong trying to add the required tool: %1%"),
         ERROR_DATA_YML("error.data_yml", "&cYou have a messed up data.yml - fix or remove it!"),
+        ERROR_EMPTY_HAND("error.emptyhand", "&cYou don't have an item in your hand"),
+        ERROR_PERMISSION_ADDTOOL("error.permission.addtool", "&cYou don't have 'treeassist.addtool'"),
+        ERROR_PERMISSION_PURGE("error.permission.purge", "&cYou don't have 'treeassist.purge'"),
         ERROR_PERMISSION_RELOAD("error.permission.reload", "&cYou don't have 'treeassist.reload'"),
+        ERROR_PERMISSION_REMOVETOOL("error.permission.removetool", "&cYou don't have 'treeassist.removetool'"),
         ERROR_PERMISSION_TOGGLE("error.permission.toggle", "&cYou don't have 'treeassist.toggle'"),
         ERROR_PERMISSION_TOGGLE_GLOBAL("error.permission.toggle_global", "&cYou don't have 'treeassist.toggle.global'"),
         ERROR_PERMISSION_TOGGLE_TOOL("error.permission.toggle_tool", "&cYou don't have 'treeassist.tool'"),
+        ERROR_REMOVETOOL_NOTDONE("error.removetool.not_done", "&cTool is no required tool!"),
 
         ERROR_NOTFOUND_WORLD("error.notfound.world", "&cWorld not found: %1%'"),
 
@@ -32,6 +40,9 @@ public final class Language {
         INFO_NEVER_BREAK_SAPLINGS("info.never_break_saplings", "&aYou cannot break saplings on this server!"),
         INFO_SAPLING_PROTECTED("info.sapling_protected", "&aThis sapling is protected!"),
 
+        WARNING_ADDTOOL_ONLYONE("warning.sapling_protected", "&6You can only use one enchantment. Using: %1%"),
+
+        SUCCESSFUL_ADDTOOL("successful.addtool", "&aRequired tool added: %1%"),
         SUCCESSFUL_DEBUG_ALL("successful.debug_all", "debugging EVERYTHING"),
         SUCCESSFUL_DEBUG_X("successful.debug", "debugging %1%"),
 
@@ -45,6 +56,8 @@ public final class Language {
         SUCCESSFUL_PURGE_WORLD("successful.purge.world", "&a%1% entries have been purged for the world %2%!"),
 
         SUCCESSFUL_RELOAD("successful.reload", "&aTreeAssist has been reloaded."),
+
+        SUCCESSFUL_REMOVETOOL("successful.removetool", "&aRequired tool removed: %1%"),
 
         SUCCESSFUL_TOGGLE_GLOBAL_OFF("successful.toggle.global_off", "&aTreeAssist functions are turned off globally!"),
         SUCCESSFUL_TOGGLE_GLOBAL_ON("successful.toggle.global_on", "&aTreeAssist functions are now turned on globally!"),

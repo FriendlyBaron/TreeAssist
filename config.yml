@@ -79,6 +79,7 @@ Custom Drops:
 Placed Blocks:
   Handler Plugin Name: TreeAssist
 Modding:
+  Disable Durability Fix: false
   Custom Logs:
   - -1
   Custom Tree Blocks:

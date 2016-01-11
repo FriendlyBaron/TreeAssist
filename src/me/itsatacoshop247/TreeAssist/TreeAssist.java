@@ -229,6 +229,11 @@ public class TreeAssist extends JavaPlugin {
                     sender.sendMessage(Language.parse(MSG.SUCCESSFUL_NOREPLACE, String.valueOf(seconds)));
                     return true;
                 } else if (args[0].equalsIgnoreCase("purge")) {
+                    if (!sender.hasPermission("treeassist.purge")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_PURGE));
+                        return true;
+
+                    }
                     if (blockList instanceof FlatFileBlockList) {
                         FlatFileBlockList bl = (FlatFileBlockList) blockList;
                         try {
@@ -248,6 +253,31 @@ public class TreeAssist extends JavaPlugin {
                     } else {
                         sender.sendMessage(Language.parse(MSG.ERROR_ONLY_TREEASSIST_BLOCKLIST));
                     }
+                    return true;
+                } else if (args[0].equalsIgnoreCase("addtool")) {
+                    if (!sender.hasPermission("treeassist.addtool")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_ADDTOOL));
+                        return true;
+                    }
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+                        Utils.addRequiredTool(player);
+                        return true;
+                    }
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
+                    return true;
+                } else if (args[0].equalsIgnoreCase("removetool")) {
+                    if (!sender.hasPermission("treeassist.removetool")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_REMOVETOOL));
+                        return true;
+
+                    }
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+                        Utils.removeRequiredTool(player);
+                        return true;
+                    }
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
                     return true;
                 }
             }

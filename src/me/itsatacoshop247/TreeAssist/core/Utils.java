@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.itsatacoshop247.TreeAssist.TreeAssist;
+import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 
+import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -35,8 +37,137 @@ public final class Utils {
 			175 // double plants
 			)); // if it's not one of these blocks, it's
 								// safe to assume its a house/building
-	
-	
+
+
+
+    public static void removeRequiredTool(Player player) {
+        ItemStack inHand = player.getItemInHand();
+        if (inHand == null || inHand.getType() == Material.AIR) {
+            player.sendMessage(Language.parse(MSG.ERROR_EMPTY_HAND));
+            return;
+        }
+
+        String definition = null;
+
+        List<?> fromConfig = Utils.plugin.getConfig().getList("Tools.Tools List");
+        if (fromConfig.contains(inHand.getType().name())) {
+            fromConfig.remove(inHand.getType().name());
+            definition = inHand.getType().name();
+        } else if (fromConfig.contains(inHand.getTypeId())) {
+            fromConfig.remove(fromConfig.contains(inHand.getTypeId()));
+            definition = String.valueOf(fromConfig.contains(inHand.getTypeId()));
+        } else if (fromConfig.contains(String.valueOf(inHand.getTypeId()))) {
+            fromConfig.remove(String.valueOf(fromConfig.contains(inHand.getTypeId())));
+            definition = String.valueOf(fromConfig.contains(inHand.getTypeId()));
+        } else {
+            for (Object obj : fromConfig) {
+                if (!(obj instanceof String)) {
+                    continue; // skip item IDs
+                }
+                String tool = (String) obj;
+                if (!tool.startsWith(inHand.getType().name())) {
+                    continue; // skip other names
+                }
+
+                String[] values = tool.split(":");
+
+                if (values.length < 2) {
+                    definition = tool;
+                    // (found) name
+                } else {
+
+                    for (Enchantment ench : inHand.getEnchantments().keySet()) {
+                        if (!ench.getName().equalsIgnoreCase(values[1])) {
+                            continue; // skip other enchantments
+                        }
+                        int level = 0;
+                        if (values.length < 3) { // has correct enchantment, no level needed
+                            definition = tool;
+                        } else {
+                            try {
+                                level = Integer.parseInt(values[2]);
+                            } catch (Exception e) { // invalid level defined, defaulting to no
+                                definition = tool;
+                                // level
+                            }
+
+                            if (level > inHand.getEnchantments().get(ench)) {
+                                continue; // enchantment too low
+                            }
+                            definition = tool;
+                        }
+
+                    }
+                }
+            }
+            if (definition == null) {
+                player.sendMessage(Language.parse(MSG.ERROR_REMOVETOOL_NOTDONE));
+                return;
+            } else {
+                fromConfig.remove(definition);
+            }
+        }
+
+        player.sendMessage(Language.parse(MSG.SUCCESSFUL_REMOVETOOL, definition));
+        return;
+
+
+    }
+
+    public static void addRequiredTool(Player player) {
+        ItemStack item = player.getItemInHand();
+        if (item == null || item.getType() == Material.AIR) {
+            player.sendMessage(Language.parse(MSG.ERROR_EMPTY_HAND));
+            return;
+        }
+        if (isRequiredTool(item)) {
+            player.sendMessage(Language.parse(MSG.ERROR_ADDTOOL_ALREADY));
+            return;
+        }
+        StringBuffer entry = new StringBuffer();
+
+        try {
+            entry.append(item.getType().name());
+        } catch (Exception e) {
+            final String msg = "Could not retrieve item type name: " + String.valueOf(item.getType());
+            plugin.getLogger().severe(msg);
+            player.sendMessage(Language.parse(MSG.ERROR_ADDTOOL_OTHER, msg));
+            return;
+        }
+
+        boolean found = false;
+
+        for (Enchantment ench : item.getEnchantments().keySet()) {
+            if (found) {
+                player.sendMessage(Language.parse(MSG.WARNING_ADDTOOL_ONLYONE, ench.getName()));
+                break;
+            }
+            entry.append(':');
+            entry.append(ench.getName());
+            entry.append(':');
+            entry.append(item.getEnchantmentLevel(ench));
+            found = true;
+        }
+        List<String> result = new ArrayList<String>();
+        List<?> fromConfig = Utils.plugin.getConfig().getList("Tools.Tools List");
+        for (Object obj : fromConfig) {
+            if (obj instanceof String) {
+                result.add(String.valueOf(obj));
+            } else if (obj instanceof Integer) {
+                Integer value = (Integer) obj;
+                try {
+                    Material mat = Material.getMaterial(value);
+                    result.add(mat.name());
+                } catch (Exception e) {
+                    result.add(String.valueOf(obj));
+                }
+            }
+        }
+        result.add(entry.toString());
+        Utils.plugin.getConfig().set("Tools.Tools List", result);
+        Utils.plugin.saveConfig();
+        player.sendMessage(Language.parse(MSG.SUCCESSFUL_ADDTOOL, entry.toString()));
+    }
 	/**
 	 * Check if the player has a needed tool
 	 * 
