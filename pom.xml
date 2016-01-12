@@ -22,7 +22,7 @@
         </repository>
         <repository>
             <id>md5-repo</id>
-            <url>http://repo.md-5.net/content/repositories/releases/</url>
+            <url>http://repo.md-5.net/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>blha303-repo</id>
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>de.diddiz</groupId>
 			<artifactId>logblock</artifactId>
-			<version>1.94</version>
+			<version>1.10.0-dev-SNAPSHOT</version>
 			<type>jar</type>
             <scope>provided</scope>
 		</dependency>
