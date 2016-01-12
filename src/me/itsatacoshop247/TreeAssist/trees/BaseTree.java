@@ -42,7 +42,7 @@ public abstract class BaseTree {
     private static void checkAndDoSaplingProtect(Player player, Block block,
                                                  BlockBreakEvent event) {
         Material blockMat = block.getType();
-        if (blockMat != Material.LOG && !blockMat.name().equals("LOG_2")
+        if (blockMat != Material.LOG && blockMat != Material.LOG_2
                 && !CustomTree.isCustomLog(block)) {
             if (blockMat == Material.SAPLING) {
                 if (Utils.plugin.getConfig().getBoolean(
@@ -100,8 +100,8 @@ public abstract class BaseTree {
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());
             case ONESEVEN:
-                //Tree tree2 = (Tree) block.getState().getData();
-                return new VanillaOneSevenTree(/*tree2.getSpecies()*/block.getState().getData().getData());
+                Tree tree2 = (Tree) block.getState().getData();
+                return new VanillaOneSevenTree(tree2.getSpecies());
             case SHROOM:
                 return new MushroomTree(block.getType());
             case CUSTOM:
@@ -122,7 +122,7 @@ public abstract class BaseTree {
                 default:
                     return null;
             }
-        } else if (block.getType().name().equals("LOG_2")) {
+        } else if (block.getType() == Material.LOG_2) {
             return TreeType.ONESEVEN;
         } else if (CustomTree.isCustomLog(block)) {
             return TreeType.CUSTOM;
@@ -325,7 +325,7 @@ public abstract class BaseTree {
                             .getType() == Material.LOG && (block.getData() == 1 || block
                             .getData() == 3)) || (block
                             .getRelative(BlockFace.valueOf(directions[x]))
-                            .getType().name().equals("LOG_2") && block
+                            .getType() == Material.LOG_2 && block
                             .getData() == 1))) {
                         debug.i("invalid because of invalid type: "
                                 + block.getRelative(

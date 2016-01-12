@@ -13,23 +13,17 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.bukkit.TreeSpecies;
-//import org.bukkit.material.Tree;
+import org.bukkit.TreeSpecies;
+import org.bukkit.material.Tree;
 
 public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
     public static Debugger debugger;
-    // private final TreeSpecies species;
+    private final TreeSpecies species;
     Block[] bottoms = null;
     Material logMat = Material.LOG_2;
-    byte data;
 
-    /*
-        public VanillaOneSevenTree(TreeSpecies species) {
-            this.species = species;
-        }
-    */
-    public VanillaOneSevenTree(byte data) {
-        this.data = data;
+    public VanillaOneSevenTree(TreeSpecies species) {
+        this.species = species;
     }
 
     @Override
@@ -42,10 +36,10 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
         if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
             return true;
         }
-        if (/*species == TreeSpecies.ACACIA*/data == 0) {
+        if (species == TreeSpecies.ACACIA) {
             return player.hasPermission("treeassist.destroy.acacia");
         }
-        if (/*species == TreeSpecies.DARK_OAK*/data == 1) {
+        if (species == TreeSpecies.DARK_OAK) {
             return player.hasPermission("treeassist.destroy.darkoak");
         }
         return false;
@@ -92,7 +86,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
 
 //		debug.i("> straight trunk for " + counter + " blocks; y="+top.getY());
 
-        if (/*species == TreeSpecies.ACACIA*/data == 0) {
+        if (species == TreeSpecies.ACACIA) {
             // acacia might get really messy now; check!
             while (hasDiagonals(top)) {
                 top = getDiagonal(top);
@@ -191,7 +185,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
 
     @Override
     protected void getTrunks() {
-        if (/*species == TreeSpecies.ACACIA*/data == 0) {
+        if (species == TreeSpecies.ACACIA) {
             return;
         }
         bottoms = new Block[4];
@@ -215,11 +209,11 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
 
     @Override
     protected boolean willBeDestroyed() {
-        switch (/*species*/data) {
-            case /*ACACIA:*/ 0:
+        switch (species) {
+            case ACACIA:
                 return Utils.plugin.getConfig()
                         .getBoolean("Automatic Tree Destruction.Tree Types.Acacia");
-            case /*DARK_OAK:*/ 1:
+            case DARK_OAK:
                 return Utils.plugin.getConfig()
                         .getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak");
             default:
@@ -229,12 +223,12 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
 
     @Override
     protected boolean willReplant() {
-        return Utils.replantType(/*species*/data);
+        return Utils.replantType(species);
     }
 
     @Override
     protected void handleSaplingReplace(int delay) {
-        if (/*species == TreeSpecies.DARK_OAK*/data == 1 && bottoms != null) {
+        if (species == TreeSpecies.DARK_OAK && bottoms != null) {
             for (Block bottom : bottoms) {
                 replaceSapling(delay, bottom);
             }
@@ -258,7 +252,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
         removeBlocks.remove(bottom);
         totalBlocks.remove(bottom);
 
-        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, /*species*/(byte) (data + 4));
+        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, species.getData());
         Utils.plugin.getServer()
                 .getScheduler()
                 .scheduleSyncDelayedTask(Utils.plugin, b,
@@ -308,9 +302,9 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
             return;
         }
 
-        //Tree tree = (Tree) block.getState().getData();
+        Tree tree = (Tree) block.getState().getData();
 
-        if (/*tree.getSpecies() != species*/block.getState().getData().getData() != data && block.getState().getData().getData() != data + 12) {
+        if (tree.getSpecies() != species) {
 //			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
             if (top.getData() != 0 || block.getData() <= 1) {
 //				debug.i("out!");
@@ -348,10 +342,10 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
             }
         }
 
-        if (!isMain && /*tree.getSpecies() == TreeSpecies.DARK_OAK*/block.getState().getData().getData() == 1) {
+        if (!isMain && tree.getSpecies() == TreeSpecies.DARK_OAK) {
             // we have a fat block outside of the trunk, make sure it is not another tree's trunk!
             Block iBlock = block.getRelative(BlockFace.DOWN);
-            while (iBlock.getType().name().equals("LOG_2")) {
+            while (iBlock.getType() == Material.LOG_2) {
                 iBlock = iBlock.getRelative(BlockFace.DOWN);
                 // check what is UNDER the maybe-trunk we have here
             }
@@ -376,7 +370,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
             if (!isMain) {
 //				debug.i("not main!");
 
-                if (/*tree.getSpecies() != TreeSpecies.DARK_OAK*/block.getState().getData().getData() != 1) {
+                if (tree.getSpecies() != TreeSpecies.DARK_OAK) {
 //					debug.i("no big!");
 
                     if (checkFail(block)) {
@@ -409,8 +403,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
 
         boolean isBig = bottoms != null;
 
-        boolean destroyBig = //tree.getSpecies() == TreeSpecies.DARK_OAK;
-                block.getState().getData().getData() == 1;
+        boolean destroyBig = tree.getSpecies() == TreeSpecies.DARK_OAK;
 
         if (!destroyBig && isBig) {
 //			debug.i("!destroy & isBig; out!");
@@ -467,9 +460,9 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
     }
 
     protected boolean checkFail(Block block) {
-        //Tree tree = (Tree) block.getState().getData();
+        Tree tree = (Tree) block.getState().getData();
 
-        if (/*tree.getSpecies() == TreeSpecies.DARK_OAK*/block.getState().getData().getData() == 1) {
+        if (tree.getSpecies() == TreeSpecies.DARK_OAK) {
 
             if (bottoms == null) {
                 if (block.getLocation().distanceSquared(bottom.getLocation()) > 9) {
@@ -486,7 +479,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
                 }
             }
 
-            while (block.getType().name().equals("LOG_2")) {
+            while (block.getType() == Material.LOG) {
                 block = block.getRelative(BlockFace.DOWN);
             }
             switch (block.getType()) {
@@ -521,7 +514,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
 
     @Override
     protected boolean isBottom(Block block) {
-        if (bottoms != null && /*species == TreeSpecies.DARK_OAK*/ data == 1) {
+        if (bottoms != null && species == TreeSpecies.DARK_OAK) {
             for (Block b : bottoms) {
                 if (b != null && b.equals(block)) {
                     return true;
@@ -535,7 +528,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
     protected void debug() {
         System.out.print("Tree: VanillaOneSevenTree");
         System.out.print("logMat: " + (logMat == null ? "null" : logMat.name()));
-        System.out.print("data: " + data);
+        System.out.print("species: " + species.name());
         System.out.print("bottoms: ");
         if (bottoms == null) {
             System.out.print("null");

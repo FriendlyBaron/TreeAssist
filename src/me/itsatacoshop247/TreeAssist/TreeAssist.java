@@ -347,8 +347,6 @@ public class TreeAssist extends JavaPlugin {
                 blockList = new LogBlockBlockList();
             } else if ("CoreProtect".equalsIgnoreCase(pluginName)) {
                 blockList = new CoreProtectBlockList();
-            } else if ("HawkEye".equalsIgnoreCase(pluginName)) {
-                blockList = new HawkEyeBlockList();
             } else {
                 blockList = new EmptyBlockList();
             }
