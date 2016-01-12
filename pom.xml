@@ -59,6 +59,14 @@
 			<type>jar</type>
             <scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>de.diddiz</groupId>
+            <artifactId>questioner</artifactId>
+            <version>1.94</version>
+            <type>jar</type>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/LogBlockQuestioner.jar</systemPath>
+        </dependency>
 		<dependency>
 			<groupId>net.coreprotect</groupId>
 			<artifactId>CoreProtect</artifactId>
