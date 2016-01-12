@@ -65,7 +65,7 @@
             <version>1.94</version>
             <type>jar</type>
             <scope>system</scope>
-            <systemPath>${project.basedir}/LogBlockQuestioner.jar</systemPath>
+            <systemPath>${project.basedir}/lib/LogBlockQuestioner.jar</systemPath>
         </dependency>
 		<dependency>
 			<groupId>net.coreprotect</groupId>
