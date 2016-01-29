@@ -6,15 +6,14 @@ import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.TreeSpecies;
-import org.bukkit.material.Tree;
 
 public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
     public static Debugger debugger;
@@ -139,7 +138,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
         List<Block> list = new ArrayList<Block>();
 
         if (bottoms == null) {
-            checkBlock(list, bottom, top, true);
+            checkBlock(list, bottom, top, true, 0);
         } else {
 //			debug.i("-------- checking bottoms!! --------");
             for (Block bBlock : bottoms) {
@@ -147,7 +146,7 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
                     continue;
                 }
 //				debug.i("-------- checking bottom!! --------");
-                checkBlock(list, bBlock, top, true);
+                checkBlock(list, bBlock, top, true, 0);
             }
         }
 
@@ -277,17 +276,20 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
     @Override
     public void checkBlock(List<Block> list, Block block,
                            Block top, boolean deep, byte origData) {
-        checkBlock(list, block, top, deep);
+        checkBlock(list, block, top, deep, 0);
     }
 
     public void checkBlock(List<Block> list, Block block,
-                           Block top, boolean deep) {
+                           Block top, boolean deep, int step) {
+        if (++step > 500) {
+            return;
+        }
 
 //		debug.i("cB " + Debugger.parse(block.getLocation()));
         if (block.getType() != this.logMat) {
 
             if (hasDiagonals(block)) {
-                checkBlock(list, getDiagonal(block), top, deep);
+                checkBlock(list, getDiagonal(block), top, deep, step);
                 return;
             }
 
@@ -419,12 +421,12 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
         }
 
         for (BlockFace face : Utils.NEIGHBORFACES) {
-            checkBlock(list, block.getRelative(face), top, false);
+            checkBlock(list, block.getRelative(face), top, false, step);
 
-            checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
-            checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
+            checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false, step);
+            checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false, step);
             if (isBig) {
-                checkBlock(list, block.getRelative(face, 2), top, false);
+                checkBlock(list, block.getRelative(face, 2), top, false, step);
             }
         }
 
@@ -439,24 +441,24 @@ public class VanillaOneSevenTree extends BaseTree implements ISpecialTree {
         }
 
         if (destroyBig) {
-            checkBlock(list, block.getRelative(-2, 0, -2), top, false);
-            checkBlock(list, block.getRelative(-1, 0, -2), top, false);
-            checkBlock(list, block.getRelative(0, 0, -2), top, false);
-            checkBlock(list, block.getRelative(1, 0, -2), top, false);
-            checkBlock(list, block.getRelative(2, 0, -2), top, false);
-            checkBlock(list, block.getRelative(2, 0, -1), top, false);
-            checkBlock(list, block.getRelative(2, 0, 0), top, false);
-            checkBlock(list, block.getRelative(2, 0, 1), top, false);
-            checkBlock(list, block.getRelative(2, 0, 2), top, false);
-            checkBlock(list, block.getRelative(1, 0, 2), top, false);
-            checkBlock(list, block.getRelative(0, 0, 2), top, false);
-            checkBlock(list, block.getRelative(-1, 0, 2), top, false);
-            checkBlock(list, block.getRelative(-2, 0, 2), top, false);
-            checkBlock(list, block.getRelative(-2, 0, 1), top, false);
-            checkBlock(list, block.getRelative(-2, 0, 0), top, false);
-            checkBlock(list, block.getRelative(-2, 0, -1), top, false);
+            checkBlock(list, block.getRelative(-2, 0, -2), top, false, step);
+            checkBlock(list, block.getRelative(-1, 0, -2), top, false, step);
+            checkBlock(list, block.getRelative(0, 0, -2), top, false, step);
+            checkBlock(list, block.getRelative(1, 0, -2), top, false, step);
+            checkBlock(list, block.getRelative(2, 0, -2), top, false, step);
+            checkBlock(list, block.getRelative(2, 0, -1), top, false, step);
+            checkBlock(list, block.getRelative(2, 0, 0), top, false, step);
+            checkBlock(list, block.getRelative(2, 0, 1), top, false, step);
+            checkBlock(list, block.getRelative(2, 0, 2), top, false, step);
+            checkBlock(list, block.getRelative(1, 0, 2), top, false, step);
+            checkBlock(list, block.getRelative(0, 0, 2), top, false, step);
+            checkBlock(list, block.getRelative(-1, 0, 2), top, false, step);
+            checkBlock(list, block.getRelative(-2, 0, 2), top, false, step);
+            checkBlock(list, block.getRelative(-2, 0, 1), top, false, step);
+            checkBlock(list, block.getRelative(-2, 0, 0), top, false, step);
+            checkBlock(list, block.getRelative(-2, 0, -1), top, false, step);
         }
-        checkBlock(list, block.getRelative(0, 1, 0), top, true);
+        checkBlock(list, block.getRelative(0, 1, 0), top, true, step);
     }
 
     protected boolean checkFail(Block block) {
