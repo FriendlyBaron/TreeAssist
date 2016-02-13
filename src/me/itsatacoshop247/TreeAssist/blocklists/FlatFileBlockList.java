@@ -131,6 +131,10 @@ public class FlatFileBlockList implements BlockList {
         for (String def : list) {
             String[] split = def.split(";");
             // x y z TIME world
+            if (split.length < 4) {
+                removals.add(def);
+                continue;
+            }
             World world = Bukkit.getWorld(split[4]);
             if (world == null) {
                 removals.add(def);

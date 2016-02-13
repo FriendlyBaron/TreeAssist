@@ -1,3 +1,4 @@
+v5.9.8 - revert back to including libs - seems we cannot rely on those maven repos :P
 v5.9.7 - prevent StackOverflow for now, I will have to look into this in detail, but later
 v5.9.6 - yeah. finally fixed LogBlock
 v5.9.5 - -
