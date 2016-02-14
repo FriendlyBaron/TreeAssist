@@ -127,8 +127,9 @@ public class FlatFileBlockList implements BlockList {
 
     public int purge(final CommandSender sender) {
         final List<String> removals = new ArrayList<String>();
-
+        int line = 1;
         for (String def : list) {
+            line++;
             String[] split = def.split(";");
             // x y z TIME world
             if (split.length < 4) {
@@ -149,7 +150,9 @@ public class FlatFileBlockList implements BlockList {
                     removals.add(def);
                 }
             } catch (NumberFormatException e) {
-                sender.sendMessage(Language.parse(MSG.ERROR_DATA_YML));
+                removals.add(def);
+            } catch (Exception e) {
+                sender.sendMessage(Language.parse(MSG.ERROR_DATA_YML) + " (#" + line + ")");
                 return 0;
             }
         }
