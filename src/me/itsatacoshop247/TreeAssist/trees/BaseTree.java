@@ -6,8 +6,6 @@ import me.itsatacoshop247.TreeAssist.core.Language;
 import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.events.TATreeBrokenEvent;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -100,8 +98,8 @@ public abstract class BaseTree {
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());
             case ONESEVEN:
-                Tree tree2 = (Tree) block.getState().getData();
-                return new VanillaOneSevenTree(tree2.getSpecies());
+                //Tree tree2 = (Tree) block.getState().getData();
+                return new VanillaOneSevenTree(block.getState().getData().getData());
             case SHROOM:
                 return new MushroomTree(block.getType());
             case CUSTOM:

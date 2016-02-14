@@ -1,3 +1,4 @@
+v5.9.10 - revert the API update, because Spigot did not do that, or did revert it
 v5.9.9 - ignore some number errors in the data.yml parsing , remove them
 v5.9.8 - revert back to including libs - seems we cannot rely on those maven repos :P
 v5.9.7 - prevent StackOverflow for now, I will have to look into this in detail, but later
