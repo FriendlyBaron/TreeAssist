@@ -16,11 +16,16 @@ public final class Language {
 
         ERROR_ADDTOOL_ALREADY("error.addtool.already", "&cYou have already added this as required tool!"),
         ERROR_ADDTOOL_OTHER("error.addtool.other", "&cSomething went wrong trying to add the required tool: %1%"),
+        ERROR_CUSTOM_LISTS("error.custom.lists", "&cSomething is wrong with your custom lists. Please fix them! They need have to same item count!"),
+        ERROR_CUSTOM_EXISTS("error.custom.exists", "&cThis custom block group definition already exists!"),
+        ERROR_CUSTOM_EXPLANATION("error.custom.explanation", "&cYou need to have three items in you first hotbar slots. &e1) SAPLING - 2) LOG - 3) LEAVES"),
         ERROR_DATA_YML("error.data_yml", "&cYou have a messed up data.yml - fix or remove it!"),
         ERROR_EMPTY_HAND("error.emptyhand", "&cYou don't have an item in your hand"),
+        ERROR_PERMISSION_ADDCUSTOM("error.permission.addcustom", "&cYou don't have 'treeassist.addcustom'"),
         ERROR_PERMISSION_ADDTOOL("error.permission.addtool", "&cYou don't have 'treeassist.addtool'"),
         ERROR_PERMISSION_PURGE("error.permission.purge", "&cYou don't have 'treeassist.purge'"),
         ERROR_PERMISSION_RELOAD("error.permission.reload", "&cYou don't have 'treeassist.reload'"),
+        ERROR_PERMISSION_REMOVECUSTOM("error.permission.removecustom", "&cYou don't have 'treeassist.removecustom'"),
         ERROR_PERMISSION_REMOVETOOL("error.permission.removetool", "&cYou don't have 'treeassist.removetool'"),
         ERROR_PERMISSION_TOGGLE("error.permission.toggle", "&cYou don't have 'treeassist.toggle'"),
         ERROR_PERMISSION_TOGGLE_GLOBAL("error.permission.toggle_global", "&cYou don't have 'treeassist.toggle.global'"),
@@ -36,6 +41,9 @@ public final class Language {
         INFO_COOLDOWN_STILL("info.cooldown_still", "&aTreeAssist is still cooling down!"),
         INFO_COOLDOWN_VALUE("info.cooldown_value", "&a%1% seconds remaining!"),
         INFO_COOLDOWN_WAIT("info.cooldown_wait", "&aWait %1% seconds for TreeAssist cooldown!"),
+
+        INFO_CUSTOM_ADDED("info.custom.added", "&aCustom block group definition added!"),
+        INFO_CUSTOM_REMOVED("info.custom.removed", "&aCustom block group definition removed!"),
 
         INFO_NEVER_BREAK_SAPLINGS("info.never_break_saplings", "&aYou cannot break saplings on this server!"),
         INFO_SAPLING_PROTECTED("info.sapling_protected", "&aThis sapling is protected!"),

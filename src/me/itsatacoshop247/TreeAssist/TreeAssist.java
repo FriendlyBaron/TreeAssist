@@ -279,6 +279,31 @@ public class TreeAssist extends JavaPlugin {
                     }
                     sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
                     return true;
+                } else if (args[0].equalsIgnoreCase("addcustom")) {
+                    if (!sender.hasPermission("treeassist.addcustom")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_ADDCUSTOM));
+                        return true;
+                    }
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+                        Utils.addCustomGroup(player);
+                        return true;
+                    }
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
+                    return true;
+                } else if (args[0].equalsIgnoreCase("removecustom")) {
+                    if (!sender.hasPermission("treeassist.removecustom")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_REMOVECUSTOM));
+                        return true;
+
+                    }
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+                        Utils.removeCustomGroup(player);
+                        return true;
+                    }
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
+                    return true;
                 }
             }
         }
@@ -538,7 +563,7 @@ public class TreeAssist extends JavaPlugin {
         return items;
     }
 
-    private void reloadLists() {
+    public void reloadLists() {
         CustomTree.customTreeBlocks = config.getList("Modding.Custom Tree Blocks");
         CustomTree.customLogs = config.getList("Modding.Custom Logs");
         CustomTree.customSaplings = config.getList("Modding.Custom Saplings");

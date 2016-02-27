@@ -37,6 +37,9 @@ permissions:
     description: allows to use tree-assist for brown shrooms
   treeassist.destroy.redshroom:
     description: allows to use tree-assist for red shrooms
+  treeassist.addcustom:
+    descroption: allows to add a custom blocks group
+    default: op
   treeassist.addtool:
     descroption: allows to add a required tool
     default: op
@@ -45,6 +48,9 @@ permissions:
     default: op
   treeassist.reload:
     descroption: allows to reload the TreeAssist config
+    default: op
+  treeassist.removecustom:
+    descroption: allows to remove a custom blocks group
     default: op
   treeassist.removetool:
     descroption: allows to remove a required tool
