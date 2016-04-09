@@ -891,7 +891,7 @@ public abstract class BaseTree {
 
         }
 
-        (new CleanRunner(this)).runTaskTimer(Utils.plugin, delay, offset);
+        (new CleanRunner(this)).runTaskTimer(Utils.plugin, delay + 200L, offset);
     }
 
     public boolean contains(Block block) {
