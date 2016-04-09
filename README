@@ -1,3 +1,4 @@
+v5.9.15 - add more debug to find out what is happening on 1.9.2
 v5.9.14 - add some messages and a plugin enabling listener
 v5.9.13 - wait for other plugins to load before checking whether they are loaded
 v5.9.12 - fix a startup error that only happens the first time you run the plugin :)

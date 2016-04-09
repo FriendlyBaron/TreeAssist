@@ -517,6 +517,8 @@ public abstract class BaseTree {
         } else if (!leaf) {
             debug.i("mat: " + maat.name());
             debug.i("data: " + data);
+            debug.i("mcMMO: " + Utils.plugin.mcMMO);
+            debug.i("player: " + String.valueOf(player));
         }
 
         int chance = 100;
@@ -781,6 +783,7 @@ public abstract class BaseTree {
                         		block.breakNaturally();
                         	}
                         } else {
+                            debug.i("InstantRunner: breakBlock 1 with player");
                             breakBlock(block, tool, player);
                             if (tool.getDurability() == tool.getType().getMaxDurability()) {
                             	player.getInventory().remove(tool);
@@ -810,6 +813,7 @@ public abstract class BaseTree {
                         		block.breakNaturally();
                         	}
                         } else {
+                            debug.i("InstantRunner: breakBlock 2 with player");
                             breakBlock(block, tool, player);
                             if (tool.getDurability()== tool.getType().getMaxDurability()) {
                             	player.getInventory().remove(tool);
@@ -855,6 +859,7 @@ public abstract class BaseTree {
                             Utils.plugin.getListener().breakRadiusIfLeaf(block);
                             fastDecaying = true;
                         }
+                        debug.i("CleanRunner: breakBlock 1 with player");
                         breakBlock(block, null, null);
                     }
                     removeBlocks.clear();
@@ -869,6 +874,7 @@ public abstract class BaseTree {
                             debug.i("CleanRunner: skipping breaking a sapling");
                             continue;
                         }
+                        debug.i("CleanRunner: breakBlock 2 with player");
                         breakBlock(block, null, null);
                         totalBlocks.remove(block);
                         return;
