@@ -17,6 +17,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,7 +32,7 @@ import java.util.*;
 //- Fixed Blocks dissapearing when used to destroy a tree.
 //- Config autoupdates
 
-public class TreeAssist extends JavaPlugin {
+public class TreeAssist extends JavaPlugin implements Listener {
     public List<Location> saplingLocationList = new ArrayList<Location>();
     private final Map<String, List<String>> disabledMap = new HashMap<String, List<String>>();
     private Map<String, CooldownCounter> coolDowns = new HashMap<String, CooldownCounter>();
@@ -380,7 +382,6 @@ public class TreeAssist extends JavaPlugin {
         }
         blockList.initiate();
 
-
         Language.init(this, config.getString("Main.Language", "en"));
     }
 
@@ -422,9 +423,20 @@ public class TreeAssist extends JavaPlugin {
         return toggleWorld("global", player);
     }
 
+    public void onPluginEnable(PluginEnableEvent event) {
+        if (event.getPlugin().getName().equals("mcMMO")) {
+            mcMMO = true;
+            getLogger().info("Loaded mcMMO, better late than never!");
+        }
+    }
+
     private void checkMcMMO() {
         if (getConfig().getBoolean("Main.Use mcMMO if Available")) {
             this.mcMMO = getServer().getPluginManager().isPluginEnabled("mcMMO");
+            this.getLogger().info("Loaded mcMMO: " + mcMMO);
+            if (!mcMMO) {
+                getServer().getPluginManager().registerEvents(this, this);
+            }
         } else {
             this.mcMMO = false;
         }
