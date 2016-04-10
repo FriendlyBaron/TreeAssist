@@ -1,3 +1,4 @@
+v5.10.1 - pull all fixes from the 1.8 branch and fix mcMMO config reading
 v5.9.12 - ONLY FOR 1.9 !!!
 v5.9.11 - add commands "addcustom" and "removecustom" - setting the first three items to custom block group (SAPLING, LOG, LEAF)
 v5.9.10 - revert the API update, because Spigot did not do that, or did revert it

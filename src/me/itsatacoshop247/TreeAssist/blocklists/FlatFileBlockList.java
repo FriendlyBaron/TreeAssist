@@ -35,6 +35,9 @@ public class FlatFileBlockList implements BlockList {
         this.dataFile = new File(Utils.plugin.getDataFolder(), "data.yml");
         data.options().copyDefaults(true);
         try {
+            if (!this.dataFile.exists()) {
+                this.dataFile.createNewFile();
+            }
             this.data.load(this.dataFile);
             list = data.getStringList("Blocks");
 

@@ -513,10 +513,13 @@ public abstract class BaseTree {
             tree = null;
         }
         if (!leaf && Utils.plugin.mcMMO && player != null) {
+            debug.i("Adding mcMMO EXP!");
             Utils.mcMMOaddExp(player, block);
         } else if (!leaf) {
             debug.i("mat: " + maat.name());
             debug.i("data: " + data);
+            debug.i("mcMMO: " + Utils.plugin.mcMMO);
+            debug.i("player: " + String.valueOf(player));
         }
 
         int chance = 100;
@@ -781,6 +784,7 @@ public abstract class BaseTree {
                         		block.breakNaturally();
                         	}
                         } else {
+                            debug.i("InstantRunner: 1");
                             breakBlock(block, tool, player);
                             if (tool.getDurability() == tool.getType().getMaxDurability()) {
                             	player.getInventory().remove(tool);
@@ -810,6 +814,7 @@ public abstract class BaseTree {
                         		block.breakNaturally();
                         	}
                         } else {
+                            debug.i("InstantRunner: 2");
                             breakBlock(block, tool, player);
                             if (tool.getDurability()== tool.getType().getMaxDurability()) {
                             	player.getInventory().remove(tool);
@@ -855,6 +860,7 @@ public abstract class BaseTree {
                             Utils.plugin.getListener().breakRadiusIfLeaf(block);
                             fastDecaying = true;
                         }
+                        debug.i("CleanRunner: 1");
                         breakBlock(block, null, null);
                     }
                     removeBlocks.clear();
@@ -869,6 +875,7 @@ public abstract class BaseTree {
                             debug.i("CleanRunner: skipping breaking a sapling");
                             continue;
                         }
+                        debug.i("CleanRunner: 2");
                         breakBlock(block, null, null);
                         totalBlocks.remove(block);
                         return;
@@ -885,7 +892,7 @@ public abstract class BaseTree {
 
         }
 
-        (new CleanRunner(this)).runTaskTimer(Utils.plugin, delay, offset);
+        (new CleanRunner(this)).runTaskTimer(Utils.plugin, delay + 200L, offset);
     }
 
     public boolean contains(Block block) {
