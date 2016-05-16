@@ -1,3 +1,6 @@
+v5.10.4 - add more keywords to start and stop debugging
+v5.10.3 - add cooldown override for forcebreak
+v5.10.2 - add forcebreak, forcegrow, including permissions and messages
 v5.10.1 - pull all fixes from the 1.8 branch and fix mcMMO config reading
 v5.9.12 - ONLY FOR 1.9 !!!
 v5.9.11 - add commands "addcustom" and "removecustom" - setting the first three items to custom block group (SAPLING, LOG, LEAF)

@@ -44,6 +44,12 @@ permissions:
   treeassist.addtool:
     descroption: allows to add a required tool
     default: op
+  treeassist.forcebreak:
+    descroption: allows to force break trees
+    default: op
+  treeassist.forcegrow:
+    descroption: allows to force grow saplings
+    default: op
   treeassist.purge:
     descroption: allows to purge the database or data.yml
     default: op

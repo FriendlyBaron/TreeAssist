@@ -8,16 +8,20 @@ import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
 import me.itsatacoshop247.TreeAssist.timers.CooldownCounter;
 import me.itsatacoshop247.TreeAssist.trees.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Sapling;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -34,6 +38,7 @@ public class TreeAssist extends JavaPlugin {
     public List<Location> saplingLocationList = new ArrayList<Location>();
     private final Map<String, List<String>> disabledMap = new HashMap<String, List<String>>();
     private Map<String, CooldownCounter> coolDowns = new HashMap<String, CooldownCounter>();
+    private Set<String> coolDownOverrides = new HashSet<String>();
 
     public boolean Enabled = true;
     public boolean mcMMO = false;
@@ -56,7 +61,7 @@ public class TreeAssist extends JavaPlugin {
     }
 
     public boolean hasCoolDown(Player player) {
-        return coolDowns.containsKey(player.getName());
+        return !coolDownOverrides.contains(player.getName()) && coolDowns.containsKey(player.getName());
     }
 
     public boolean isActive(World world) {
@@ -186,11 +191,15 @@ public class TreeAssist extends JavaPlugin {
                     }
                     return true;
                 } else if (args[0].equalsIgnoreCase("Debug")) {
-                    if (args.length < 2) {
+                    if (args.length < 2 || args[1].equalsIgnoreCase("off") || args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("none")) {
                         getConfig().set("Debug", "none");
                         Debugger.load(this, sender);
                     } else {
-                        getConfig().set("Debug", args[1]);
+                        if (args[1].equalsIgnoreCase("on") || args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("all")) {
+                            getConfig().set("Debug", "all");
+                        } else {
+                            getConfig().set("Debug", args[1]);
+                        }
                         Debugger.load(this, sender);
                     }
                     return true;
@@ -304,6 +313,132 @@ public class TreeAssist extends JavaPlugin {
                     }
                     sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
                     return true;
+                } else if (args[0].equalsIgnoreCase("forcegrow")) {
+                    if (!sender.hasPermission("treeassist.forcegrow")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_FORCEGROW));
+                        return true;
+                    }
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+
+                        int radius = this.getConfig().getInt("Main.Force Grow Default Radius", 10);
+
+                        if (args.length > 1) {
+                            try {
+                                radius = Math.max(1, Integer.parseInt(args[1]));
+                                int configValue = this.getConfig().getInt("Main.Force Grow Max Radius", 30);
+                                if (radius > configValue) {
+                                    sender.sendMessage(Language.parse(MSG.ERROR_OUT_OF_RANGE, String.valueOf(configValue)));
+                                }
+                            } catch (Exception e) {
+                            }
+                        }
+
+                        for (int x = -radius; x <= radius; x++) {
+                            for (int y = -radius; y <= radius; y++) {
+                                nextBlock:
+                                for (int z = -radius; z <= radius; z++) {
+                                    if (player.getLocation().add(x, y, z).getBlock().getType() == Material.SAPLING) {
+                                        Block block = player.getLocation().add(x, y, z).getBlock();
+                                        BlockState state = block.getState();
+                                        MaterialData data = state.getData();
+                                        Sapling sap = (Sapling) data;
+                                        byte specific = sap.getData();
+
+                                        TreeType type = TreeType.TREE;
+
+                                        if (sap.getSpecies() != TreeSpecies.GENERIC) {
+                                            type = TreeType.valueOf(sap.getSpecies().name());
+                                        }
+                                        if (type == TreeType.JUNGLE) {
+                                            type = TreeType.SMALL_JUNGLE;
+                                        }
+
+                                        for (int offset = 0; offset < 7; offset++) {
+                                            if (block.getRelative(BlockFace.UP, offset).getType() == Material.DIRT) {
+                                                continue nextBlock;
+                                            }
+                                        }
+
+                                        block.setType(Material.AIR);
+                                        for (int i = 0; i < 20; i++) {
+                                            if (block.getWorld().generateTree(block.getLocation(), type)) {
+                                                continue nextBlock;
+                                            }
+                                        }
+                                        block.setType(Material.SAPLING);
+                                        sap.setData(specific);
+                                        block.getState().setData(sap);
+                                        block.getState().update();
+                                    }
+                                }
+                            }
+                        }
+
+                        return true;
+                    }
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
+                    return true;
+                } else if (args[0].equalsIgnoreCase("forcebreak")) {
+                    if (!sender.hasPermission("treeassist.forcebreak")) {
+                        sender.sendMessage(Language.parse(MSG.ERROR_PERMISSION_FORCEBREAK));
+                        return true;
+                    }
+                    if (sender instanceof Player) {
+                        final Player player = (Player) sender;
+
+                        if (getConfig().getBoolean(
+                                "Tools.Tree Destruction Require Tools")) {
+                            if (!Utils.isRequiredTool(player.getItemInHand())) {
+                                sender.sendMessage(Language.parse(MSG.ERROR_NOT_TOOL));
+                                return true;
+                            }
+                        }
+
+                        int radius = this.getConfig().getInt("Main.Force Break Default Radius", 10);
+
+                        if (args.length > 1) {
+                            try {
+                                radius = Math.max(1, Integer.parseInt(args[1]));
+                                int configValue = this.getConfig().getInt("Main.Force Break Max Radius", 30);
+                                if (radius > configValue) {
+                                    sender.sendMessage(Language.parse(MSG.ERROR_OUT_OF_RANGE, String.valueOf(configValue)));
+                                }
+                            } catch (Exception e) {
+                            }
+                        }
+
+                        setCoolDownOverride(player.getName(), true);
+
+                        for (int x = -radius; x <= radius; x++) {
+                            for (int y = -radius; y <= radius; y++) {
+                                nextBlock:
+                                for (int z = -radius; z <= radius; z++) {
+                                    Block b = player.getLocation().add(x, y, z).getBlock();
+                                    if (b.getType() == Material.LOG
+                                            || b.getType() == Material.LOG_2) {
+                                        if (b.getRelative(BlockFace.DOWN).getType() == Material.DIRT ||
+                                                b.getRelative(BlockFace.DOWN).getType() == Material.GRASS ||
+                                                b.getRelative(BlockFace.DOWN).getType() == Material.SAND) {
+                                            BlockBreakEvent bbe = new BlockBreakEvent(b, player);
+                                            this.getServer().getPluginManager().callEvent(bbe);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                setCoolDownOverride(player.getName(), false);
+                            }
+                        }, Math.min(10, getConfig().getInt("Automatic Tree Destruction.Initial Delay (seconds)", 10) + 10) * 20);
+
+                        return true;
+                    }
+                    sender.sendMessage(Language.parse(MSG.ERROR_ONLY_PLAYERS));
+                    return true;
                 }
             }
         }
@@ -403,7 +538,7 @@ public class TreeAssist extends JavaPlugin {
 
     public void setCoolDown(Player player, BaseTree tree) {
         int coolDown = getConfig().getInt("Automatic Tree Destruction.Cooldown (seconds)", 0);
-        if (coolDown == 0 || tree == null || !tree.isValid()) {
+        if (coolDown == 0 || tree == null || !tree.isValid() || coolDownOverrides.contains(player.getName())) {
             return;
         } else if (coolDown < 0) {
             coolDown = tree.calculateCooldown(player.getItemInHand());
@@ -413,6 +548,14 @@ public class TreeAssist extends JavaPlugin {
         CooldownCounter cc = new CooldownCounter(player, coolDown);
         cc.runTaskTimer(this, 20L, 20L);
         coolDowns.put(player.getName(), cc);
+    }
+
+    synchronized void setCoolDownOverride(String player, boolean value) {
+        if (value) {
+            coolDownOverrides.add(player);
+        } else {
+            coolDownOverrides.remove(player);
+        }
     }
 
     /**
