@@ -13,11 +13,32 @@ public final class Language {
     private static TreeAssist instance;
 
     public enum MSG {
+
+        ERROR_ADDTOOL_ALREADY("error.addtool.already", "&cYou have already added this as required tool!"),
+        ERROR_ADDTOOL_OTHER("error.addtool.other", "&cSomething went wrong trying to add the required tool: %1%"),
+        ERROR_CUSTOM_LISTS("error.custom.lists", "&cSomething is wrong with your custom lists. Please fix them! They need have to same item count!"),
+        ERROR_CUSTOM_EXISTS("error.custom.exists", "&cThis custom block group definition already exists!"),
+        ERROR_CUSTOM_EXPLANATION("error.custom.explanation", "&cYou need to have three items in you first hotbar slots. &e1) SAPLING - 2) LOG - 3) LEAVES"),
         ERROR_DATA_YML("error.data_yml", "&cYou have a messed up data.yml - fix or remove it!"),
+        ERROR_EMPTY_HAND("error.emptyhand", "&cYou don't have an item in your hand"),
+        ERROR_INVALID_ARGUMENT_COUNT("error.invalid_argumentcount", "&cInvalid number of arguments&r (%1% instead of %2%)!"),
+        ERROR_NOT_TOOL("error.nottool", "&cYou don't have the required tool to do that!"),
+        ERROR_OUT_OF_RANGE("error.outofrange", "c&The max range for this command is: %1%"),
+        ERROR_PERMISSION_ADDCUSTOM("error.permission.addcustom", "&cYou don't have 'treeassist.addcustom'"),
+        ERROR_PERMISSION_ADDTOOL("error.permission.addtool", "&cYou don't have 'treeassist.addtool'"),
+        ERROR_PERMISSION_DEBUG("error.permission.debug", "&cYou don't have 'treeassist.debug'"),
+        ERROR_PERMISSION_FORCEBREAK("error.permission.forcebreak", "&cYou don't have 'treeassist.forcebreak'"),
+        ERROR_PERMISSION_FORCEGROW("error.permission.forcegrow", "&cYou don't have 'treeassist.forcegrow'"),
+        ERROR_PERMISSION_NOREPLACE("error.permission.noreplace", "&cYou don't have 'treeassist.noreplace'"),
+        ERROR_PERMISSION_PURGE("error.permission.purge", "&cYou don't have 'treeassist.purge'"),
         ERROR_PERMISSION_RELOAD("error.permission.reload", "&cYou don't have 'treeassist.reload'"),
+        ERROR_PERMISSION_REMOVECUSTOM("error.permission.removecustom", "&cYou don't have 'treeassist.removecustom'"),
+        ERROR_PERMISSION_REMOVETOOL("error.permission.removetool", "&cYou don't have 'treeassist.removetool'"),
         ERROR_PERMISSION_TOGGLE("error.permission.toggle", "&cYou don't have 'treeassist.toggle'"),
+        ERROR_PERMISSION_TOGGLE_OTHER("error.permission.toggle_other", "&cYou don't have 'treeassist.toggle.other'"),
         ERROR_PERMISSION_TOGGLE_GLOBAL("error.permission.toggle_global", "&cYou don't have 'treeassist.toggle.global'"),
         ERROR_PERMISSION_TOGGLE_TOOL("error.permission.toggle_tool", "&cYou don't have 'treeassist.tool'"),
+        ERROR_REMOVETOOL_NOTDONE("error.removetool.not_done", "&cTool is no required tool!"),
 
         ERROR_NOTFOUND_WORLD("error.notfound.world", "&cWorld not found: %1%'"),
 
@@ -29,9 +50,15 @@ public final class Language {
         INFO_COOLDOWN_VALUE("info.cooldown_value", "&a%1% seconds remaining!"),
         INFO_COOLDOWN_WAIT("info.cooldown_wait", "&aWait %1% seconds for TreeAssist cooldown!"),
 
+        INFO_CUSTOM_ADDED("info.custom.added", "&aCustom block group definition added!"),
+        INFO_CUSTOM_REMOVED("info.custom.removed", "&aCustom block group definition removed!"),
+
         INFO_NEVER_BREAK_SAPLINGS("info.never_break_saplings", "&aYou cannot break saplings on this server!"),
         INFO_SAPLING_PROTECTED("info.sapling_protected", "&aThis sapling is protected!"),
 
+        WARNING_ADDTOOL_ONLYONE("warning.sapling_protected", "&6You can only use one enchantment. Using: %1%"),
+
+        SUCCESSFUL_ADDTOOL("successful.addtool", "&aRequired tool added: %1%"),
         SUCCESSFUL_DEBUG_ALL("successful.debug_all", "debugging EVERYTHING"),
         SUCCESSFUL_DEBUG_X("successful.debug", "debugging %1%"),
 
@@ -45,6 +72,8 @@ public final class Language {
         SUCCESSFUL_PURGE_WORLD("successful.purge.world", "&a%1% entries have been purged for the world %2%!"),
 
         SUCCESSFUL_RELOAD("successful.reload", "&aTreeAssist has been reloaded."),
+
+        SUCCESSFUL_REMOVETOOL("successful.removetool", "&aRequired tool removed: %1%"),
 
         SUCCESSFUL_TOGGLE_GLOBAL_OFF("successful.toggle.global_off", "&aTreeAssist functions are turned off globally!"),
         SUCCESSFUL_TOGGLE_GLOBAL_ON("successful.toggle.global_on", "&aTreeAssist functions are now turned on globally!"),

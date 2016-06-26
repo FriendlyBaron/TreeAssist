@@ -35,6 +35,9 @@ public class FlatFileBlockList implements BlockList {
         this.dataFile = new File(Utils.plugin.getDataFolder(), "data.yml");
         data.options().copyDefaults(true);
         try {
+            if (!this.dataFile.exists()) {
+                this.dataFile.createNewFile();
+            }
             this.data.load(this.dataFile);
             list = data.getStringList("Blocks");
 
@@ -127,10 +130,15 @@ public class FlatFileBlockList implements BlockList {
 
     public int purge(final CommandSender sender) {
         final List<String> removals = new ArrayList<String>();
-
+        int line = 1;
         for (String def : list) {
+            line++;
             String[] split = def.split(";");
             // x y z TIME world
+            if (split.length < 4) {
+                removals.add(def);
+                continue;
+            }
             World world = Bukkit.getWorld(split[4]);
             if (world == null) {
                 removals.add(def);
@@ -145,7 +153,9 @@ public class FlatFileBlockList implements BlockList {
                     removals.add(def);
                 }
             } catch (NumberFormatException e) {
-                sender.sendMessage(Language.parse(MSG.ERROR_DATA_YML));
+                removals.add(def);
+            } catch (Exception e) {
+                sender.sendMessage(Language.parse(MSG.ERROR_DATA_YML) + " (#" + line + ")");
                 return 0;
             }
         }

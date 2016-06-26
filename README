@@ -1,3 +1,20 @@
+v5.10.17 - push this version to jenkins, fix an issue about disappearing items in 1.10, backwards compatible to 1.9!
+v5.10.4 - add more keywords to start and stop debugging
+v5.10.3 - add cooldown override for forcebreak
+v5.10.2 - add forcebreak, forcegrow, including permissions and messages
+v5.10.1 - pull all fixes from the 1.8 branch and fix mcMMO config reading
+v5.9.12 - ONLY FOR 1.9 !!!
+v5.9.11 - add commands "addcustom" and "removecustom" - setting the first three items to custom block group (SAPLING, LOG, LEAF)
+v5.9.10 - revert the API update, because Spigot did not do that, or did revert it
+v5.9.9 - ignore some number errors in the data.yml parsing , remove them
+v5.9.8 - revert back to including libs - seems we cannot rely on those maven repos :P
+v5.9.7 - prevent StackOverflow for now, I will have to look into this in detail, but later
+v5.9.6 - yeah. finally fixed LogBlock
+v5.9.5 - -
+v5.9.4 - fix LogBlock?
+v5.9.3 - one last chance for LogBlock
+v5.9.2 - update to Java 7 and Spigot 1.8.8
+v5.8.91 - address bukkit issue #276
 v5.8.90 - pull things by uroskn - thanks, dude! - aaand fixing a logic bug about DURABILITY. Thanks, serpi90!
 v5.8.89 - issue fixed, updated README!
 v5.8.88 - still debugging

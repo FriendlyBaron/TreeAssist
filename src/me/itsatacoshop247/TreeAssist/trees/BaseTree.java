@@ -6,8 +6,6 @@ import me.itsatacoshop247.TreeAssist.core.Language;
 import me.itsatacoshop247.TreeAssist.core.Language.MSG;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.events.TATreeBrokenEvent;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -42,7 +40,7 @@ public abstract class BaseTree {
     private static void checkAndDoSaplingProtect(Player player, Block block,
                                                  BlockBreakEvent event) {
         Material blockMat = block.getType();
-        if (blockMat != Material.LOG && !blockMat.name().equals("LOG_2")
+        if (blockMat != Material.LOG && blockMat != Material.LOG_2
                 && !CustomTree.isCustomLog(block)) {
             if (blockMat == Material.SAPLING) {
                 if (Utils.plugin.getConfig().getBoolean(
@@ -100,8 +98,8 @@ public abstract class BaseTree {
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());
             case ONESEVEN:
-                //Tree tree2 = (Tree) block.getState().getData();
-                return new VanillaOneSevenTree(/*tree2.getSpecies()*/block.getState().getData().getData());
+                Tree tree2 = (Tree) block.getState().getData();
+                return new VanillaOneSevenTree(tree2.getSpecies());
             case SHROOM:
                 return new MushroomTree(block.getType());
             case CUSTOM:
@@ -122,7 +120,7 @@ public abstract class BaseTree {
                 default:
                     return null;
             }
-        } else if (block.getType().name().equals("LOG_2")) {
+        } else if (block.getType() == Material.LOG_2) {
             return TreeType.ONESEVEN;
         } else if (CustomTree.isCustomLog(block)) {
             return TreeType.CUSTOM;
@@ -325,7 +323,7 @@ public abstract class BaseTree {
                             .getType() == Material.LOG && (block.getData() == 1 || block
                             .getData() == 3)) || (block
                             .getRelative(BlockFace.valueOf(directions[x]))
-                            .getType().name().equals("LOG_2") && block
+                            .getType() == Material.LOG_2 && block
                             .getData() == 1))) {
                         debug.i("invalid because of invalid type: "
                                 + block.getRelative(
@@ -353,11 +351,17 @@ public abstract class BaseTree {
                 return tree;
             }
 
-            if (player.getItemInHand().getDurability() > player.getItemInHand()
-                    .getType().getMaxDurability() ||
-                    player.getItemInHand().getDurability() < 0
-                            && Utils.isVanillaTool(player.getItemInHand())) {
-                player.setItemInHand(new ItemStack(Material.AIR));
+            if (!Utils.plugin.getConfig().getBoolean("Modding.Disable Durability Fix")) {
+
+                int durability = player.getItemInHand().getDurability();
+                int maxDurability = player.getItemInHand().getType().getMaxDurability();
+
+                if (((durability > maxDurability) || player.getItemInHand().getDurability() < 0)
+                                && Utils.isVanillaTool(player.getItemInHand())) {
+                    debug.i("removing item: " + player.getItemInHand().getType().name() +
+                            " (durability " + durability + ">" + maxDurability);
+                    player.setItemInHand(new ItemStack(Material.AIR));
+                }
             }
             resultTree.findYourBlocks(block);
             if (resultTree.isValid()) {
@@ -509,10 +513,13 @@ public abstract class BaseTree {
             tree = null;
         }
         if (!leaf && Utils.plugin.mcMMO && player != null) {
+            debug.i("Adding mcMMO EXP!");
             Utils.mcMMOaddExp(player, block);
         } else if (!leaf) {
             debug.i("mat: " + maat.name());
             debug.i("data: " + data);
+            debug.i("mcMMO: " + Utils.plugin.mcMMO);
+            debug.i("player: " + String.valueOf(player));
         }
 
         int chance = 100;
@@ -777,9 +784,13 @@ public abstract class BaseTree {
                         		block.breakNaturally();
                         	}
                         } else {
+                            debug.i("InstantRunner: 1");
                             breakBlock(block, tool, player);
-                            if (tool.getDurability() == tool.getType().getMaxDurability()) {
-                            	player.getInventory().remove(tool);
+                            if (tool.getType().getMaxDurability() > 0 && tool.getDurability() == tool.getType().getMaxDurability()) {
+
+                                debug.i("removing item: " + player.getItemInHand().getType().name() +
+                                        " (durability " + tool.getDurability() + "==" + tool.getType().getMaxDurability());
+                                player.getInventory().remove(tool);
                             	this.cancel();
                             }
                         }
@@ -806,9 +817,12 @@ public abstract class BaseTree {
                         		block.breakNaturally();
                         	}
                         } else {
+                            debug.i("InstantRunner: 2");
                             breakBlock(block, tool, player);
-                            if (tool.getDurability()== tool.getType().getMaxDurability()) {
-                            	player.getInventory().remove(tool);
+                            if (tool.getType().getMaxDurability() > 0 && tool.getDurability() == tool.getType().getMaxDurability()) {
+                                debug.i("removing item: " + player.getItemInHand().getType().name() +
+                                        " (durability " + tool.getDurability() + "==" + tool.getType().getMaxDurability());
+                                player.getInventory().remove(tool);
                             	this.cancel();
                             }
                         }
@@ -851,6 +865,7 @@ public abstract class BaseTree {
                             Utils.plugin.getListener().breakRadiusIfLeaf(block);
                             fastDecaying = true;
                         }
+                        debug.i("CleanRunner: 1");
                         breakBlock(block, null, null);
                     }
                     removeBlocks.clear();
@@ -865,6 +880,7 @@ public abstract class BaseTree {
                             debug.i("CleanRunner: skipping breaking a sapling");
                             continue;
                         }
+                        debug.i("CleanRunner: 2");
                         breakBlock(block, null, null);
                         totalBlocks.remove(block);
                         return;
@@ -881,7 +897,7 @@ public abstract class BaseTree {
 
         }
 
-        (new CleanRunner(this)).runTaskTimer(Utils.plugin, delay, offset);
+        (new CleanRunner(this)).runTaskTimer(Utils.plugin, delay + 200L, offset);
     }
 
     public boolean contains(Block block) {
