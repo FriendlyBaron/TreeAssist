@@ -356,7 +356,7 @@ public abstract class BaseTree {
                 int durability = player.getItemInHand().getDurability();
                 int maxDurability = player.getItemInHand().getType().getMaxDurability();
 
-                if ((durability > maxDurability || player.getItemInHand().getDurability() < 0)
+                if (((durability > maxDurability) || player.getItemInHand().getDurability() < 0)
                                 && Utils.isVanillaTool(player.getItemInHand())) {
                     debug.i("removing item: " + player.getItemInHand().getType().name() +
                             " (durability " + durability + ">" + maxDurability);
@@ -786,8 +786,11 @@ public abstract class BaseTree {
                         } else {
                             debug.i("InstantRunner: 1");
                             breakBlock(block, tool, player);
-                            if (tool.getDurability() == tool.getType().getMaxDurability()) {
-                            	player.getInventory().remove(tool);
+                            if (tool.getType().getMaxDurability() > 0 && tool.getDurability() == tool.getType().getMaxDurability()) {
+
+                                debug.i("removing item: " + player.getItemInHand().getType().name() +
+                                        " (durability " + tool.getDurability() + "==" + tool.getType().getMaxDurability());
+                                player.getInventory().remove(tool);
                             	this.cancel();
                             }
                         }
@@ -816,8 +819,10 @@ public abstract class BaseTree {
                         } else {
                             debug.i("InstantRunner: 2");
                             breakBlock(block, tool, player);
-                            if (tool.getDurability()== tool.getType().getMaxDurability()) {
-                            	player.getInventory().remove(tool);
+                            if (tool.getType().getMaxDurability() > 0 && tool.getDurability() == tool.getType().getMaxDurability()) {
+                                debug.i("removing item: " + player.getItemInHand().getType().name() +
+                                        " (durability " + tool.getDurability() + "==" + tool.getType().getMaxDurability());
+                                player.getInventory().remove(tool);
                             	this.cancel();
                             }
                         }

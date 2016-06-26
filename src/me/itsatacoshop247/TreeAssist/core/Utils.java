@@ -450,6 +450,18 @@ public final class Utils {
 				.contains(itemStack.getTypeId()));
 	}
 
+    public static String joinArray(final Object[] array, final String glue) {
+        final StringBuilder result = new StringBuilder("");
+        for (final Object o : array) {
+            result.append(glue);
+            result.append(o);
+        }
+        if (result.length() <= glue.length()) {
+            return result.toString();
+        }
+        return result.substring(glue.length());
+    }
+
 	/**
 	 * Add mcMMO exp for destroying a block
 	 * 
