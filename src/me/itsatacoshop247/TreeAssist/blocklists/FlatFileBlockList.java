@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ public class FlatFileBlockList implements BlockList {
             e.printStackTrace();
         }
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Utils.plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskTimer(Utils.plugin, new Runnable() {
             @Override
             public void run() {
                 FlatFileBlockList.this.save(true);
@@ -182,15 +183,24 @@ public class FlatFileBlockList implements BlockList {
     }
 
     private void saveData() {
-        try {
-            List<TreeBlock> list = new ArrayList<>();
-            for (TreeBlock block : blockMap.keySet()) {
-                list.add(block);
-            }
-            config.set("TreeBlocks", list);
-            config.save(configFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<TreeBlock> list = new ArrayList<>();
+        for (TreeBlock block : blockMap.keySet()) {
+            list.add(block);
         }
+        config.set("TreeBlocks", list);
+
+        final String contents = config.saveToString();
+
+        Bukkit.getScheduler().runTaskAsynchronously(Utils.plugin, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PrintWriter pw = new PrintWriter(configFile);
+                    pw.println(contents);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
