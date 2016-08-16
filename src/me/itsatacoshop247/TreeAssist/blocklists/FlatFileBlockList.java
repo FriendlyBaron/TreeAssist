@@ -179,10 +179,10 @@ public class FlatFileBlockList implements BlockList {
 
     @Override
     public void save(boolean force) {
-        this.saveData();
+        this.saveData(force);
     }
 
-    private void saveData() {
+    private void saveData(boolean force) {
         List<TreeBlock> list = new ArrayList<>();
         for (TreeBlock block : blockMap.keySet()) {
             list.add(block);
@@ -191,7 +191,7 @@ public class FlatFileBlockList implements BlockList {
 
         final String contents = config.saveToString();
 
-        Bukkit.getScheduler().runTaskAsynchronously(Utils.plugin, new Runnable() {
+        class RunLater implements Runnable {
             @Override
             public void run() {
                 try {
@@ -201,6 +201,13 @@ public class FlatFileBlockList implements BlockList {
                     e.printStackTrace();
                 }
             }
-        });
+
+        }
+        if (force) {
+            new RunLater().run();
+        } else {
+            Bukkit.getScheduler().runTaskAsynchronously(Utils.plugin, new RunLater() {
+            });
+        }
     }
 }

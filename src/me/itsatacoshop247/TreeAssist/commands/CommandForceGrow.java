@@ -52,7 +52,7 @@ public class CommandForceGrow extends AbstractCommand {
                             BlockState state = block.getState();
                             MaterialData data = state.getData();
                             Sapling sap = (Sapling) data;
-                            byte specific = sap.getData();
+                            byte specific = block.getData();
 
                             TreeType type = TreeType.TREE;
 
@@ -76,9 +76,7 @@ public class CommandForceGrow extends AbstractCommand {
                                 }
                             }
                             block.setType(Material.SAPLING);
-                            sap.setData(specific);
-                            block.getState().setData(sap);
-                            block.getState().update();
+                            block.setData(specific);
                         }
                     }
                 }
