@@ -33,7 +33,7 @@ public class CommandPurge extends AbstractCommand {
                 sender.sendMessage(Language.parse(Language.MSG.SUCCESSFUL_PURGE_DAYS, String.valueOf(done), args[1]));
             } catch (NumberFormatException e) {
                 if (args[1].equalsIgnoreCase("global")) {
-                    int done = bl.purge(sender);
+                    int done = bl.purge();
                     sender.sendMessage(Language.parse(Language.MSG.SUCCESSFUL_PURGE_GLOBAL, String.valueOf(done)));
                 } else {
                     int done = bl.purge(args[1]);
