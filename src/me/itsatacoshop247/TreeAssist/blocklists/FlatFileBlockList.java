@@ -105,6 +105,7 @@ public class FlatFileBlockList implements BlockList {
                             TreeBlock tBlock = new TreeBlock(line);
                             map.put(tBlock, tBlock.time);
                         }
+                        reader.close();
                     }
                 }
             } catch (Exception e) {
@@ -153,7 +154,7 @@ public class FlatFileBlockList implements BlockList {
             return;
         }
         Map<TreeBlock, Long> cc = getChunkContent(block);
-        cc.remove(new TreeBlock(block, 0));
+        Object rem = cc.remove(new TreeBlock(block, 0));
     }
 
     /**
@@ -359,6 +360,7 @@ public class FlatFileBlockList implements BlockList {
                     }
                     pw.close();
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
