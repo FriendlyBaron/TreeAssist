@@ -41,6 +41,22 @@ public class TreeBlock implements ConfigurationSerializable {
         return Bukkit.getWorld(world).getBlockAt(x, y, z);
     }
 
+    public String getWorld() {
+        return world;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> map = new HashMap<String, Object>();

@@ -6,12 +6,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ public class FlatFileBlockList implements BlockList {
         int x;
         int z;
 
-        RegionKey(String world, int x, int z) {
+        RegionKey(final String world, final int x, final int z) {
             this.world = world;
             this.x = x;
             this.z = z;
@@ -72,17 +72,17 @@ public class FlatFileBlockList implements BlockList {
      * @param block the block to check
      * @return the TreeBlock Map
      */
-    private synchronized Map<TreeBlock, Long> getChunkContent(Block block) {
-        int cx = block.getX() >> 4;
-        int cz = block.getZ() >> 4;
+    private synchronized Map<TreeBlock, Long> getChunkMap(final Block block) {
+        final int cx = block.getX() >> 4;
+        final int cz = block.getZ() >> 4;
 
-        int rx = cx >> 5;
-        int rz = cz >> 5;
+        final int rx = cx >> 5;
+        final int rz = cz >> 5;
 
-        String world = block.getWorld().getName();
-        RegionKey rKey = new RegionKey(world, rx, rz);
+        final String world = block.getWorld().getName();
+        final RegionKey rKey = new RegionKey(world, rx, rz);
 
-        return getChunkContent(rKey);
+        return getChunkMap(rKey);
     }
 
     /**
@@ -91,15 +91,15 @@ public class FlatFileBlockList implements BlockList {
      * @param rKey the RegionKey to check
      * @return the TreeBlock Map
      */
-    private synchronized Map<TreeBlock, Long> getChunkContent(RegionKey rKey) {
+    private synchronized Map<TreeBlock, Long> getChunkMap(final RegionKey rKey) {
         if (!mymap.containsKey(rKey)) {
-            Map<TreeBlock, Long> map = new HashMap<TreeBlock, Long>();
+            final Map<TreeBlock, Long> map = new HashMap<TreeBlock, Long>();
             try {
-                File path = new File(Utils.plugin.getDataFolder(), rKey.world);
+                final File path = new File(Utils.plugin.getDataFolder(), rKey.world);
                 if (path.isDirectory() && path.exists()) {
-                    File file = new File(path, rKey.x + "." + rKey.z + ".txt");
+                    final File file = new File(path, rKey.x + "." + rKey.z + ".txt");
                     if (file.exists()) {
-                        BufferedReader reader = new BufferedReader(new FileReader(file));
+                        final BufferedReader reader = new BufferedReader(new FileReader(file));
                         String line = null;
                         while ((line = reader.readLine()) != null) {
                             TreeBlock tBlock = new TreeBlock(line);
@@ -109,23 +109,101 @@ public class FlatFileBlockList implements BlockList {
                     }
                 }
             } catch (Exception e) {
-
             }
             mymap.put(rKey, map);
         }
-
         return mymap.get(rKey);
     }
 
+    private synchronized Map<TreeBlock, Long> getChunkMap(final TreeBlock treeBlock) {
+        final int cx = treeBlock.getX() >> 4;
+        final int cz = treeBlock.getZ() >> 4;
+
+        final int rx = cx >> 5;
+        final int rz = cz >> 5;
+
+        final String world = treeBlock.getWorld();
+        final RegionKey rKey = new RegionKey(world, rx, rz);
+
+        return getChunkMap(rKey);
+    }
+
     @Override
-    public void addBlock(Block block) {
+    public void addBlock(final Block block) {
         final long time = System.currentTimeMillis();
-        Map<TreeBlock, Long> cc = getChunkContent(block);
+        final Map<TreeBlock, Long> cc = getChunkMap(block);
         cc.put(new TreeBlock(block, time), time);
+    }
+
+    private void addBlock(final TreeBlock treeBlock) {
+        final Map<TreeBlock, Long> cc = getChunkMap(treeBlock);
+        cc.put(treeBlock, treeBlock.time);
     }
 
     @Override
     public void initiate() {
+        final File configFile = new File(Utils.plugin.getDataFolder(), "data.yml");
+
+        try {
+            if (configFile.exists()) {
+                final FileConfiguration config = new YamlConfiguration();
+                config.load(configFile);
+
+                final File backupFile = new File(Utils.plugin.getDataFolder(), "data_old.yml");
+                if (!backupFile.exists()) {
+                    config.save(backupFile);
+                }
+
+                if (config.contains("Blocks")) {
+                    final List<String> list = config.getStringList("Blocks");
+                    final Map<String, Object> map = new HashMap<String, Object>();
+                    for (final String entry : list) {
+                        final String[] split = entry.split(";");
+                        if (split.length == 4) {
+                            // legacy²
+                            // X;Y;Z;W
+                            try {
+                                long time = System.currentTimeMillis();
+                                map.put("x", Integer.parseInt(split[0]));
+                                map.put("y", Integer.parseInt(split[1]));
+                                map.put("z", Integer.parseInt(split[2]));
+                                map.put("t", time);
+                                map.put("w", split[3]);
+                                addBlock(new TreeBlock(map));
+                            } catch (Exception e) {
+                            }
+                        } else if (split.length == 5) {
+                            // legacy
+                            // X;Y;Z;T;W
+                            try {
+                                long time = Long.parseLong(split[3]);
+                                map.put("x", Integer.parseInt(split[0]));
+                                map.put("y", Integer.parseInt(split[1]));
+                                map.put("z", Integer.parseInt(split[2]));
+                                map.put("t", time);
+                                map.put("w", split[4]);
+                                addBlock(new TreeBlock(map));
+                            } catch (Exception e) {
+                            }
+                        } else {
+                            continue;
+                        }
+                        map.clear();
+                    }
+                    config.set("Blocks", null);
+                } else if (config.contains("TreeBlocks")) {
+                    for (Object o : config.getList("TreeBlocks")) {
+                        addBlock((TreeBlock) o);
+                    }
+                }
+                configFile.delete();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+
         Bukkit.getScheduler().runTaskTimer(Utils.plugin, new Runnable() {
             @Override
             public void run() {
@@ -139,12 +217,12 @@ public class FlatFileBlockList implements BlockList {
         if (block == null) {
             return false;
         }
-        Map<TreeBlock, Long> cc = getChunkContent(block);
+        final Map<TreeBlock, Long> cc = getChunkMap(block);
         return cc.containsKey(new TreeBlock(block, 0));
     }
 
     @Override
-    public void logBreak(Block block, Player player) {
+    public void logBreak(final Block block, final Player player) {
         removeBlock(block);
     }
 
@@ -153,8 +231,8 @@ public class FlatFileBlockList implements BlockList {
         if (block == null) {
             return;
         }
-        Map<TreeBlock, Long> cc = getChunkContent(block);
-        Object rem = cc.remove(new TreeBlock(block, 0));
+        final Map<TreeBlock, Long> cc = getChunkMap(block);
+        cc.remove(new TreeBlock(block, 0));
     }
 
     /**
@@ -165,34 +243,34 @@ public class FlatFileBlockList implements BlockList {
     public int purge() {
         int total = 0;
 
-        List<RegionKey> keyRemovals = new ArrayList<RegionKey>();
+        final List<RegionKey> keyRemovals = new ArrayList<RegionKey>();
 
-        for (World world : Bukkit.getWorlds()) {
-            File path = new File(Utils.plugin.getDataFolder(), world.getName());
+        for (final World world : Bukkit.getWorlds()) {
+            final File path = new File(Utils.plugin.getDataFolder(), world.getName());
             if (!path.isDirectory() || !path.exists()) {
                 continue;
             }
-            for (File file : path.listFiles()) {
+            for (final File file : path.listFiles()) {
                 if (file.isFile() && file.getName().endsWith(".txt")) {
                     String[] vals = file.getName().split("\\.");
                     try {
-                        int x = Integer.parseInt(vals[0]);
-                        int z = Integer.parseInt(vals[1]);
+                        final int x = Integer.parseInt(vals[0]);
+                        final int z = Integer.parseInt(vals[1]);
 
-                        RegionKey rKey = new RegionKey(world.getName(), x, z);
+                        final RegionKey rKey = new RegionKey(world.getName(), x, z);
 
-                        Map<TreeBlock, Long> blockMap = getChunkContent(rKey);
+                        final Map<TreeBlock, Long> blockMap = getChunkMap(rKey);
 
                         final List<TreeBlock> removals = new ArrayList<TreeBlock>();
-                        for (TreeBlock block : blockMap.keySet()) {
-                            Block bukkitBlock = block.getBukkitBlock();
+                        for (final TreeBlock block : blockMap.keySet()) {
+                            final Block bukkitBlock = block.getBukkitBlock();
                             if (bukkitBlock.getType() != Material.LOG &&
                                     !bukkitBlock.getType().name().equals(Material.LOG_2)) {
                                 removals.add(block);
                             }
                         }
                         if (removals.size() > 0) {
-                            for (TreeBlock block : removals) {
+                            for (final TreeBlock block : removals) {
                                 blockMap.remove(block);
                             }
                             saveData(rKey, true);
@@ -202,12 +280,11 @@ public class FlatFileBlockList implements BlockList {
                             }
                         }
                     } catch (Exception e) {
-
                     }
                 }
             }
         }
-        for (RegionKey key : keyRemovals) {
+        for (final RegionKey key : keyRemovals) {
             mymap.remove(key);
         }
         return total;
@@ -221,18 +298,18 @@ public class FlatFileBlockList implements BlockList {
     public int purge(final String worldname) {
         int total = 0;
 
-        File path = new File(Utils.plugin.getDataFolder(), worldname);
+        final File path = new File(Utils.plugin.getDataFolder(), worldname);
         if (path.isDirectory() && path.exists()) {
-            for (File file : path.listFiles()) {
+            for (final File file : path.listFiles()) {
                 if (file.isFile() && file.getName().endsWith(".txt")) {
-                    String[] vals = file.getName().split("\\.");
+                    final String[] vals = file.getName().split("\\.");
                     try {
-                        int x = Integer.parseInt(vals[0]);
-                        int z = Integer.parseInt(vals[1]);
+                        final int x = Integer.parseInt(vals[0]);
+                        final int z = Integer.parseInt(vals[1]);
 
-                        RegionKey rKey = new RegionKey(worldname, x, z);
+                        final RegionKey rKey = new RegionKey(worldname, x, z);
 
-                        Map<TreeBlock, Long> blockMap = getChunkContent(rKey);
+                        final Map<TreeBlock, Long> blockMap = getChunkMap(rKey);
 
                         if (blockMap.size() > 0) {
                             total += blockMap.size();
@@ -245,11 +322,11 @@ public class FlatFileBlockList implements BlockList {
             }
         }
 
-        List<RegionKey> removals = new ArrayList<RegionKey>();
+        final List<RegionKey> removals = new ArrayList<RegionKey>();
 
-        for (RegionKey key : mymap.keySet()) {
+        for (final RegionKey key : mymap.keySet()) {
             if (key.world.equalsIgnoreCase(worldname)) {
-                Map<TreeBlock, Long> blockMap = getChunkContent(key);
+                final Map<TreeBlock, Long> blockMap = getChunkMap(key);
                 if (blockMap.size() > 0) {
                     total += blockMap.size();
                     blockMap.clear();
@@ -258,7 +335,7 @@ public class FlatFileBlockList implements BlockList {
                 removals.add(key);
             }
         }
-        for (RegionKey key : removals) {
+        for (final RegionKey key : removals) {
             mymap.remove(key);
         }
         return total;
@@ -273,32 +350,32 @@ public class FlatFileBlockList implements BlockList {
 
         int total = 0;
 
-        List<RegionKey> keyRemovals = new ArrayList<RegionKey>();
+        final List<RegionKey> keyRemovals = new ArrayList<RegionKey>();
 
-        for (World world : Bukkit.getWorlds()) {
-            File path = new File(Utils.plugin.getDataFolder(), world.getName());
+        for (final World world : Bukkit.getWorlds()) {
+            final File path = new File(Utils.plugin.getDataFolder(), world.getName());
             if (!path.isDirectory() || !path.exists()) {
                 continue;
             }
-            for (File file : path.listFiles()) {
+            for (final File file : path.listFiles()) {
                 if (file.isFile() && file.getName().endsWith(".txt")) {
-                    String[] vals = file.getName().split("\\.");
+                    final String[] vals = file.getName().split("\\.");
                     try {
-                        int x = Integer.parseInt(vals[0]);
-                        int z = Integer.parseInt(vals[1]);
+                        final int x = Integer.parseInt(vals[0]);
+                        final int z = Integer.parseInt(vals[1]);
 
-                        RegionKey rKey = new RegionKey(world.getName(), x, z);
+                        final RegionKey rKey = new RegionKey(world.getName(), x, z);
 
-                        Map<TreeBlock, Long> blockMap = getChunkContent(rKey);
+                        final Map<TreeBlock, Long> blockMap = getChunkMap(rKey);
 
                         final List<TreeBlock> removals = new ArrayList<TreeBlock>();
-                        for (TreeBlock block : blockMap.keySet()) {
+                        for (final TreeBlock block : blockMap.keySet()) {
                             if (block.time < (System.currentTimeMillis() - days * 24 * 60 * 60 * 1000)) {
                                 removals.add(block);
                             }
                         }
                         if (removals.size() > 0) {
-                            for (TreeBlock block : removals) {
+                            for (final TreeBlock block : removals) {
                                 blockMap.remove(block);
                             }
                             saveData(rKey, true);
@@ -308,12 +385,11 @@ public class FlatFileBlockList implements BlockList {
                             }
                         }
                     } catch (Exception e) {
-
                     }
                 }
             }
         }
-        for (RegionKey key : keyRemovals) {
+        for (final RegionKey key : keyRemovals) {
             mymap.remove(key);
         }
         return total;
@@ -324,8 +400,8 @@ public class FlatFileBlockList implements BlockList {
     }
 
     @Override
-    public void save(boolean force) {
-        for (RegionKey key : mymap.keySet()) {
+    public void save(final boolean force) {
+        for (final RegionKey key : mymap.keySet()) {
             saveData(key, force);
         }
     }
@@ -347,20 +423,19 @@ public class FlatFileBlockList implements BlockList {
                     if (!path.exists() || !path.isDirectory()) {
                         path.mkdir();
                     }
-                    File file = new File(path, rKey.x + "." + rKey.z + ".txt");
+                    final File file = new File(path, rKey.x + "." + rKey.z + ".txt");
                     if (!file.exists() && map != null && map.size() > 0) {
                         file.createNewFile();
                     } else if (map == null || map.size() < 1) {
                         file.delete();
                         return;
                     }
-                    PrintWriter pw = new PrintWriter(file);
+                    final PrintWriter pw = new PrintWriter(file);
                     for (TreeBlock block : map.keySet()) {
                         pw.println(block.toString());
                     }
                     pw.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }
