@@ -44,6 +44,7 @@ permissions:
       treeassist.addcustom: true
       treeassist.addtool: true
       treeassist.debug: true
+      treeassist.findforest: true
       treeassist.forcebreak: true
       treeassist.forcegrow: true
       treeassist.noreplace: true
@@ -63,6 +64,9 @@ permissions:
     default: op
   treeassist.debug:
     descroption: allows to debug
+    default: op
+  treeassist.findforest:
+    descroption: allows to find forest by tree type
     default: op
   treeassist.forcebreak:
     descroption: allows to force break trees

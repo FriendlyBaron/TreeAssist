@@ -116,10 +116,7 @@ public class TreeAssist extends JavaPlugin {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (args.length <= 0) {
-            return false;
-        }
-        AbstractCommand acc = commandMap.get(args[0].toLowerCase());
+        final AbstractCommand acc = (args.length > 0) ? commandMap.get(args[0].toLowerCase()) : null;
         if (acc != null) {
             acc.commit(sender, args);
             return true;
@@ -182,7 +179,8 @@ public class TreeAssist extends JavaPlugin {
         InvalidTree.debugger = new Debugger(this, 3);
         MushroomTree.debugger = new Debugger(this, 4);
         VanillaTree.debugger = new Debugger(this, 5);
-        VanillaOneSevenTree.debugger = new Debugger(this, 6);
+        VanillaAcaciaTree.debugger = new Debugger(this, 6);
+        VanillaDarkOakTree.debugger = new Debugger(this, 7);
         Debugger.load(this, Bukkit.getConsoleSender());
 
 
@@ -217,6 +215,7 @@ public class TreeAssist extends JavaPlugin {
         new CommandAddCustom().load(commandList, commandMap);
         new CommandAddTool().load(commandList, commandMap);
         new CommandDebug().load(commandList, commandMap);
+        new CommandFindForest().load(commandList, commandMap);
         new CommandForceBreak().load(commandList, commandMap);
         new CommandForceGrow().load(commandList, commandMap);
         new CommandGlobal().load(commandList, commandMap);

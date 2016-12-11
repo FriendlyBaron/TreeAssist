@@ -21,12 +21,15 @@ public final class Language {
         ERROR_CUSTOM_EXPLANATION("error.custom.explanation", "&cYou need to have three items in you first hotbar slots. &e1) SAPLING - 2) LOG - 3) LEAVES"),
         ERROR_DATA_YML("error.data_yml", "&cYou have a messed up data.yml - fix or remove it!"),
         ERROR_EMPTY_HAND("error.emptyhand", "&cYou don't have an item in your hand"),
+        ERROR_FINDFOREST("error.findforest", "&cForest not found in 500 block radius: &r%1%"),
         ERROR_INVALID_ARGUMENT_COUNT("error.invalid_argumentcount", "&cInvalid number of arguments&r (%1% instead of %2%)!"),
+        ERROR_INVALID_ARGUMENT_LIST("error.invalid_argumentlist", "&cInvalid arguments! Valid:&r %1%"),
         ERROR_NOT_TOOL("error.nottool", "&cYou don't have the required tool to do that!"),
         ERROR_OUT_OF_RANGE("error.outofrange", "c&The max range for this command is: %1%"),
         ERROR_PERMISSION_ADDCUSTOM("error.permission.addcustom", "&cYou don't have 'treeassist.addcustom'"),
         ERROR_PERMISSION_ADDTOOL("error.permission.addtool", "&cYou don't have 'treeassist.addtool'"),
         ERROR_PERMISSION_DEBUG("error.permission.debug", "&cYou don't have 'treeassist.debug'"),
+        ERROR_PERMISSION_FINDFOREST("error.permission.findforest", "&cYou don't have 'treeassist.findforest'"),
         ERROR_PERMISSION_FORCEBREAK("error.permission.forcebreak", "&cYou don't have 'treeassist.forcebreak'"),
         ERROR_PERMISSION_FORCEGROW("error.permission.forcegrow", "&cYou don't have 'treeassist.forcegrow'"),
         ERROR_PERMISSION_NOREPLACE("error.permission.noreplace", "&cYou don't have 'treeassist.noreplace'"),
@@ -61,6 +64,8 @@ public final class Language {
         SUCCESSFUL_ADDTOOL("successful.addtool", "&aRequired tool added: %1%"),
         SUCCESSFUL_DEBUG_ALL("successful.debug_all", "debugging EVERYTHING"),
         SUCCESSFUL_DEBUG_X("successful.debug", "debugging %1%"),
+
+        SUCCESSFUL_FINDFOREST("successful.findforest", "&aForest found at &r%1%"),
 
         SUCCESSFUL_NOREPLACE("successful.noreplace", "&aYou now stop replanting trees for %1% seconds."),
 
