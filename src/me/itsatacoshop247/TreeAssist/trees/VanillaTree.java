@@ -352,13 +352,15 @@ public class VanillaTree extends BaseTree implements INormalTree {
         Tree tree = (Tree) block.getState().getData();
         if (tree.getSpecies() == TreeSpecies.JUNGLE) {
             if (bottoms == null) {
-                if (block.getLocation().distanceSquared(bottom.getLocation()) > 4) {
+                if (Math.abs(block.getX() - bottom.getX()) > 2 ||
+                        Math.abs(block.getZ() - bottom.getZ()) > 2) {
                     return true;
                 }
             }
 
             for (Block bottom : bottoms) {
-                if (block.getLocation().distanceSquared(bottom.getLocation()) > 4) {
+                if (Math.abs(block.getX() - bottom.getX()) > 2 ||
+                        Math.abs(block.getZ() - bottom.getZ()) > 2) {
                     return true;
                 }
             }
@@ -371,7 +373,7 @@ public class VanillaTree extends BaseTree implements INormalTree {
                 failCount++;
             }
         }
-        if (failCount > 3) {
+        if (failCount > 4) {
 //			debug.i("fail count "+failCount+"! out!");
             return true;
         }

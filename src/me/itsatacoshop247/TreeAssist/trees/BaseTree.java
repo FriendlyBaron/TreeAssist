@@ -23,7 +23,7 @@ import java.util.*;
 
 public abstract class BaseTree {
     protected enum TreeType {
-        OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ONESEVEN;
+        OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ACACIA, DARK_OAK;
     }
 
     public static Debugger debug;
@@ -36,6 +36,8 @@ public abstract class BaseTree {
     protected Block top;
 
     protected boolean fastDecaying = false;
+
+    protected int steps = 0;
 
     private static void checkAndDoSaplingProtect(Player player, Block block,
                                                  BlockBreakEvent event) {
@@ -97,9 +99,10 @@ public abstract class BaseTree {
             case JUNGLE:
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());
-            case ONESEVEN:
-                Tree tree2 = (Tree) block.getState().getData();
-                return new VanillaOneSevenTree(tree2.getSpecies());
+            case ACACIA:
+                return new VanillaAcaciaTree();
+            case DARK_OAK:
+                return new VanillaDarkOakTree();
             case SHROOM:
                 return new MushroomTree(block.getType());
             case CUSTOM:
@@ -121,7 +124,7 @@ public abstract class BaseTree {
                     return null;
             }
         } else if (block.getType() == Material.LOG_2) {
-            return TreeType.ONESEVEN;
+            return block.getData() == 1 ? TreeType.DARK_OAK : TreeType.ACACIA;
         } else if (CustomTree.isCustomLog(block)) {
             return TreeType.CUSTOM;
         }
@@ -272,11 +275,14 @@ public abstract class BaseTree {
         if (!plugin.getConfig().getBoolean("Main.Destroy Only Blocks Above")) {
             resultTree.bottom = resultTree.getBottom(block);
         }
-        resultTree.top = resultTree.getTop(block);
+
         if (resultTree.bottom == null) {
             debug.i("bottom is null!");
             return new InvalidTree();// not a valid tree
         }
+
+        resultTree.getTrunks();
+        resultTree.top = resultTree.getTop(block);
 
         if (plugin.getConfig().getBoolean("Main.Automatic Tree Destruction")) {
             if (resultTree.top == null) {
@@ -288,7 +294,6 @@ public abstract class BaseTree {
                 return new InvalidTree(); // not a valid tree
             }
         }
-        resultTree.getTrunks();
 
         boolean success = false;
         boolean damage = false;
@@ -338,6 +343,8 @@ public abstract class BaseTree {
                 success = resultTree.willBeDestroyed();
                 damage = plugin.getConfig().getBoolean(
                         "Main.Apply Full Tool Damage");
+            } else {
+                debug.i("plugin is disabled for player!");
             }
         }
         if (success) {
@@ -364,6 +371,7 @@ public abstract class BaseTree {
                 }
             }
             resultTree.findYourBlocks(block);
+
             if (resultTree.isValid()) {
                 debug.i("removing...");
                 resultTree.removeLater(player, damage, player.getItemInHand());
