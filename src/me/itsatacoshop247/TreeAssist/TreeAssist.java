@@ -412,6 +412,8 @@ public class TreeAssist extends JavaPlugin {
 
         items.put("Sapling Replant.Time to Block Sapling Growth (Seconds)", "0");
         items.put("Main.Language", "en");
+
+        items.put("Main.Auto Add To Inventory", "false");
         return items;
     }
 

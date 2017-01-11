@@ -542,7 +542,13 @@ public abstract class BaseTree {
 
         if (chance > 99 || (new Random()).nextInt(100) < chance) {
             Utils.plugin.blockList.logBreak(block, player);
-            block.breakNaturally(tool);
+            if (player != null && (block.getType() == Material.LOG || block.getType() == Material.LOG_2)
+                    && Utils.plugin.getConfig().getBoolean("Main.Auto Add To Inventory", false)) {
+                player.getInventory().addItem(block.getState().getData().toItemStack(1));
+                block.setType(Material.AIR);
+            } else {
+                block.breakNaturally(tool);
+            }
             if (player != null) {
                 player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0);
             }
@@ -793,7 +799,13 @@ public abstract class BaseTree {
                         	if (!event.isCancelled())
                         	{
                         		Utils.plugin.blockList.logBreak(block, player);
-                        		block.breakNaturally();
+                                if ((block.getType() == Material.LOG || block.getType() == Material.LOG_2)
+                                        && Utils.plugin.getConfig().getBoolean("Main.Auto Add To Inventory", false)) {
+                                    player.getInventory().addItem(block.getState().getData().toItemStack(1));
+                                    block.setType(Material.AIR);
+                                } else {
+                                    block.breakNaturally();
+                                }
                                 player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0);
                             }
                         } else {
@@ -827,7 +839,13 @@ public abstract class BaseTree {
                         	if (!event.isCancelled())
                         	{
                         		Utils.plugin.blockList.logBreak(block, player);
-                        		block.breakNaturally();
+                                if ((block.getType() == Material.LOG || block.getType() == Material.LOG_2)
+                                        && Utils.plugin.getConfig().getBoolean("Main.Auto Add To Inventory", false)) {
+                                    player.getInventory().addItem(block.getState().getData().toItemStack(1));
+                                    block.setType(Material.AIR);
+                                } else {
+                                    block.breakNaturally();
+                                }
                                 player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0);
                             }
                         } else {

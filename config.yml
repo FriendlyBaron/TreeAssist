@@ -1,5 +1,6 @@
 Main:
   Apply Full Tool Damage: true
+  Auto Add To Inventory: false
   Auto Plant Dropped Saplings: false
   Automatic Tree Destruction: true
   Destroy Only Blocks Above: false

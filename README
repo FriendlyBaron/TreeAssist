@@ -1,3 +1,4 @@
+v5.10.27 - add "Auto Add To Inventory" to allow for even easier harvesting
 v5.10.26 - split Dark Oak and Acacia handling - fix dark oak overhangings not being removed
 v5.10.25 - implement command "findforest" to find a certain wood type (1000 block radius) - fix command reply for OPs using no arguments
 v5.10.24 - implement a new way of saving data files. Actually the system before seems to not have worked properly. Imports old and last versions!
