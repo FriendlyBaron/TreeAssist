@@ -1,3 +1,4 @@
+v5.10.29 - treat trees only as big if they actually are, and possibly remove double discovery of trees in some cases
 v5.10.28 - fix the pom and compiling by adding mcMMO to libs
 v5.10.27 - add "Auto Add To Inventory" to allow for even easier harvesting
 v5.10.26 - split Dark Oak and Acacia handling - fix dark oak overhangings not being removed

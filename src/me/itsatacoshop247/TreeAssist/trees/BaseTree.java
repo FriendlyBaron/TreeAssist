@@ -22,6 +22,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public abstract class BaseTree {
+    int debugCount;
+
     protected enum TreeType {
         OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ACACIA, DARK_OAK;
     }
@@ -679,7 +681,9 @@ public abstract class BaseTree {
     }
 
     protected void removeLater() {
+        this.debugCount = 0;
         removeBlocks = calculate(bottom, top);
+        //System.out.println("1:"+this.debugCount);
 
         final int delay = Utils.plugin.getConfig().getBoolean("Main.Initial Delay") ? Utils.plugin.getConfig().getInt(
                 "Automatic Tree Destruction.Initial Delay (seconds)") * 20 : 0;
@@ -744,7 +748,9 @@ public abstract class BaseTree {
 
         // valid tree, first calculate all blocks to remove
         if (removeBlocks.size() == 0) {
+            this.debugCount = 0;
             removeBlocks = calculate(bottom, top);
+            //System.out.println("2:"+this.debugCount);
             debug.i("recalculated tree of size: " + removeBlocks.size());
             removeBlocks.remove(bottom);
         }
@@ -753,12 +759,14 @@ public abstract class BaseTree {
         debug.i("size: " + removeBlocks.size());
         debug.i("from: " + bottom.getY());
         debug.i("to: " + top.getY());
-
+/*
         if (totalBlocks.size() == 0) {
+            this.debugCount = 0;
             totalBlocks = (bottom == getBottom(bottom)) ? new ArrayList<Block>()
                     : calculate(getBottom(bottom), top);
+            System.out.println("3:"+this.debugCount);
         }
-
+*/
         if (totalBlocks.size() > 1) {
             removeRemovals(removeBlocks, totalBlocks);
         }

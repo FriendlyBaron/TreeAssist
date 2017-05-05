@@ -114,14 +114,20 @@ public class VanillaTree extends BaseTree implements INormalTree {
             return;
         }
 
+        int foundsum = 0;
+
         for (BlockFace face : Utils.NEIGHBORFACES) {
             if (bottom.getRelative(face).getType() == Material.LOG && j < 4) {
                 bottoms[j] = bottom.getRelative(face);
                 j++;
+                foundsum++;
             }
             if (j == 4) {
                 break;
             }
+        }
+        if (foundsum < 1) {
+            bottoms = null;
         }
     }
 
@@ -213,6 +219,7 @@ public class VanillaTree extends BaseTree implements INormalTree {
     @Override
     public void checkBlock(List<Block> list, Block block,
                            Block top, boolean deep) {
+        this.debugCount++;
 
 //		debug.i("cB " + Debugger.parse(block.getLocation()));
         if (block.getType() != Material.LOG) {
