@@ -1,3 +1,4 @@
+v5.10.31 - optimize birch and redwood tree determination, depending on the tree cutting down the block checks by up to 75%!
 v5.10.30 - optimize birch and redwood tree determination, depending on the tree cutting down the block checks by up to 75%!
 v5.10.29 - treat trees only as big if they actually are, and possibly remove double discovery of trees in some cases
 v5.10.28 - fix the pom and compiling by adding mcMMO to libs
