@@ -95,9 +95,11 @@ public abstract class BaseTree {
         debug.i(type.name());
 
         switch (type) {
-            case OAK:
             case BIRCH:
+                return new BirchTree();
             case SPRUCE:
+                return new SpruceTree();
+            case OAK:
             case JUNGLE:
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());

@@ -181,6 +181,8 @@ public class TreeAssist extends JavaPlugin {
         VanillaTree.debugger = new Debugger(this, 5);
         VanillaAcaciaTree.debugger = new Debugger(this, 6);
         VanillaDarkOakTree.debugger = new Debugger(this, 7);
+        SpruceTree.debugger = new Debugger(this, 8);
+        BirchTree.debugger = new Debugger(this, 9);
         Debugger.load(this, Bukkit.getConsoleSender());
 
 

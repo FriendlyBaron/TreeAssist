@@ -43,6 +43,7 @@ public class Debugger {
 
             for (Handler handler : logger.getHandlers()) {
                 logger.removeHandler(handler);
+                handler.close();
             }
 
             try {
@@ -139,6 +140,7 @@ public class Debugger {
             Handler[] handlers = log.getHandlers().clone();
             for (Handler hand : handlers) {
                 log.removeHandler(hand);
+                hand.close();
             }
         }
         loggers.clear();

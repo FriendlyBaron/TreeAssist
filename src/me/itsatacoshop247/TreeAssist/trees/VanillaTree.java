@@ -221,7 +221,7 @@ public class VanillaTree extends BaseTree implements INormalTree {
                            Block top, boolean deep) {
         this.debugCount++;
 
-//		debug.i("cB " + Debugger.parse(block.getLocation()));
+		debug.i("cB " + Debugger.parse(block.getLocation()));
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
