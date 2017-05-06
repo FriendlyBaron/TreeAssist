@@ -14,7 +14,7 @@ import org.bukkit.material.Tree;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BirchTree extends BaseTree implements INormalTree {
+public class JungleThinTree extends BaseTree implements INormalTree {
     public static Debugger debugger;
 
     @Override
@@ -43,7 +43,7 @@ public class BirchTree extends BaseTree implements INormalTree {
         }
 
         Tree tree = (Tree) block.getState().getData();
-        if (tree.getSpecies() != TreeSpecies.BIRCH) {
+        if (tree.getSpecies() != TreeSpecies.JUNGLE) {
 //			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
             return;
         }
@@ -103,8 +103,8 @@ public class BirchTree extends BaseTree implements INormalTree {
 
     @Override
     protected void debug() {
-        System.out.print("Tree: BirchTree");
-        System.out.print("TreeSpecies: " + TreeSpecies.BIRCH);
+        System.out.print("Tree: JungleThinTree");
+        System.out.print("TreeSpecies: " + TreeSpecies.JUNGLE);
 
         System.out.print("bottom: " + (bottom == null ? "null" : bottom.toString()));
         System.out.print("top: " + (top == null ? "null" : top.toString()));
@@ -172,7 +172,7 @@ public class BirchTree extends BaseTree implements INormalTree {
         if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
             return true;
         }
-        return player.hasPermission("treeassist.destroy.birch");
+        return player.hasPermission("treeassist.destroy.jungle");
     }
 
     @Override
@@ -198,7 +198,7 @@ public class BirchTree extends BaseTree implements INormalTree {
         removeBlocks.remove(bottom);
         totalBlocks.remove(bottom);
 
-        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, TreeSpecies.BIRCH);
+        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, TreeSpecies.JUNGLE);
         Utils.plugin.getServer()
                 .getScheduler()
                 .scheduleSyncDelayedTask(Utils.plugin, b,
@@ -222,11 +222,11 @@ public class BirchTree extends BaseTree implements INormalTree {
 
     @Override
     protected boolean willBeDestroyed() {
-        return Utils.plugin.getConfig().getBoolean("Automatic Tree Destruction.Tree Types.Birch");
+        return Utils.plugin.getConfig().getBoolean("Automatic Tree Destruction.Tree Types.Jungle");
     }
 
     @Override
     protected boolean willReplant() {
-        return Utils.replantType(TreeSpecies.BIRCH);
+        return Utils.replantType(TreeSpecies.JUNGLE);
     }
 }

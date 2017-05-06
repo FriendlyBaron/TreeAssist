@@ -25,7 +25,7 @@ public abstract class BaseTree {
     int debugCount;
 
     protected enum TreeType {
-        OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ACACIA, DARK_OAK;
+        OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ACACIA, DARK_OAK, THIN_JUNGLE;
     }
 
     public static Debugger debug;
@@ -99,6 +99,8 @@ public abstract class BaseTree {
                 return new BirchTree();
             case SPRUCE:
                 return new SpruceTree();
+            case THIN_JUNGLE:
+                return new JungleThinTree();
             case OAK:
             case JUNGLE:
                 Tree tree = (Tree) block.getState().getData();
@@ -122,8 +124,17 @@ public abstract class BaseTree {
                 case 0:
                 case 1:
                 case 2:
-                case 3:
                     return TreeType.values()[block.getData()];
+                case 3:
+                    for (BlockFace face : Utils.NEIGHBORFACES) {
+                        if (face == BlockFace.NORTH_EAST) {
+                            break;
+                        }
+                        if (block.getRelative(face).getData() == 3) {
+                            return TreeType.values()[block.getData()];
+                        }
+                    }
+                    return TreeType.THIN_JUNGLE;
                 default:
                     return null;
             }
