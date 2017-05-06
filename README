@@ -1,3 +1,4 @@
+v5.10.34 - optimize big jungle tree determination - take the block checks down to 20% from before
 v5.10.33 - optimize thin jungle tree determination
 v5.10.32 - optimize acacia determination, let's not talk about statistics here, just take it :P
 v5.10.31 - optimize birch and redwood tree determination, depending on the tree cutting down the block checks by up to 75%!

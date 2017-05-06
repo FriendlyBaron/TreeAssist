@@ -201,7 +201,7 @@ public class SpruceTree extends BaseTree implements INormalTree {
             }
         }
         if (failCount > 4) {
-			debug.i("fail count "+failCount+"! out!");
+			//debug.i("fail count "+failCount+"! out!");
             return true;
         }
         return false;
@@ -223,7 +223,6 @@ public class SpruceTree extends BaseTree implements INormalTree {
                 }
             }
         }
-
 
         System.out.print("bottom: " + (bottom == null ? "null" : bottom.toString()));
         System.out.print("top: " + (top == null ? "null" : top.toString()));

@@ -101,8 +101,9 @@ public abstract class BaseTree {
                 return new SpruceTree();
             case THIN_JUNGLE:
                 return new JungleThinTree();
-            case OAK:
             case JUNGLE:
+                return new JungleBigTree();
+            case OAK:
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());
             case ACACIA:
