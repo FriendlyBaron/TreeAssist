@@ -19,6 +19,7 @@ public class CommandDebug extends AbstractCommand {
             sender.sendMessage(Language.parse(Language.MSG.ERROR_PERMISSION_DEBUG));
             return;
         }
+        Debugger.destroy();
         if (args.length < 2 || args[1].equalsIgnoreCase("off") || args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("none")) {
             Utils.plugin.getConfig().set("Debug", "none");
             Debugger.load(Utils.plugin, sender);

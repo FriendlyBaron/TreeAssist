@@ -104,7 +104,7 @@ public abstract class BaseTree {
                 Tree tree = (Tree) block.getState().getData();
                 return new VanillaTree(tree.getSpecies());
             case ACACIA:
-                return new VanillaAcaciaTree();
+                return new AcaciaTree();
             case DARK_OAK:
                 return new VanillaDarkOakTree();
             case SHROOM:

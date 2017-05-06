@@ -179,7 +179,7 @@ public class TreeAssist extends JavaPlugin {
         InvalidTree.debugger = new Debugger(this, 3);
         MushroomTree.debugger = new Debugger(this, 4);
         VanillaTree.debugger = new Debugger(this, 5);
-        VanillaAcaciaTree.debugger = new Debugger(this, 6);
+        AcaciaTree.debugger = new Debugger(this, 6);
         VanillaDarkOakTree.debugger = new Debugger(this, 7);
         SpruceTree.debugger = new Debugger(this, 8);
         BirchTree.debugger = new Debugger(this, 9);
