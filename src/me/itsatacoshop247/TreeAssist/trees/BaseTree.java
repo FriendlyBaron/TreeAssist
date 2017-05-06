@@ -104,12 +104,11 @@ public abstract class BaseTree {
             case JUNGLE:
                 return new JungleBigTree();
             case OAK:
-                Tree tree = (Tree) block.getState().getData();
-                return new VanillaTree(tree.getSpecies());
+                return new OakTree();
             case ACACIA:
                 return new AcaciaTree();
             case DARK_OAK:
-                return new VanillaDarkOakTree();
+                return new DarkOakTree();
             case SHROOM:
                 return new MushroomTree(block.getType());
             case CUSTOM:

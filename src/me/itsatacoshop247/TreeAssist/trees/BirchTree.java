@@ -28,7 +28,7 @@ public class BirchTree extends BaseTree implements INormalTree {
     public void checkBlock(List<Block> list, Block block, Block top, boolean deep) {
         this.debugCount++;
 
-        debug.i("cB " + Debugger.parse(block.getLocation()));
+        //debug.i("cB " + Debugger.parse(block.getLocation()));
 
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());

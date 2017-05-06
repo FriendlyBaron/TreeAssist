@@ -4,6 +4,7 @@ import me.itsatacoshop247.TreeAssist.TreeAssistProtect;
 import me.itsatacoshop247.TreeAssist.TreeAssistReplant;
 import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
@@ -14,7 +15,7 @@ import org.bukkit.material.Tree;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JungleBigTree extends BaseTree implements INormalTree {
+public class DarkOakTree extends BaseTree implements INormalTree {
     public static Debugger debugger;
     Block[] bottoms = null;
 
@@ -40,21 +41,23 @@ public class JungleBigTree extends BaseTree implements INormalTree {
                 bottom.getWorld().getBlockAt(x+1, bottom.getY(), z+1),
                 bottom.getWorld().getBlockAt(x+1, top.getY(), z+1),
                 BlockFace.EAST, BlockFace.SOUTH, true);
-
         return list;
     }
+
+    // north = towards negative z
+    // west = towards negative x
 
     private void checkBlock(List<Block> list, Block block, Block top, BlockFace x, BlockFace z, boolean deep) {
 
         this.debugCount++;
 
         if (!Utils.plugin.getConfig()
-                .getBoolean("Automatic Tree Destruction.Tree Types.BigJungle")) {
+                .getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak")) {
             return;
         }
-        //debug.i("cB " + Debugger.parse(block.getLocation()));
+        debug.i("cB " + Debugger.parse(block.getLocation()));
 
-        if (block.getType() != Material.LOG) {
+        if (block.getType() != Material.LOG_2) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
                 if (!list.contains(block)) {
@@ -67,12 +70,12 @@ public class JungleBigTree extends BaseTree implements INormalTree {
         }
 
         Tree tree = (Tree) block.getState().getData();
-        if (tree.getSpecies() != TreeSpecies.JUNGLE) {
+        if (tree.getSpecies() != TreeSpecies.DARK_OAK) {
 //			debug.i("cB not custom log; data wrong! " + block.getData() + "!=" + top.getData());
             return;
         }
 
-        if (block.getRelative(0, 1, 0).getType() == Material.LOG) { // might
+        if (block.getRelative(0, 1, 0).getType() == Material.LOG_2) { // might
             // be a
             // trunk
 //			debug.i("trunk?");
@@ -94,95 +97,20 @@ public class JungleBigTree extends BaseTree implements INormalTree {
             list.add(block);
         }
 
-        checkBlock(list, block.getRelative(x), top, x, z, false);
-        checkBlock(list, block.getRelative(x).getRelative(z), top, x, z, false);
-        checkBlock(list, block.getRelative(z), top, x, z, false);
+        if (!deep) {
+            checkBlock(list, block.getRelative(x), top, x, z, false);
+            checkBlock(list, block.getRelative(z), top, x, z, false);
+            checkBlock(list, block.getRelative(BlockFace.UP), top, x, z, false);
+//			debug.i("not deep, out!");
+            return;
+        }
 
         checkBlock(list, block.getRelative(x).getRelative(BlockFace.UP), top, x, z, false);
         checkBlock(list, block.getRelative(x).getRelative(z).getRelative(BlockFace.UP), top, x, z, false);
         checkBlock(list, block.getRelative(z).getRelative(BlockFace.UP), top, x, z, false);
 
-
-        if (!deep) {
-            // last resort: look for switching branches away from the trunk
-
-            // north: -z
-            // west: -x
-
-            if (x == BlockFace.WEST && z == BlockFace.NORTH) {
-                if (block.getZ() == bottom.getZ() && block.getRelative(0, 0, 1).getType() != Material.LOG) {
-                    // on the NORTH X axis -> to the WEST of the trunk log, check the SOUTH relative and one above
-                    checkBlock(list, block.getRelative(0, 0, 1), top, x, z, false);
-                    checkBlock(list, block.getRelative(0, 1, 1), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(-1, 0, 1), top, x, z, false);
-                    checkBlock(list, block.getRelative(-1, 1, 1), top, x, z, false);
-                } else if (block.getX() == bottom.getX() && block.getRelative(1, 0, 0).getType() != Material.LOG) {
-                    // on the WEST Z axis, -> to the NORTH of the trunk log, check the EAST relative and one above
-                    checkBlock(list, block.getRelative(1, 0, 0), top, x, z, false);
-                    checkBlock(list, block.getRelative(1, 1, 0), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(1, 0, -1), top, x, z, false);
-                    checkBlock(list, block.getRelative(1, 1, -1), top, x, z, false);
-                }
-            } else if (x == BlockFace.EAST && z == BlockFace.NORTH) {
-                if (block.getX() == bottom.getX()+1 && block.getRelative(-1, 0, 0).getType() != Material.LOG) {
-                    // on the EAST Z axis, -> to the NORTH of the trunk log, check the WEST relative and one above
-                    checkBlock(list, block.getRelative(-1, 0, 0), top, x, z, false);
-                    checkBlock(list, block.getRelative(-1, 1, 0), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(-1, 0, -1), top, x, z, false);
-                    checkBlock(list, block.getRelative(-1, 1, -1), top, x, z, false);
-                } else if (block.getZ() == bottom.getZ() && block.getRelative(0, 0, 1).getType() != Material.LOG) {
-                    // on the NORTH X axis -> to the EAST of the trunk log, check the SOUTH relative and one above
-                    checkBlock(list, block.getRelative(0, 0, 1), top, x, z, false);
-                    checkBlock(list, block.getRelative(0, 1, 1), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(1, 0, 1), top, x, z, false);
-                    checkBlock(list, block.getRelative(1, 1, 1), top, x, z, false);
-                }
-            } else if (x == BlockFace.EAST && z == BlockFace.SOUTH) {
-                if (block.getZ() == bottom.getZ()+1 && block.getRelative(0, 0, -1).getType() != Material.LOG) {
-                    // on the SOUTH X axis -> to the EAST of the trunk log, check the NORTH relative and one above
-                    checkBlock(list, block.getRelative(0, 0, -1), top, x, z, false);
-                    checkBlock(list, block.getRelative(0, 1, -1), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(1, 0, -1), top, x, z, false);
-                    checkBlock(list, block.getRelative(1, 1, -1), top, x, z, false);
-                } else if (block.getX() == bottom.getX()+1 && block.getRelative(-1, 0, 0).getType() != Material.LOG) {
-                    // on the EAST Z axis, -> to the SOUTH of the trunk log, check the WEST relative and one above
-                    checkBlock(list, block.getRelative(-1, 0, 0), top, x, z, false);
-                    checkBlock(list, block.getRelative(-1, 1, 0), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(-1, 0, 1), top, x, z, false);
-                    checkBlock(list, block.getRelative(-1, 1, 1), top, x, z, false);
-                }
-            } else if (x == BlockFace.WEST && z == BlockFace.SOUTH) {
-                if (block.getX() == bottom.getX() && block.getRelative(1, 0, 0).getType() != Material.LOG) {
-                    // on the WEST Z axis, -> to the SOUTH of the trunk log, check the EAST relative and one above
-                    checkBlock(list, block.getRelative(1, 0, 0), top, x, z, false);
-                    checkBlock(list, block.getRelative(1, 1, 0), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(1, 0, 1), top, x, z, false);
-                    checkBlock(list, block.getRelative(1, 1, 1), top, x, z, false);
-                } else if (block.getZ() == bottom.getZ()+1 && block.getRelative(0, 0, -1).getType() != Material.LOG) {
-                    // on the SOUTH X axis -> to the WEST of the trunk log, check the NORTH relative and one above
-                    checkBlock(list, block.getRelative(0, 0, -1), top, x, z, false);
-                    checkBlock(list, block.getRelative(0, 1, -1), top, x, z, false);
-
-                    checkBlock(list, block.getRelative(-1, 0, -1), top, x, z, false);
-                    checkBlock(list, block.getRelative(-1, 1, -1), top, x, z, false);
-                }
-            }
-
-//			debug.i("not deep, out!");
-            return;
-        }
-/*
-        checkBlock(list, block.getRelative(x).getRelative(x).getRelative(BlockFace.UP), top, x, z, false);
-        checkBlock(list, block.getRelative(z).getRelative(z).getRelative(BlockFace.UP), top, x, z, false);
-*/
-        if (block.getY() > top.getY()) {
+        // distinct changing of TOP support, because OAK
+        if (block.getY() > top.getY() +3) {
 //			debug.i("over the top! (hah) out!");
             return;
         }
@@ -190,28 +118,35 @@ public class JungleBigTree extends BaseTree implements INormalTree {
     }
 
     @Override
-    public void checkBlock(List<Block> list, Block block,
-                           Block top, boolean deep) {
+    public void checkBlock(List<Block> list, Block block, Block top, boolean deep) {
+
     }
 
     protected boolean checkFail(Block block) {
-        int failCount = 0;
-        for (int cont = -4; cont < 5; cont++) {
-            if (block.getRelative(0, cont, 0).getType() == Material.LOG) {
-                failCount++;
-            }
+        // Tree tree = (Tree) block.getState().getData();
+        // debug.i("["+block.hashCode()+"]"+ "checkFail!");
+
+        while (block.getType() == Material.LOG_2) {
+            block = block.getRelative(BlockFace.DOWN);
         }
-        if (failCount > 4) {
-//			debug.i("fail count "+failCount+"! out!");
-            return true;
+        // debug.i("["+block.hashCode()+"]"+ "checkFail result based on type: "+block.getType());
+        switch (block.getType()) {
+            case AIR:
+                return false; // we're just hanging in there, it'll be fine
+            case GRASS:
+            case DIRT:
+            case CLAY:
+                return true; // another trunk - OUT!!!
+            default:
+                return false; // I dunno - should be fine, I guess?
         }
-        return false;
     }
 
     @Override
     protected void debug() {
-        System.out.print("Tree: JungleBigTree");
-        System.out.print("TreeSpecies: " + TreeSpecies.JUNGLE);
+        System.out.print("Tree: DarkOakTree");
+        System.out.print("logMat: " + Material.LOG_2);
+        System.out.print("species: " + TreeSpecies.DARK_OAK);
         System.out.print("bottoms: ");
         for (Block b : bottoms) {
             if (b == null) {
@@ -233,13 +168,13 @@ public class JungleBigTree extends BaseTree implements INormalTree {
     protected Block getBottom(Block block) {
         int counter = 1;
         do {
-            if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG) {
+            if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG_2) {
                 counter++;
             } else {
-                if (block.getRelative(0, 0, -1).getType() == Material.LOG) {
+                if (block.getRelative(0, 0, -1).getType() == Material.LOG_2) {
                     block = block.getRelative(0, 0, -1);
                 }
-                if (block.getRelative(-1, 0, 0).getType() == Material.LOG) {
+                if (block.getRelative(-1, 0, 0).getType() == Material.LOG_2) {
                     block = block.getRelative(-1, 0, 0);
                 }
 
@@ -263,14 +198,17 @@ public class JungleBigTree extends BaseTree implements INormalTree {
         int counter = 1;
 
         while (block.getY() + counter < maxY) {
-            if (block.getRelative(0, counter, 0).getType() == Material.LEAVES) {
+            if (block.getRelative(0, counter, 0).getType() == Material.LEAVES_2) {
                 top = block.getRelative(0, counter - 1, 0);
                 break;
             } else {
                 counter++;
             }
         }
-        return (top != null && leafCheck(top)) ? top.getRelative(0, 1, 0) : null;
+        // distinct difference from other tops:
+        // non-trunk blocks can be higher than the top
+        // and thus mess up the leafCheck check
+        return (top != null) ? top.getRelative(0, 1, 0) : null;
     }
 
     @Override
@@ -286,7 +224,7 @@ public class JungleBigTree extends BaseTree implements INormalTree {
         int foundsum = 0;
 
         for (BlockFace face : Utils.NEIGHBORFACES) {
-            if (bottom.getRelative(face).getType() == Material.LOG && j < 4) {
+            if (bottom.getRelative(face).getType() == Material.LOG_2 && j < 4) {
                 bottoms[j] = bottom.getRelative(face);
                 j++;
                 foundsum++;
@@ -297,23 +235,39 @@ public class JungleBigTree extends BaseTree implements INormalTree {
         }
         if (foundsum < 1) {
             bottoms = null;
+            valid = false;
         }
     }
 
     @Override
     protected void handleSaplingReplace(int delay) {
-        if (bottoms != null ) {
-            if (!Utils.plugin.getConfig().getBoolean(
-                    "Sapling Replant.Tree Types to Replant.BigJungle")) {
-                debugger.i("no big jungle sapling !!!");
-                return;
-            }
-            for (Block bottom : bottoms) {
-                replaceSapling(delay, bottom);
-                //debugger.i("go !!!");
+        if (!Utils.plugin.getConfig().getBoolean(
+                "Sapling Replant.Tree Types to Replant.Dark Oak")) {
+            debugger.i("no big spruce sapling !!!");
+            return;
+        }
+        for (Block bottom : bottoms) {
+            replaceSapling(delay, bottom);
+            debugger.i("go !!!");
+        }
+    }
+
+    private boolean hasDiagonals(Block block) {
+        // always remember, the block block is the TOP, and the TOP is one ABOVE the last found LOG!
+
+        // debug.i("checking for diagonal at y="+block.getY());
+
+        if (Material.LOG_2 == block.getType()) {
+            // debug.i("> UP");
+            return true;
+        }
+        for (BlockFace bf : Utils.NEIGHBORFACES) {
+            if (Material.LOG_2 == block.getRelative(bf).getType()) {
+                // debug.i("> "+bf.name());
+                return true;
             }
         }
-        replaceSapling(delay, bottom);
+        return false;
     }
 
     @Override
@@ -321,9 +275,8 @@ public class JungleBigTree extends BaseTree implements INormalTree {
         if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
             return true;
         }
-        return player.hasPermission("treeassist.destroy.jungle");
+        return player.hasPermission("treeassist.destroy.darkoak");
     }
-
     @Override
     protected boolean isBottom(Block block) {
         if (bottoms != null) {
@@ -338,7 +291,28 @@ public class JungleBigTree extends BaseTree implements INormalTree {
 
     @Override
     protected int isLeaf(Block block) {
-        if (block.getType() == Material.LEAVES) {
+        if (block.getType() == Material.LEAVES_2) {
+            Location bottomLoc = block.getLocation().clone();
+            if (bottoms == null) {
+                if (bottom == null) {
+                    return 0;
+                }
+                bottomLoc.setY(bottom.getY());
+                if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
+                    return 0;
+                }
+            } else {
+                for (Block bottom : bottoms) {
+                    if (bottom == null) {
+                        continue;
+                    }
+                    bottomLoc.setY(bottom.getY());
+                    if (bottom.getLocation().distanceSquared(bottomLoc) > 25) {
+                        return 0;
+                    }
+                }
+            }
+
             return 1;
         }
         return 0;
@@ -351,7 +325,6 @@ public class JungleBigTree extends BaseTree implements INormalTree {
 
     private void replaceSapling(int delay, Block bottom) {
         if (bottom == null) {
-            debugger.i("no null sapling !!!");
             return;
         }
         // make sure that the block is not being removed later
@@ -366,7 +339,7 @@ public class JungleBigTree extends BaseTree implements INormalTree {
         removeBlocks.remove(bottom);
         totalBlocks.remove(bottom);
 
-        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, TreeSpecies.JUNGLE);
+        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, Material.SAPLING, TreeSpecies.DARK_OAK.getData());
         Utils.plugin.getServer()
                 .getScheduler()
                 .scheduleSyncDelayedTask(Utils.plugin, b,
@@ -390,12 +363,13 @@ public class JungleBigTree extends BaseTree implements INormalTree {
 
     @Override
     protected boolean willBeDestroyed() {
+        // debug.i("willbedestroyedcheck: " + Utils.plugin.getConfig().getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak"));
         return Utils.plugin.getConfig()
-                .getBoolean("Automatic Tree Destruction.Tree Types.Jungle");
+                .getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak");
     }
 
     @Override
     protected boolean willReplant() {
-        return Utils.replantType(TreeSpecies.JUNGLE);
+        return Utils.replantType(TreeSpecies.DARK_OAK);
     }
 }
