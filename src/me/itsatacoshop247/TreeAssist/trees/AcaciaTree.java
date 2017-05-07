@@ -20,6 +20,7 @@ import java.util.Map;
 public class AcaciaTree extends BaseTree {
     public static Debugger debugger;
     private final List<Block> blocks = new ArrayList<>();
+    private final List<Block> leafTops = new ArrayList<>();
 
     public AcaciaTree() {
     }
@@ -27,6 +28,13 @@ public class AcaciaTree extends BaseTree {
     @Override
     protected List<Block> calculate(final Block bottom, final Block top) {
         debugger.i("size: " + blocks.size());
+        for (Block block : leafTops) {
+            for (BlockFace face : Utils.NEIGHBORFACES) {
+                blocks.add(block.getRelative(face));
+                blocks.add(block.getRelative(face).getRelative(BlockFace.UP));
+            }
+            blocks.add(block.getRelative(BlockFace.UP));
+        }
         return blocks;
     }
 
@@ -92,7 +100,8 @@ public class AcaciaTree extends BaseTree {
 
                 if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
                         bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
-                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY) {
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.SAND) {
                     return null; // the tree is already broken.
                 }
                 return bottom;
@@ -114,6 +123,8 @@ public class AcaciaTree extends BaseTree {
         if (block.getRelative(BlockFace.UP).getRelative(face).getType() == Material.LOG_2) {
             return getDiagonalTop(block.getRelative(BlockFace.UP).getRelative(face), face);
         }
+        // we are at the top
+        leafTops.add(block);
         return block;
     }
 
@@ -165,6 +176,8 @@ public class AcaciaTree extends BaseTree {
         }
 
 		debug.i("> straight trunk for " + counter + " blocks; y="+top.getY());
+
+        leafTops.add(top);
 
         // top is the currently last trunk log
         // from here on we either go horizontally or diagonally

@@ -17,6 +17,7 @@ import java.util.List;
 public class SpruceTree extends BaseTree implements INormalTree {
     public static Debugger debugger;
     Block[] bottoms = null;
+    private final List<Block> leaves = new ArrayList<>();
 
     @Override
     protected List<Block> calculate(Block bottom, Block top) {
@@ -44,6 +45,7 @@ public class SpruceTree extends BaseTree implements INormalTree {
                     bottom.getWorld().getBlockAt(x+1, top.getY(), z+1),
                     BlockFace.EAST, BlockFace.SOUTH, true);
         }
+        list.addAll(leaves);
         return list;
     }
 
@@ -67,8 +69,8 @@ public class SpruceTree extends BaseTree implements INormalTree {
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
-                if (!list.contains(block)) {
-                    list.add(block);
+                if (!leaves.contains(block)) {
+                    leaves.add(block);
 //					debug.i("cB: adding leaf " + block.getY());
                 }
             }
@@ -133,8 +135,8 @@ public class SpruceTree extends BaseTree implements INormalTree {
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
-                if (!list.contains(block)) {
-                    list.add(block);
+                if (!leaves.contains(block)) {
+                    leaves.add(block);
 //					debug.i("cB: adding leaf " + block.getY());
                 }
             }
@@ -255,7 +257,8 @@ public class SpruceTree extends BaseTree implements INormalTree {
                 bottom = block.getRelative(0, 1 - counter, 0);
                 if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
                         bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
-                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY) {
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.SAND) {
                     return null; // the tree is already broken.
                 }
                 return bottom;

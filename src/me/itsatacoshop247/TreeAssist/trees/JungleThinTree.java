@@ -16,11 +16,13 @@ import java.util.List;
 
 public class JungleThinTree extends BaseTree implements INormalTree {
     public static Debugger debugger;
+    private final List<Block> leaves = new ArrayList<>();
 
     @Override
     protected List<Block> calculate(Block bottom, Block top) {
         List<Block> list = new ArrayList<Block>();
         checkBlock(list, bottom, top, true);
+        list.addAll(leaves);
         return list;
     }
 
@@ -33,8 +35,8 @@ public class JungleThinTree extends BaseTree implements INormalTree {
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
-                if (!list.contains(block)) {
-                    list.add(block);
+                if (!leaves.contains(block)) {
+                    leaves.add(block);
 //					debug.i("cB: adding leaf " + block.getY());
                 }
             }
@@ -130,7 +132,8 @@ public class JungleThinTree extends BaseTree implements INormalTree {
                 bottom = block.getRelative(0, 1 - counter, 0);
                 if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
                         bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
-                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY) {
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.SAND) {
                     return null; // the tree is already broken.
                 }
                 return bottom;

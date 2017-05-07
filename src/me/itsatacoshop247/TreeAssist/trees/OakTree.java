@@ -16,123 +16,14 @@ import java.util.List;
 
 public class OakTree extends BaseTree implements INormalTree {
     public static Debugger debugger;
-
-    @Override
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    protected boolean hasPerms(Player player) {
-        if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
-            return true;
-        }
-        return player.hasPermission("treeassist.destroy.oak");
-    }
-
-    @Override
-    protected Block getBottom(Block block) {
-        int counter = 1;
-        do {
-            if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG) {
-                counter++;
-            } else {
-
-                bottom = block.getRelative(0, 1 - counter, 0);
-                if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
-                        bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
-                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY) {
-                    return null; // the tree is already broken.
-                }
-                return bottom;
-            }
-        } while (block.getY() - counter > 0);
-
-        bottom = null;
-        return bottom;
-    }
-
-    @Override
-    protected Block getTop(Block block) {
-        int maxY = block.getWorld().getMaxHeight() + 10;
-        int counter = 1;
-
-        while (block.getY() + counter < maxY) {
-            if (block.getRelative(0, counter, 0).getType() == Material.LEAVES) {
-                top = block.getRelative(0, counter - 1, 0);
-                break;
-            } else {
-                counter++;
-            }
-        }
-        return (top != null && leafCheck(top)) ? top.getRelative(0, 1, 0) : null;
-    }
+    private final List<Block> leaves = new ArrayList<>();
 
     @Override
     protected List<Block> calculate(final Block bottom, final Block top) {
         List<Block> list = new ArrayList<Block>();
         checkBlock(list, bottom, top, true);
+        list.addAll(leaves);
         return list;
-    }
-
-    @Override
-    protected int isLeaf(Block block) {
-        if (block.getType() == Material.LEAVES) {
-            return 1;
-        }
-        return 0;
-    }
-
-    @Override
-    protected void getTrunks() {
-    }
-
-    @Override
-    protected boolean willBeDestroyed() {
-        return Utils.plugin.getConfig()
-                .getBoolean("Automatic Tree Destruction.Tree Types.Oak");
-    }
-
-    @Override
-    protected boolean willReplant() {
-        return Utils.replantType(TreeSpecies.GENERIC);
-    }
-
-    @Override
-    protected void handleSaplingReplace(int delay) {
-        replaceSapling(delay, bottom);
-    }
-
-    private void replaceSapling(int delay, Block bottom) {
-        if (bottom == null) {
-            debugger.i("no null sapling !!!");
-            return;
-        }
-        // make sure that the block is not being removed later
-
-        removeBlocks.remove(bottom);
-        totalBlocks.remove(bottom);
-
-        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, TreeSpecies.GENERIC);
-        Utils.plugin.getServer()
-                .getScheduler()
-                .scheduleSyncDelayedTask(Utils.plugin, b,
-                        20 * delay);
-
-        if (Utils.plugin.getConfig()
-                .getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
-            Utils.plugin.saplingLocationList.add(bottom.getLocation());
-            Runnable X = new TreeAssistProtect(Utils.plugin,
-                    bottom.getLocation());
-
-            Utils.plugin.getServer()
-                    .getScheduler()
-                    .scheduleSyncDelayedTask(
-                            Utils.plugin,
-                            X,
-                            20 * Utils.plugin.getConfig()
-                                    .getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
-        }
     }
 
     @Override
@@ -140,12 +31,12 @@ public class OakTree extends BaseTree implements INormalTree {
                            Block top, boolean deep) {
         this.debugCount++;
 
-		debug.i("cB " + Debugger.parse(block.getLocation()));
+        debug.i("cB " + Debugger.parse(block.getLocation()));
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
-                if (!list.contains(block)) {
-                    list.add(block);
+                if (!leaves.contains(block)) {
+                    leaves.add(block);
 //					debug.i("cB: adding leaf " + block.getY());
                 }
             }
@@ -189,16 +80,23 @@ public class OakTree extends BaseTree implements INormalTree {
             list.add(block);
         }
 
-        for (BlockFace face : Utils.NEIGHBORFACES) {
-            checkBlock(list, block.getRelative(face), top, false);
+        if (deep) {
 
-            checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
-            checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
-        }
+            for (BlockFace face : Utils.NEIGHBORFACES) {
+                //TODO: maybe skip after the 4th face?
+                checkBlock(list, block.getRelative(face), top, false);
+            }
+        } else {
 
-        if (!deep) {
+            for (BlockFace face : Utils.NEIGHBORFACES) {
+                checkBlock(list, block.getRelative(face), top, false);
+                //TODO: optimize by taking direction into account -> less checks
+                checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
+                checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
+            }
 //			debug.i("not deep, out!");
             return;
+
         }
 
         if (block.getY() > top.getY()) {
@@ -224,11 +122,6 @@ public class OakTree extends BaseTree implements INormalTree {
     }
 
     @Override
-    protected boolean isBottom(Block block) {
-        return block.equals(bottom);
-    }
-
-    @Override
     protected void debug() {
         System.out.print("Tree: OakTree");
         System.out.print("TreeSpecies: " + TreeSpecies.GENERIC);
@@ -239,5 +132,122 @@ public class OakTree extends BaseTree implements INormalTree {
 
         System.out.print("removeBlocks: " + removeBlocks.size());
         System.out.print("totalBlocks: " + totalBlocks.size());
+    }
+
+    @Override
+    protected Block getBottom(Block block) {
+        int counter = 1;
+        do {
+            if (block.getRelative(0, 0 - counter, 0).getType() == Material.LOG) {
+                counter++;
+            } else {
+
+                bottom = block.getRelative(0, 1 - counter, 0);
+                if (bottom.getRelative(BlockFace.DOWN).getType() != Material.DIRT &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.GRASS &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.CLAY &&
+                        bottom.getRelative(BlockFace.DOWN).getType() != Material.SAND) {
+                    return null; // the tree is already broken.
+                }
+                return bottom;
+            }
+        } while (block.getY() - counter > 0);
+
+        bottom = null;
+        return bottom;
+    }
+
+    @Override
+    protected Block getTop(Block block) {
+        int maxY = block.getWorld().getMaxHeight() + 10;
+        int counter = 1;
+
+        while (block.getY() + counter < maxY) {
+            if (block.getRelative(0, counter, 0).getType() == Material.LEAVES) {
+                top = block.getRelative(0, counter - 1, 0);
+                break;
+            } else {
+                counter++;
+            }
+        }
+        return (top != null && leafCheck(top)) ? top.getRelative(0, 1, 0) : null;
+    }
+
+    @Override
+    protected void getTrunks() {
+    }
+
+    @Override
+    protected void handleSaplingReplace(int delay) {
+        replaceSapling(delay, bottom);
+    }
+
+    @Override
+    protected boolean hasPerms(Player player) {
+        if (!Utils.plugin.getConfig().getBoolean("Main.Use Permissions")) {
+            return true;
+        }
+        return player.hasPermission("treeassist.destroy.oak");
+    }
+
+    @Override
+    protected boolean isBottom(Block block) {
+        return block.equals(bottom);
+    }
+
+    @Override
+    protected int isLeaf(Block block) {
+        if (block.getType() == Material.LEAVES) {
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
+
+    private void replaceSapling(int delay, Block bottom) {
+        if (bottom == null) {
+            debugger.i("no null sapling !!!");
+            return;
+        }
+        // make sure that the block is not being removed later
+
+        removeBlocks.remove(bottom);
+        totalBlocks.remove(bottom);
+
+        Runnable b = new TreeAssistReplant(Utils.plugin, bottom, TreeSpecies.GENERIC);
+        Utils.plugin.getServer()
+                .getScheduler()
+                .scheduleSyncDelayedTask(Utils.plugin, b,
+                        20 * delay);
+
+        if (Utils.plugin.getConfig()
+                .getInt("Sapling Replant.Time to Protect Sapling (Seconds)") > 0) {
+            Utils.plugin.saplingLocationList.add(bottom.getLocation());
+            Runnable X = new TreeAssistProtect(Utils.plugin,
+                    bottom.getLocation());
+
+            Utils.plugin.getServer()
+                    .getScheduler()
+                    .scheduleSyncDelayedTask(
+                            Utils.plugin,
+                            X,
+                            20 * Utils.plugin.getConfig()
+                                    .getInt("Sapling Replant.Time to Protect Sapling (Seconds)"));
+        }
+    }
+
+    @Override
+    protected boolean willBeDestroyed() {
+        return Utils.plugin.getConfig()
+                .getBoolean("Automatic Tree Destruction.Tree Types.Oak");
+    }
+
+    @Override
+    protected boolean willReplant() {
+        return Utils.replantType(TreeSpecies.GENERIC);
     }
 }

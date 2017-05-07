@@ -26,18 +26,59 @@ public final class Utils {
 	private Utils() {
 	}
 
+    // if it's not one of these blocks, it's safe to assume its a house/building
+    public static List<Material> naturalMaterials = new ArrayList<>();
+
+	static {
+        // elements
+        naturalMaterials.add(Material.AIR);
+        naturalMaterials.add(Material.FIRE);
+        naturalMaterials.add(Material.WATER);
+        naturalMaterials.add(Material.STATIONARY_WATER);
+        naturalMaterials.add(Material.SNOW_BLOCK);
+        naturalMaterials.add(Material.SNOW);
+
+        // ground materials
+
+        naturalMaterials.add(Material.STONE);
+        naturalMaterials.add(Material.GRASS);
+        naturalMaterials.add(Material.DIRT);
+        naturalMaterials.add(Material.SAND);
+        naturalMaterials.add(Material.STAINED_CLAY);
+        naturalMaterials.add(Material.MYCEL);
+
+        // natural growing things
+
+        naturalMaterials.add(Material.SAPLING);
+        naturalMaterials.add(Material.LEAVES);
+        naturalMaterials.add(Material.LEAVES_2);
+        naturalMaterials.add(Material.YELLOW_FLOWER);
+        naturalMaterials.add(Material.RED_ROSE);
+        naturalMaterials.add(Material.DOUBLE_PLANT);
+        naturalMaterials.add(Material.BROWN_MUSHROOM);
+        naturalMaterials.add(Material.RED_MUSHROOM);
+        naturalMaterials.add(Material.LONG_GRASS);
+        naturalMaterials.add(Material.DEAD_BUSH);
+        naturalMaterials.add(Material.SUGAR_CANE_BLOCK);
+        naturalMaterials.add(Material.VINE);
+        naturalMaterials.add(Material.WATER_LILY);
+        naturalMaterials.add(Material.HUGE_MUSHROOM_1);
+        naturalMaterials.add(Material.HUGE_MUSHROOM_2);
+        naturalMaterials.add(Material.MELON_BLOCK);
+        naturalMaterials.add(Material.PUMPKIN);
+        naturalMaterials.add(Material.COCOA);
+
+        // blocks that are used in farms
+
+        naturalMaterials.add(Material.TORCH);
+        naturalMaterials.add(Material.RAILS);
+	}
+
 	public static List<Integer> toolgood = Arrays.asList(271, 275, 258, 286,
 			279);
 	public static List<Integer> toolbad = Arrays.asList(256, 257, 267, 268,
 			269, 270, 272, 273, 274, 276, 277, 278, 283, 284, 285, 290, 291,
 			292, 293, 294);
-
-	public static List<Integer> validTypes = new ArrayList<Integer>(Arrays.asList(0,
-			2, 3, 6, 8, 9, 18, 37, 38, 39, 40, 31, 32, 83, 106, 111,
-			78, 12, 50, 66, 99, 100, 161,
-			175 // double plants
-			)); // if it's not one of these blocks, it's
-								// safe to assume its a house/building
 
 
     public static void removeCustomGroup(Player player) {

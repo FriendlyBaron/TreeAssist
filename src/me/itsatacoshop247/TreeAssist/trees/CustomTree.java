@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomTree extends BaseTree implements ISpecialTree {
-    public static List<?> customTreeBlocks = null;
-    public static List<?> customLogs = null;
-    public static List<?> customSaplings = null;
+    public static List<?> customTreeBlocks = new ArrayList<>();
+    public static List<?> customLogs = new ArrayList<>();
+    public static List<?> customSaplings = new ArrayList<>();
     public static Debugger debugger;
     private final Material mat;
 

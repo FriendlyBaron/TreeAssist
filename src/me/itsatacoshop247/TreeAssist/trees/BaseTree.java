@@ -25,7 +25,7 @@ public abstract class BaseTree {
     int debugCount;
 
     protected enum TreeType {
-        OAK, SPRUCE, BIRCH, JUNGLE, SHROOM, CUSTOM, ACACIA, DARK_OAK, THIN_JUNGLE;
+        OAK, SPRUCE, BIRCH, JUNGLE, BROWN_SHROOM, RED_SHROOM, CUSTOM, ACACIA, DARK_OAK, THIN_JUNGLE;
     }
 
     public static Debugger debug;
@@ -63,7 +63,7 @@ public abstract class BaseTree {
                     event.setCancelled(true);
                 }
             } else if (blockMat == Material.GRASS || blockMat == Material.DIRT
-                    || blockMat == Material.CLAY) {
+                    || blockMat == Material.CLAY || blockMat == Material.SAND) {
                 if (Utils.plugin.saplingLocationList.contains(block
                         .getRelative(BlockFace.UP, 1).getLocation())) {
                     if (player.getGameMode() == GameMode.CREATIVE) {
@@ -109,8 +109,10 @@ public abstract class BaseTree {
                 return new AcaciaTree();
             case DARK_OAK:
                 return new DarkOakTree();
-            case SHROOM:
-                return new MushroomTree(block.getType());
+            case BROWN_SHROOM:
+                return new MushroomBrownTree();
+            case RED_SHROOM:
+                return new MushroomRedTree();
             case CUSTOM:
                 return new CustomTree(block.getType(), block.getData());
             default:
@@ -146,8 +148,9 @@ public abstract class BaseTree {
         switch (block.getType()) {
 
             case HUGE_MUSHROOM_1:
+                return TreeType.BROWN_SHROOM;
             case HUGE_MUSHROOM_2:
-                return TreeType.SHROOM;
+                return TreeType.RED_SHROOM;
             default:
                 return null;
         }
@@ -333,24 +336,25 @@ public abstract class BaseTree {
                 }
             }
 
-            String[] directions = {"NORTH", "SOUTH", "EAST", "WEST",
-                    "NORTH_EAST", "NORTH_WEST", "SOUTH_EAST", "SOUTH_WEST"};
+            for (BlockFace face : Utils.NEIGHBORFACES) {
+                if (!Utils.naturalMaterials.contains(block.getRelative(
+                        face).getType())) {
 
-            for (int x = 0; x < directions.length; x++) {
-                if (!Utils.validTypes.contains(block.getRelative(
-                        BlockFace.valueOf(directions[x])).getTypeId())) {
-                    if (!((block.getRelative(BlockFace.valueOf(directions[x]))
-                            .getType() == Material.LOG && (block.getData() == 1 || block
-                            .getData() == 3)) || (block
-                            .getRelative(BlockFace.valueOf(directions[x]))
-                            .getType() == Material.LOG_2 && block
-                            .getData() == 1))) {
-                        debug.i("invalid because of invalid type: "
-                                + block.getRelative(
-                                BlockFace.valueOf(directions[x]))
-                                .getType() + ":" + block.getData());
-                        return new InvalidTree(); // not a valid tree
+                    if (CustomTree.isCustomLog(block.getRelative(face)) ||
+                            CustomTree.isCustomTreeBlock(block.getRelative(face))) {
+                        continue;
                     }
+
+                    TreeType type = getTreeTypeByBlock(block.getRelative(face));
+                    if ( type == TreeType.DARK_OAK || type == TreeType.JUNGLE || type == TreeType.SPRUCE) {
+                        continue;
+                    }
+
+                    debug.i("invalid because of invalid type: "
+                            + block.getRelative(
+                            face)
+                            .getType() + ":" + block.getData());
+                    return new InvalidTree(); // not a valid tree
                 }
             }
 
@@ -430,7 +434,7 @@ public abstract class BaseTree {
         }
 
         Material below = block.getRelative(BlockFace.DOWN).getType();
-        if (!(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY)) {
+        if (!(below == Material.DIRT || below == Material.GRASS || below == Material.CLAY || below == Material.SAND)) {
             return resultTree;
         }
 

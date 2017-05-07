@@ -10,10 +10,7 @@ import me.itsatacoshop247.TreeAssist.core.Utils;
 import me.itsatacoshop247.TreeAssist.metrics.MetricsLite;
 import me.itsatacoshop247.TreeAssist.timers.CooldownCounter;
 import me.itsatacoshop247.TreeAssist.trees.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -177,17 +174,18 @@ public class TreeAssist extends JavaPlugin {
         BaseTree.debug = new Debugger(this, 1);
         CustomTree.debugger = new Debugger(this, 2);
         InvalidTree.debugger = new Debugger(this, 3);
-        MushroomTree.debugger = new Debugger(this, 4);
+        MushroomBrownTree.debugger = new Debugger(this, 4);
         OakTree.debugger = new Debugger(this, 5);
         AcaciaTree.debugger = new Debugger(this, 6);
         DarkOakTree.debugger = new Debugger(this, 7);
         SpruceTree.debugger = new Debugger(this, 8);
         BirchTree.debugger = new Debugger(this, 9);
+        MushroomRedTree.debugger = new Debugger(this, 10);
         Debugger.load(this, Bukkit.getConsoleSender());
 
 
-        initiateList("Modding.Custom Logs", Utils.validTypes);
-        initiateList("Modding.Custom Tree Blocks", Utils.validTypes);
+        initiateList("Modding.Custom Logs");
+        initiateList("Modding.Custom Tree Blocks");
 
         if (!getConfig().getBoolean("Main.Ignore User Placed Blocks")) {
             String pluginName = getConfig().getString(
@@ -306,12 +304,8 @@ public class TreeAssist extends JavaPlugin {
         }
     }
 
-    private void initiateList(String string, List<Integer> validTypes) {
+    private void initiateList(String string) {
         for (Object obj : config.getList(string)) {
-            if (obj instanceof Integer) {
-                validTypes.add((Integer) obj);
-                continue;
-            }
             if (obj.equals("LIST ITEMS GO HERE")) {
                 List<Object> list = new ArrayList<Object>();
                 list.add(-1);
@@ -319,7 +313,6 @@ public class TreeAssist extends JavaPlugin {
                 saveConfig();
                 break;
             }
-            validTypes.add(Integer.parseInt(((String) obj).split(":")[0]));
         }
     }
 
