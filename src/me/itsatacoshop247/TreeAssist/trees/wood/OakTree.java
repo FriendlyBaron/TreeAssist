@@ -20,7 +20,7 @@ public class OakTree extends AbstractWoodenTree {
     @Override
     public void checkBlock(List<Block> list, Block block,
                            Block top, boolean deep) {
-        debug.i("cB " + Debugger.parse(block.getLocation()));
+        //debug.i("cB " + Debugger.parse(block.getLocation()));
         if (block.getType() != Material.LOG) {
 //			debug.i("no log: " + block.getType().name());
             if (isLeaf(block) > 0) {
@@ -78,7 +78,6 @@ public class OakTree extends AbstractWoodenTree {
 
             for (BlockFace face : Utils.NEIGHBORFACES) {
                 checkBlock(list, block.getRelative(face), top, false);
-                //TODO: optimize by taking direction into account -> less checks
                 checkBlock(list, block.getRelative(face).getRelative(BlockFace.DOWN), top, false);
                 checkBlock(list, block.getRelative(face).getRelative(BlockFace.UP), top, false);
             }

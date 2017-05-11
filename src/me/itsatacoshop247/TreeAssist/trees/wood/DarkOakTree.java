@@ -232,7 +232,7 @@ public class DarkOakTree extends AbstractWoodenTree {
     @Override
     protected void handleSaplingReplace(int delay) {
         if (!Utils.plugin.getConfig().getBoolean(
-                "Sapling Replant.Tree Types to Replant.Dark Oak")) {
+                "Sapling Replant.Tree Types to Replant.Dark Oak") || (bottoms == null)) {
             //debugger.i("no big spruce sapling !!!");
             return;
         }
