@@ -728,7 +728,7 @@ public abstract class AbstractGenericTree {
                         debug.i("removeLater: skip breaking leaf");
                     } else {
                         if (!fastDecaying && isLeaf(block) == 1) {
-                            Utils.plugin.getListener().breakRadiusIfLeaf(block);
+                            Utils.plugin.getListener().breakRadiusLeaves(block);
                             fastDecaying = true;
                         }
                         TATreeBrokenEvent event = new TATreeBrokenEvent(block, null, null);
@@ -808,7 +808,7 @@ public abstract class AbstractGenericTree {
                             continue;
                         }
                         if (!fastDecaying && isLeaf(block) == 1) {
-                            Utils.plugin.getListener().breakRadiusIfLeaf(block);
+                            Utils.plugin.getListener().breakRadiusLeaves(block);
                             fastDecaying = true;
                         }
                         if (tool == null) {
@@ -907,15 +907,12 @@ public abstract class AbstractGenericTree {
                         if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
                                 || block.getType() == Material.RED_MUSHROOM) {
                             debug.i("CleanRunner: skipping breaking a sapling");
-                            continue;
                         } else if (!Utils.plugin.getConfig().getBoolean(
                                 "Automatic Tree Destruction.Remove Leaves") &&
                                 isLeaf(block) == 1) {
                             debug.i("CleanRunner: skip breaking leaf");
-                            continue;
-                        }
-                        if (!fastDecaying && isLeaf(block) == 1) {
-                            Utils.plugin.getListener().breakRadiusIfLeaf(block);
+                        } else if (!fastDecaying && isLeaf(block) == 1) {
+                            Utils.plugin.getListener().breakRadiusLeaves(block);
                             fastDecaying = true;
                         }
                         debug.i("CleanRunner: 1");
@@ -925,7 +922,7 @@ public abstract class AbstractGenericTree {
                 } else {
                     for (Block block : totalBlocks) {
                         if (!fastDecaying && isLeaf(block) == 1) {
-                            Utils.plugin.getListener().breakRadiusIfLeaf(block);
+                            Utils.plugin.getListener().breakRadiusLeaves(block);
                             fastDecaying = true;
                         }
                         if (block.getType() == Material.SAPLING || block.getType() == Material.BROWN_MUSHROOM
