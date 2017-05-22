@@ -1,3 +1,4 @@
+v5.11.38 - catch another NPE in DarkOak implementation
 v5.11.37 - catch NPE in DarkOak Tree implementation, skip air blocks when removing later
 v5.11.36 - rewrite of the tree implementation, a TON of duplicated code removed, tested in all environments, it SHOULD work
 
