@@ -2,7 +2,6 @@ package me.itsatacoshop247.TreeAssist.trees.wood;
 
 import me.itsatacoshop247.TreeAssist.TreeAssistProtect;
 import me.itsatacoshop247.TreeAssist.TreeAssistReplant;
-import me.itsatacoshop247.TreeAssist.core.Debugger;
 import me.itsatacoshop247.TreeAssist.core.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -59,7 +58,7 @@ public class DarkOakTree extends AbstractWoodenTree {
                 .getBoolean("Automatic Tree Destruction.Tree Types.Dark Oak")) {
             return;
         }
-        debug.i("cB " + Debugger.parse(block.getLocation()));
+//      debug.i("cB " + Debugger.parse(block.getLocation()));
 
         if (block.getType() != Material.LOG_2) {
 //			debug.i("no log: " + block.getType().name());
