@@ -1,3 +1,4 @@
+v5.11.41 - remove unused debuggers
 v5.11.39 - several improvements, in the leaf decay enhancement and the block list
 v5.11.38 - catch another NPE in DarkOak implementation
 v5.11.37 - catch NPE in DarkOak Tree implementation, skip air blocks when removing later
